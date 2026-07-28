@@ -10,6 +10,7 @@ Supporting product-foundation documents:
 
 - [V1 Decision Sheet](docs/decision-sheet.md)
 - [V1 User Flow](docs/user-flow.md)
+- [V1 Low-Fidelity Wireframes](docs/low-fidelity-wireframes.md)
 
 ## Who is it for?
 

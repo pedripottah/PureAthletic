@@ -169,9 +169,9 @@ V1 does not include:
 - Verify every safety and scheduling rule with automated tests.
 - Review all athlete-facing safety and disclaimer language.
 
-## 12. Next artifact
+## 12. Next validation
 
-Create the detailed user-flow diagram using these decisions. The flow must include:
+The detailed [user flow](user-flow.md) and [low-fidelity wireframes](low-fidelity-wireframes.md) now cover:
 
 - First-time onboarding and plan generation
 - Normal daily use
@@ -180,3 +180,5 @@ Create the detailed user-flow diagram using these decisions. The flow must inclu
 - Plan-change confirmation and undo
 - Weekly review
 - Schedule editing and plan recalculation
+
+The next step is to turn the six routes defined in the low-fidelity wireframes into a clickable grayscale prototype and test them with representative adult amateur football players before visual design begins.
