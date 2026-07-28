@@ -6,6 +6,11 @@ PureAthletic is an adaptive training planner designed to help athletes train wit
 
 The focused version-one scope, user journey, safety boundaries, data model, and delivery milestones are defined in the [Product Requirements](docs/product-requirements.md).
 
+Supporting product-foundation documents:
+
+- [V1 Decision Sheet](docs/decision-sheet.md)
+- [V1 User Flow](docs/user-flow.md)
+
 ## Who is it for?
 
 The first version is focused on adult amateur football players who train with a team and independently but do not have access to a personal strength and conditioning coach. Supporting other sports and junior athletes remains part of the long-term vision.
