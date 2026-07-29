@@ -8,6 +8,7 @@ The focused version-one scope, user journey, safety boundaries, data model, and 
 
 Supporting product-foundation documents:
 
+- [Quick Product Summary](docs/product-foundation-summary.md)
 - [V1 Decision Sheet](docs/decision-sheet.md)
 - [V1 User Flow](docs/user-flow.md)
 - [V1 Low-Fidelity Wireframes](docs/low-fidelity-wireframes.md)
