@@ -6,14 +6,39 @@
  * There is no React, Next.js, build step, or package dependency here. Each
  * render function returns an HTML string, render() puts it in #app, and the
  * event listeners at the bottom handle interaction with normal DOM APIs.
- * 
- * of course this is vibe-coded but i just wanna try and have the willingness to learn
+ *
+ * A useful mental model for reading this file:
+ * 1. Constants describe the prototype's starting data.
+ * 2. `data` stores the athlete information that should survive a page refresh.
+ * 3. `ui` stores temporary information about what is currently on screen.
+ * 4. Render functions turn that state into HTML.
+ * 5. Event listeners react to the user, update state, and render again.
+ *
+ * This started as a vibe-coded prototype, but the comments below are here so
+ * every section can also be used as a JavaScript learning exercise.
  */
 
-const STORAGE_KEY = "pureathletic-prototype-v1"; /* name used to save data in browser */
-const app = document.querySelector("#app"); /* aka <div id="app"> */
-const landingTemplate = document.querySelector("#landing-view");  /* aka <template id="landing-view"> */
+// =============================================================================
+// BROWSER CONNECTIONS
+// =============================================================================
 
+// This is the name used to save and retrieve the app's data in localStorage.
+const STORAGE_KEY = "pureathletic-prototype-v1";
+
+// querySelector() connects JavaScript to elements that already exist in index.html.
+const app = document.querySelector("#app"); // The <div id="app"> where screens appear.
+const landingTemplate = document.querySelector("#landing-view"); // Reusable landing-page HTML.
+
+// =============================================================================
+// STARTING AND DEMO DATA
+// =============================================================================
+
+/*
+ * The initial seven-day plan.
+ * This is an array: an ordered list surrounded by [].
+ * Each item is an object: a group of related properties surrounded by {}.
+ * Example: initialPlan[0].title gives "Lower-body foundation".
+ */
 const initialPlan = [
   { id: "tue", day: "TODAY · TUE 28", type: "Strength", title: "Lower-body foundation", duration: 45, intensity: "Moderate", status: "Planned", fixed: false },
   { id: "wed", day: "WED 29", type: "Rest", title: "Full rest", duration: 0, intensity: "Easy", status: "Rest", fixed: false },
@@ -22,11 +47,15 @@ const initialPlan = [
   { id: "sat", day: "SAT 1", type: "Match", title: "League match", duration: 90, intensity: "Match", status: "Fixed", fixed: true, time: "15:00" },
   { id: "sun", day: "SUN 2", type: "Recovery", title: "Post-match recovery", duration: 25, intensity: "Easy", status: "Recovery", fixed: false },
   { id: "mon", day: "MON 3", type: "Speed", title: "Acceleration quality", duration: 35, intensity: "Moderate", status: "Planned", fixed: false }
-]; /*  This is the initial seven-day training plan. Each object represents one day. this is like a demo */
+];
 
-const demoState = { /* demoState shows an example account. This is loaded when clicking Explore demo */
-  onboarded: true, /* The demo user has already completed the app's initial setup */
-  user: { /* Example user details used by the demo and displayed around the app, app.js access using data.user.something */
+/*
+ * A complete example account loaded by the "Explore demo" button.
+ * Nested values are accessed one level at a time, such as data.user.name.
+ */
+const demoState = {
+  onboarded: true, // The example user has completed onboarding.
+  user: {
     name: "Sam",
     ageConfirmed: true,
     disclaimerAccepted: true,
@@ -58,9 +87,13 @@ const demoState = { /* demoState shows an example account. This is loaded when c
     matchDay: "Saturday",
     matchTime: "15:00"
   }
-}; /* this whole thing is all demo version values */
+};
 
-const onboardingSeed = { /* When someone starts onboarding, these are default values */
+/*
+ * The blank starting state for a new athlete.
+ * "Seed" means the default data from which a new account begins.
+ */
+const onboardingSeed = {
   onboarded: false,
   user: {
     name: "",
@@ -80,6 +113,10 @@ const onboardingSeed = { /* When someone starts onboarding, these are default va
   schedule: demoState.schedule
 };
 
+/*
+ * A list of exercise objects used by renderWorkout().
+ * Each object supplies the title and smaller detail text for one workout row.
+ */
 const exercises = [
   { name: "Dynamic movement series", detail: "8 min warm-up" },
   { name: "Split squat", detail: "3 × 8 each side" },
@@ -88,7 +125,14 @@ const exercises = [
   { name: "Trunk + mobility", detail: "9 min finish" }
 ];
 
+// These values are reused to build choices instead of repeating the HTML by hand.
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+/*
+ * Each inner array describes one navigation button:
+ * [screen id, icon name, visible label].
+ * Later, array destructuring gives those values the names id, iconName, and label.
+ */
 const navItems = [
   ["today", "today", "Today"],
   ["week", "week", "Week"],
@@ -96,8 +140,24 @@ const navItems = [
   ["profile", "profile", "Profile"]
 ];
 
+// =============================================================================
+// LIVE APPLICATION STATE
+// =============================================================================
+
+/*
+ * `data` is the app's lasting state. loadData() restores it from the browser or
+ * returns a new onboarding state. It is saved again whenever important data
+ * changes.
+ */
 let data = loadData();
+
+/*
+ * `ui` is temporary interface state. It remembers the open screen, unfinished
+ * form values, and temporary choices. Unlike `data`, it is not saved between
+ * page refreshes.
+ */
 let ui = {
+  // A ternary is a short if/else: condition ? valueIfTrue : valueIfFalse.
   screen: data.onboarded ? "today" : "landing",
   onboardingStep: 1,
   onboardingForm: clone(onboardingSeed.user),
@@ -111,24 +171,45 @@ let ui = {
   notifications: true
 };
 
+// =============================================================================
+// DATA AND SAFETY HELPERS
+// =============================================================================
+
+/*
+ * Makes a separate copy of a simple object or array.
+ * Without a copy, two variables can point to the same object and accidentally
+ * change each other. This JSON technique is suitable for this prototype's data.
+ */
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+/*
+ * Tries to restore saved JSON text from localStorage.
+ * If there is no saved value—or parsing fails—it returns a fresh starting state.
+ */
 function loadData() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
+    // `saved ? A : B` returns A when saved exists and B when it does not.
     return saved ? JSON.parse(saved) : clone(onboardingSeed);
   } catch {
+    // Corrupted or unavailable saved data should not stop the app from opening.
     localStorage.removeItem(STORAGE_KEY);
     return clone(onboardingSeed);
   }
 }
 
+// localStorage only accepts text, so JSON.stringify() converts the object first.
 function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+/*
+ * Converts potentially unsafe text into safe HTML text.
+ * For example, "<" becomes "&lt;" instead of being treated as an HTML tag.
+ * `value ?? ""` uses an empty string only when value is null or undefined.
+ */
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -138,6 +219,15 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+// =============================================================================
+// SMALL HTML-BUILDING HELPERS
+// =============================================================================
+
+/*
+ * Returns the SVG markup for a named icon.
+ * `size = 20` is a default parameter used when no size is supplied.
+ * `paths[name] || paths.bolt` falls back to the bolt for an unknown name.
+ */
 function icon(name, size = 20) {
   const paths = {
     bolt: '<path d="m13 2-9 12h7l-1 8 9-12h-7l1-8Z"></path>',
@@ -160,21 +250,32 @@ function icon(name, size = 20) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.bolt}</svg>`;
 }
 
+/*
+ * The landing page starts inside an HTML <template>. This finds every element
+ * marked with data-icon and inserts the matching SVG into it.
+ */
 function hydrateTemplateIcons() {
   app.querySelectorAll("[data-icon]").forEach((element) => {
+    // closest() checks whether the icon is inside a .preview-icon parent.
     const size = element.closest(".preview-icon") ? 24 : 18;
     element.innerHTML = icon(element.dataset.icon, size);
   });
 }
 
+// The next helpers return small reusable pieces of HTML as template strings.
 function brand() {
   return `<div class="brand"><span class="brand-mark">${icon("bolt", 18)}</span><span>PureAthletic</span></div>`;
 }
 
+// `tone` changes the CSS class; its default value is "neutral".
 function pill(text, tone = "neutral") {
   return `<span class="pill pill-${tone}">${escapeHtml(text)}</span>`;
 }
 
+/*
+ * Builds a consistent button. The options object allows callers to override
+ * styling or add attributes without needing several separate button functions.
+ */
 function button(text, action, options = {}) {
   const variant = options.variant || "primary";
   const className = options.className || "";
@@ -183,19 +284,38 @@ function button(text, action, options = {}) {
   return `<button type="button" class="button button-${variant} ${className}" data-action="${action}" ${attributes}>${leadingIcon}<span>${text}</span></button>`;
 }
 
+/*
+ * map() transforms every choice into an <option>; join("") combines the array
+ * of HTML strings into one string. The matching option receives "selected".
+ */
 function selectedOptions(options, selected) {
   return options.map((option) => `<option${option === selected ? " selected" : ""}>${escapeHtml(option)}</option>`).join("");
 }
 
+// A shared heading used by several main app screens.
 function screenHeader(eyebrow, title, action = "") {
   return `<header class="screen-header"><div><span class="screen-eyebrow">${eyebrow}</span><h1>${title}</h1></div>${action}</header>`;
 }
 
+// =============================================================================
+// SCREEN RENDERING
+// =============================================================================
+
+/*
+ * A render function reads the current state and returns or inserts HTML.
+ * Rendering does not save data—it only decides what the user sees right now.
+ */
+
+// Copies the landing <template> into #app, then fills its icon placeholders.
 function renderLanding() {
   app.innerHTML = landingTemplate.innerHTML;
   hydrateTemplateIcons();
 }
 
+/*
+ * Builds one of the five onboarding steps.
+ * `panel` starts empty, then the matching if block fills it with that step's HTML.
+ */
 function renderOnboarding() {
   const step = ui.onboardingStep;
   const form = ui.onboardingForm;
@@ -243,6 +363,7 @@ function renderOnboarding() {
   }
 
   if (step === 3) {
+    // Each pair holds [goal title, supporting detail].
     const goals = [
       ["Match readiness", "Feel prepared around fixtures"],
       ["Strength", "Build force and robustness"],
@@ -255,6 +376,7 @@ function renderOnboarding() {
         <span class="section-kicker">PRIMARY GOAL</span>
         <h1>What matters most right now?</h1>
         <div class="stacked-choices">
+          <!-- [title, detail] destructures each pair into two named variables. -->
           ${goals.map(([title, detail]) => `
             <button type="button" class="radio-card ${form.goal === title ? "selected" : ""}" data-action="set-goal" data-value="${title}">
               <span class="radio-dot"></span><span><strong>${title}</strong><small>${detail}</small></span>
@@ -290,6 +412,7 @@ function renderOnboarding() {
       </div>`;
   }
 
+  // Step 1 stays disabled until both required checkboxes are selected.
   const canContinue = step !== 1 || (form.ageConfirmed && form.disclaimerAccepted);
   return `
     <main class="focused-page">
@@ -311,6 +434,11 @@ function renderOnboarding() {
     </main>`;
 }
 
+/*
+ * Builds a reusable practice or match card.
+ * A prefix such as "practice" becomes the property names "practiceDay" and
+ * "practiceTime". Bracket notation reads a property using a variable name.
+ */
 function scheduleCard(label, prefix, schedule, scope) {
   const dayField = `${prefix}Day`;
   const timeField = `${prefix}Time`;
@@ -324,7 +452,12 @@ function scheduleCard(label, prefix, schedule, scope) {
     </div>`;
 }
 
+/*
+ * Wraps a main screen with the desktop sidebar and mobile bottom navigation.
+ * The `content` argument is the already-rendered HTML for the current screen.
+ */
 function renderAppShell(content) {
+  // Destructuring names the three values inside each navItems entry.
   const navigation = navItems.map(([id, iconName, label]) => `
     <button type="button" class="${ui.screen === id ? "active" : ""}" data-action="navigate" data-screen="${id}">
       ${icon(iconName)}<span>${label}</span>
@@ -347,6 +480,10 @@ function renderAppShell(content) {
     </div>`;
 }
 
+/*
+ * Builds the Today dashboard from the current recommendation and check-in state.
+ * The nested ternaries choose the appropriate buttons and explanation.
+ */
 function renderToday() {
   const rec = data.recommendation;
   const safety = rec.status === "Safety";
@@ -391,6 +528,11 @@ function renderToday() {
     </main>`;
 }
 
+/*
+ * Builds the readiness form.
+ * Each item in `scales` holds [state key, label, low label, high label].
+ * One map() creates all four scales and another creates buttons 1 through 5.
+ */
 function renderCheckIn() {
   const scales = [
     ["sleep", "Sleep quality", "Poor", "Great"],
@@ -429,6 +571,10 @@ function renderCheckIn() {
     </main>`;
 }
 
+/*
+ * Selects the wording for the check-in result.
+ * Returning an object keeps the text decision separate from the outcome HTML.
+ */
 function outcomeCopy(kind) {
   if (kind === "poor") return { kicker: "RECOMMENDATION UPDATED", title: "A lighter day fits better.", body: "Today’s low sleep and energy make recovery the more appropriate choice before team practice.", before: "45-min strength", after: "20-min mobility + recovery" };
   if (kind === "moderate") return { kicker: "SAFETY ACTION", title: "Intense training removed.", body: "You reported moderate pain. PureAthletic cannot assess an injury or tell you when it is safe to return.", before: "45-min strength", after: "Conservative guidance" };
@@ -436,6 +582,7 @@ function outcomeCopy(kind) {
   return { kicker: "CHECK-IN SAVED", title: "Today’s plan still fits.", body: "Your readiness supports the planned session and no safety rule was triggered.", before: null, after: null };
 }
 
+// Builds the result screen after a readiness check-in or a pain safety action.
 function renderOutcome() {
   const kind = ui.outcome;
   const copy = outcomeCopy(kind);
@@ -454,6 +601,10 @@ function renderOutcome() {
     </main>`;
 }
 
+/*
+ * Builds either the full workout or its short version.
+ * When `short` is true, slice(0, 4) returns only the first four exercises.
+ */
 function renderWorkout(short = false) {
   const shown = short ? exercises.slice(0, 4) : exercises;
   return `
@@ -465,6 +616,7 @@ function renderWorkout(short = false) {
           <div class="difficulty"><span>DIFFICULTY</span><strong>Moderate</strong><div><i></i><i></i><i class="muted"></i><i class="muted"></i></div></div>
         </div>
         <div class="exercise-list">
+          <!-- map() turns every exercise object into one clickable HTML row. -->
           ${shown.map((exercise, index) => `
             <button type="button" class="exercise-row ${ui.workoutDone.includes(index) ? "done" : ""}" data-action="toggle-exercise" data-index="${index}">
               <span class="exercise-number">${ui.workoutDone.includes(index) ? icon("check", 17) : String(index + 1).padStart(2, "0")}</span>
@@ -481,6 +633,10 @@ function renderWorkout(short = false) {
     </main>`;
 }
 
+/*
+ * Builds the activity form for both planned and unplanned training.
+ * Conditional template sections show different fields for the two situations.
+ */
 function renderActivityLog() {
   const form = ui.logForm;
   const unplanned = ui.logConfig.unplanned;
@@ -506,6 +662,10 @@ function renderActivityLog() {
     </main>`;
 }
 
+/*
+ * Shows a preview before changing the plan.
+ * `ui.pending` can represent either a changed schedule or a high-load activity.
+ */
 function renderAdjustment() {
   const pending = ui.pending;
   const isSchedule = pending.kind === "schedule";
@@ -528,9 +688,14 @@ function renderAdjustment() {
     </main>`;
 }
 
+/*
+ * Builds one weekly-plan row per item in data.plan.
+ * The callback passed to map() can do several calculations before returning HTML.
+ */
 function renderWeek() {
   const rows = data.plan.map((item) => {
     const interactive = !item.fixed && item.type !== "Rest";
+    // Nested template strings add time and duration only when those values exist.
     const meta = `${item.time ? `${item.time} · ` : ""}${item.duration ? `${item.duration} min · ` : ""}${item.intensity}`;
     return `
       <button type="button" class="plan-row" ${interactive ? 'data-action="open-workout"' : ""}>
@@ -556,11 +721,16 @@ function renderWeek() {
     </main>`;
 }
 
+/*
+ * Calculates and renders the progress summary.
+ * filter() keeps matching activities; reduce() adds all activity durations.
+ */
 function renderProgress() {
   const completed = data.activities.filter((activity) => activity.status === "Completed").length;
   const modified = data.activities.filter((activity) => activity.status === "Modified").length;
   const minutes = data.activities.reduce((sum, activity) => sum + Number(activity.duration || 0), 0);
 
+  // Return early with an empty state when there are no activities to summarize.
   if (!data.activities.length) {
     return `
       <main class="screen">
@@ -584,6 +754,7 @@ function renderProgress() {
     </main>`;
 }
 
+// Builds the athlete summary and settings rows.
 function renderProfile() {
   const userName = data.user.name || "Athlete";
   return `
@@ -609,10 +780,15 @@ function renderProfile() {
     </main>`;
 }
 
+/*
+ * A small reusable settings-row builder.
+ * Empty default arguments make the action and extra CSS class optional.
+ */
 function settingsRow(iconName, title, detail, action = "", className = "") {
   return `<button type="button" class="${className}" ${action ? `data-action="${action}"` : ""}><span class="settings-icon">${icon(iconName)}</span><span><strong>${title}</strong><small>${detail}</small></span>${icon("arrow")}</button>`;
 }
 
+// Builds the form used to edit fixed practice and match commitments.
 function renderScheduleEditor() {
   const schedule = ui.scheduleForm;
   return `
@@ -628,6 +804,10 @@ function renderScheduleEditor() {
     </main>`;
 }
 
+/*
+ * Shows only the latest plan change.
+ * Returning "" means "render nothing" when the adjustment list is empty.
+ */
 function renderHistory() {
   if (!data.adjustments.length) return "";
   const adjustment = data.adjustments[0];
@@ -638,6 +818,17 @@ function renderHistory() {
     </aside>`;
 }
 
+// =============================================================================
+// SCREEN ROUTER
+// =============================================================================
+
+/*
+ * The central renderer decides which screen function to run.
+ *
+ * Focused screens take over the whole page. Main app screens are first rendered
+ * as content and then placed inside renderAppShell(). The final fallback shows
+ * Today if ui.screen contains an unknown value.
+ */
 function render() {
   if (ui.screen === "landing") {
     renderLanding();
@@ -656,6 +847,7 @@ function render() {
     schedule: renderScheduleEditor
   };
 
+  // A function is stored as the object's value, then () calls that function.
   if (focusedScreens[ui.screen]) {
     app.innerHTML = focusedScreens[ui.screen]();
     return;
@@ -670,18 +862,32 @@ function render() {
   app.innerHTML = renderAppShell((appScreens[ui.screen] || renderToday)());
 }
 
+/*
+ * Navigation always follows the same three steps:
+ * update the screen name, move to the top, and render the new screen.
+ */
 function setScreen(screen) {
   ui.screen = screen;
   window.scrollTo({ top: 0, behavior: "instant" });
   render();
 }
 
-function enterDemo() { 
-  data = clone(demoState); /* This copies all the demo information (lines 30–37) into the app’s current data variable: */
-  saveData(); /* Saves data into browser's localStorage */
+// =============================================================================
+// ACTIONS THAT CHANGE APPLICATION STATE
+// =============================================================================
+
+// Replaces the current saved account with a fresh, independent demo copy.
+function enterDemo() {
+  data = clone(demoState);
+  saveData();
   setScreen("today");
 }
 
+/*
+ * Converts the temporary onboarding form into lasting application data.
+ * `...clone(demoState)` uses spread syntax to copy all demo properties first;
+ * the properties below it then replace onboarded, user, and schedule.
+ */
 function finishOnboarding() {
   const user = clone(ui.onboardingForm);
   user.name = user.name.trim() || "Sam";
@@ -695,6 +901,11 @@ function finishOnboarding() {
   setScreen("today");
 }
 
+/*
+ * Applies the prototype's readiness rules.
+ * It starts with the normal recommendation, then replaces it when pain or very
+ * poor readiness triggers a rule. Only the first matching branch runs.
+ */
 function submitCheckIn() {
   const form = clone(ui.checkinForm);
   let kind = "good";
@@ -715,6 +926,11 @@ function submitCheckIn() {
     adjustment = { id: Date.now(), title: "Strength replaced with recovery", reason: "Very poor readiness", undoable: true, beforeRecommendation: data.recommendation };
   }
 
+  /*
+   * Spread syntax copies the old data, then the following properties overwrite
+   * the parts that changed. [adjustment, ...data.adjustments] adds the newest
+   * item to the front of the old adjustment list.
+   */
   data = {
     ...data,
     checkInDone: true,
@@ -727,6 +943,7 @@ function submitCheckIn() {
   setScreen("outcome");
 }
 
+// Creates the temporary form values for a planned or unplanned activity.
 function openLog(unplanned, status = "Completed") {
   ui.logConfig = { unplanned, status };
   ui.logForm = {
@@ -740,6 +957,11 @@ function openLog(unplanned, status = "Completed") {
   setScreen("log");
 }
 
+/*
+ * Turns the temporary log form into a saved activity.
+ * map() creates a new plan array, changing only Tuesday when appropriate.
+ * Date.now() supplies a simple numeric identifier based on the current time.
+ */
 function saveActivity() {
   const form = clone(ui.logForm);
   const activity = {
@@ -752,6 +974,7 @@ function saveActivity() {
   const plan = data.plan.map((item) => item.id === "tue" && !ui.logConfig.unplanned ? { ...item, status: form.status } : item);
   const nextData = { ...data, activities, plan };
 
+  // Moderate or severe pain takes the safety route and ends this function early.
   if (["Moderate", "Severe"].includes(form.pain)) {
     const severe = form.pain === "Severe";
     nextData.recommendation = {
@@ -772,6 +995,8 @@ function saveActivity() {
 
   data = nextData;
   saveData();
+
+  // High duration AND high effort creates a plan-change preview.
   if (form.duration >= 60 && form.effort >= 8) {
     ui.pending = { kind: "activity", originalPlan: clone(data.plan) };
     setScreen("adjustment");
@@ -780,6 +1005,11 @@ function saveActivity() {
   }
 }
 
+/*
+ * Applies the plan-change preview kept in ui.pending.
+ * A schedule change updates the match; an activity change replaces Wednesday
+ * with recovery. The old values are retained so an undo can restore them.
+ */
 function applyAdjustment() {
   const pending = ui.pending;
   if (pending.kind === "schedule") {
@@ -800,8 +1030,14 @@ function applyAdjustment() {
   setScreen("week");
 }
 
+/*
+ * Finds an adjustment by id and restores any "before" values saved with it.
+ * `||` keeps the current value when that particular before-value does not exist.
+ */
 function undoAdjustment(id) {
   const adjustment = data.adjustments.find((item) => item.id === id);
+
+  // Guard clause: stop immediately if the change is missing or cannot be undone.
   if (!adjustment || !adjustment.undoable) return;
   data = {
     ...data,
@@ -814,6 +1050,11 @@ function undoAdjustment(id) {
   render();
 }
 
+/*
+ * Downloads the current `data` object as a JSON file:
+ * Blob creates an in-memory file, an invisible <a> triggers the download, and
+ * revokeObjectURL() releases the temporary browser URL afterward.
+ */
 function exportData() {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -824,13 +1065,27 @@ function exportData() {
   URL.revokeObjectURL(url);
 }
 
+// =============================================================================
+// FORM BINDING
+// =============================================================================
+
+// Browser inputs normally return strings; checkboxes and numbers need conversion.
 function valueForInput(target) {
   if (target.type === "checkbox") return target.checked;
   if (target.type === "number") return Number(target.value);
   return target.value;
 }
 
+/*
+ * data-scope says which temporary form object to update, while data-field says
+ * which property inside that object should receive the input's new value.
+ *
+ * Example:
+ * <input data-scope="onboarding" data-field="name">
+ * updates ui.onboardingForm.name.
+ */
 function updateBoundField(target) {
+  // Destructuring reads target.dataset.scope and target.dataset.field.
   const { scope, field } = target.dataset;
   if (!scope || !field) return;
   const scopes = {
@@ -842,17 +1097,36 @@ function updateBoundField(target) {
   if (scopes[scope]) scopes[scope][field] = valueForInput(target);
 }
 
+// =============================================================================
+// EVENT LISTENERS
+// =============================================================================
+
+/*
+ * Instead of attaching a listener to every field, these listeners sit on #app.
+ * Browser events "bubble" upward from the clicked or edited element to #app.
+ * This is event delegation, and it still works after render() replaces the HTML.
+ */
+
+// `input` fires immediately while a user types or changes a number.
 app.addEventListener("input", (event) => {
   updateBoundField(event.target);
 });
 
+// `change` handles completed changes; checkboxes also need a visual rerender.
 app.addEventListener("change", (event) => {
   updateBoundField(event.target);
   if (event.target.type === "checkbox") render();
 });
 
+/*
+ * All clickable controls use a data-action attribute. closest() also handles a
+ * click on a child <span> or SVG by finding its parent action element.
+ * The long if/else chain acts as the prototype's action controller.
+ */
 app.addEventListener("click", (event) => {
   const target = event.target.closest("[data-action]");
+
+  // Ignore clicks that did not happen inside an element with data-action.
   if (!target) return;
   const action = target.dataset.action;
 
@@ -898,6 +1172,7 @@ app.addEventListener("click", (event) => {
   } else if (action === "submit-checkin") {
     submitCheckIn();
   } else if (action === "review-safety") {
+    // Optional chaining (?.) safely reads pain even if checkIn does not exist.
     ui.outcome = data.checkIn?.pain === "Severe" ? "severe" : "moderate";
     setScreen("safety");
   } else if (action === "continue-outcome") {
@@ -910,6 +1185,8 @@ app.addEventListener("click", (event) => {
     setScreen("short-workout");
   } else if (action === "toggle-exercise") {
     const index = Number(target.dataset.index);
+
+    // Remove the index if selected already; otherwise add it to a new array.
     ui.workoutDone = ui.workoutDone.includes(index)
       ? ui.workoutDone.filter((item) => item !== index)
       : [...ui.workoutDone, index];
@@ -959,4 +1236,5 @@ app.addEventListener("click", (event) => {
   }
 });
 
+// First render: this starts the application after the file has loaded.
 render();
