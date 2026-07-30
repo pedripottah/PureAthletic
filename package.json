@@ -1,0 +1,9 @@
+{
+  "name": "pureathletic-vanilla",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PureAthletic prototype built with traditional HTML, CSS, and JavaScript.",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  }
+}

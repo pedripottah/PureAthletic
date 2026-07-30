@@ -4,7 +4,7 @@ PureAthletic is an adaptive training planner designed to help athletes train wit
 
 ## Run the prototype
 
-The active prototype uses traditional, dependency-free web files:
+The active prototype uses traditional, dependency-free application files:
 
 - `index.html` contains the document structure and landing-page content.
 - `styles.css` contains all visual styling.
@@ -18,6 +18,9 @@ python3 -m http.server 8000
 
 Then open `http://localhost:8000`. You can also open `index.html` directly,
 although a local server is recommended for consistent browser behavior.
+
+For static hosting, `npm run build` copies those same three files into `dist/`.
+The build script uses only Node.js itself and installs no packages or frameworks.
 
 The previous Next.js/React implementation is preserved in
 [`archive/nextjs`](archive/nextjs).
