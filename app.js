@@ -25,8 +25,8 @@ const initialPlan = [
 ]; /*  This is the initial seven-day training plan. Each object represents one day. this is like a demo */
 
 const demoState = { /* demoState shows an example account. This is loaded when clicking Explore demo */
-  onboarded: false, /* The demo user has already completed the app's initial setup */
-  user: {
+  onboarded: true, /* The demo user has already completed the app's initial setup */
+  user: { /* Example user details used by the demo and displayed around the app, app.js access using data.user.something */
     name: "Sam",
     ageConfirmed: true,
     disclaimerAccepted: true,
@@ -58,9 +58,9 @@ const demoState = { /* demoState shows an example account. This is loaded when c
     matchDay: "Saturday",
     matchTime: "15:00"
   }
-};
+}; /* this whole thing is all demo version values */
 
-const onboardingSeed = {
+const onboardingSeed = { /* When someone starts onboarding, these are default values */
   onboarded: false,
   user: {
     name: "",
@@ -676,9 +676,9 @@ function setScreen(screen) {
   render();
 }
 
-function enterDemo() {
-  data = clone(demoState);
-  saveData();
+function enterDemo() { 
+  data = clone(demoState); /* This copies all the demo information (lines 30–37) into the app’s current data variable: */
+  saveData(); /* Saves data into browser's localStorage */
   setScreen("today");
 }
 
