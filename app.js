@@ -1,0 +1,960 @@
+"use strict";
+
+/*
+ * PureAthletic's browser application.
+ *
+ * There is no React, Next.js, build step, or package dependency here. Each
+ * render function returns an HTML string, render() puts it in #app, and the
+ * event listeners at the bottom handle interaction with normal DOM APIs.
+ */
+
+const STORAGE_KEY = "pureathletic-prototype-v1";
+const app = document.querySelector("#app");
+const landingTemplate = document.querySelector("#landing-view");
+
+const initialPlan = [
+  { id: "tue", day: "TODAY · TUE 28", type: "Strength", title: "Lower-body foundation", duration: 45, intensity: "Moderate", status: "Planned", fixed: false },
+  { id: "wed", day: "WED 29", type: "Rest", title: "Full rest", duration: 0, intensity: "Easy", status: "Rest", fixed: false },
+  { id: "thu", day: "THU 30", type: "Team practice", title: "Team training", duration: 90, intensity: "Team-led", status: "Fixed", fixed: true, time: "19:00" },
+  { id: "fri", day: "FRI 31", type: "Recovery", title: "Mobility reset", duration: 20, intensity: "Easy", status: "Recovery", fixed: false },
+  { id: "sat", day: "SAT 1", type: "Match", title: "League match", duration: 90, intensity: "Match", status: "Fixed", fixed: true, time: "15:00" },
+  { id: "sun", day: "SUN 2", type: "Recovery", title: "Post-match recovery", duration: 25, intensity: "Easy", status: "Recovery", fixed: false },
+  { id: "mon", day: "MON 3", type: "Speed", title: "Acceleration quality", duration: 35, intensity: "Moderate", status: "Planned", fixed: false }
+];
+
+const demoState = {
+  onboarded: true,
+  user: {
+    name: "Sam",
+    ageConfirmed: true,
+    disclaimerAccepted: true,
+    position: "Midfielder",
+    experience: "Intermediate",
+    goal: "Match readiness",
+    availability: ["Monday", "Wednesday", "Friday", "Sunday"],
+    equipment: ["Bodyweight", "Resistance bands", "Field or open space"]
+  },
+  checkInDone: false,
+  recommendation: {
+    id: "tue",
+    type: "Strength",
+    title: "Lower-body foundation",
+    duration: 45,
+    intensity: "Moderate",
+    status: "Planned",
+    purpose: "Build useful lower-body strength with enough recovery before Saturday’s match."
+  },
+  plan: initialPlan,
+  activities: [
+    { id: 1, title: "Speed mechanics", status: "Completed", duration: 35, effort: 6, date: "Mon 27" },
+    { id: 2, title: "Mobility reset", status: "Modified", duration: 18, effort: 3, date: "Sun 26" }
+  ],
+  adjustments: [],
+  schedule: {
+    practiceDay: "Thursday",
+    practiceTime: "19:00",
+    matchDay: "Saturday",
+    matchTime: "15:00"
+  }
+};
+
+const onboardingSeed = {
+  onboarded: false,
+  user: {
+    name: "",
+    ageConfirmed: false,
+    disclaimerAccepted: false,
+    position: "Midfielder",
+    experience: "Beginner",
+    goal: "Match readiness",
+    availability: ["Monday", "Wednesday", "Friday"],
+    equipment: ["Bodyweight"]
+  },
+  checkInDone: false,
+  recommendation: demoState.recommendation,
+  plan: initialPlan,
+  activities: [],
+  adjustments: [],
+  schedule: demoState.schedule
+};
+
+const exercises = [
+  { name: "Dynamic movement series", detail: "8 min warm-up" },
+  { name: "Split squat", detail: "3 × 8 each side" },
+  { name: "Hip hinge", detail: "3 × 10" },
+  { name: "Calf raise", detail: "3 × 12" },
+  { name: "Trunk + mobility", detail: "9 min finish" }
+];
+
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const navItems = [
+  ["today", "today", "Today"],
+  ["week", "week", "Week"],
+  ["progress", "progress", "Progress"],
+  ["profile", "profile", "Profile"]
+];
+
+let data = loadData();
+let ui = {
+  screen: data.onboarded ? "today" : "landing",
+  onboardingStep: 1,
+  onboardingForm: clone(onboardingSeed.user),
+  onboardingSchedule: clone(demoState.schedule),
+  checkinForm: { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" },
+  workoutDone: [],
+  outcome: "good",
+  logConfig: { unplanned: false, status: "Completed" },
+  logForm: null,
+  pending: null,
+  notifications: true
+};
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : clone(onboardingSeed);
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    return clone(onboardingSeed);
+  }
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function icon(name, size = 20) {
+  const paths = {
+    bolt: '<path d="m13 2-9 12h7l-1 8 9-12h-7l1-8Z"></path>',
+    today: '<circle cx="12" cy="12" r="8"></circle><path d="m12 7 1.5 4 3.5 1.5-3.5 1.5-1.5 4-1.5-4L7 12.5l3.5-1.5L12 7Z"></path>',
+    week: '<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path>',
+    progress: '<path d="M4 19V9M10 19V5M16 19v-7M22 19H2"></path>',
+    profile: '<circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path>',
+    arrow: '<path d="m9 18 6-6-6-6"></path>',
+    back: '<path d="m15 18-6-6 6-6"></path>',
+    clock: '<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path>',
+    check: '<path d="m5 12 4 4L19 6"></path>',
+    plus: '<path d="M12 5v14M5 12h14"></path>',
+    refresh: '<path d="M20 7h-6V1"></path><path d="M20 7a9 9 0 1 0 1 8"></path>',
+    alert: '<path d="M10.3 2.9 1.8 17a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 2.9a2 2 0 0 0-3.4 0Z"></path><path d="M12 9v4M12 17h.01"></path>',
+    download: '<path d="M12 3v12M7 10l5 5 5-5M5 21h14"></path>',
+    trash: '<path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"></path>'
+  };
+
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.bolt}</svg>`;
+}
+
+function hydrateTemplateIcons() {
+  app.querySelectorAll("[data-icon]").forEach((element) => {
+    const size = element.closest(".preview-icon") ? 24 : 18;
+    element.innerHTML = icon(element.dataset.icon, size);
+  });
+}
+
+function brand() {
+  return `<div class="brand"><span class="brand-mark">${icon("bolt", 18)}</span><span>PureAthletic</span></div>`;
+}
+
+function pill(text, tone = "neutral") {
+  return `<span class="pill pill-${tone}">${escapeHtml(text)}</span>`;
+}
+
+function button(text, action, options = {}) {
+  const variant = options.variant || "primary";
+  const className = options.className || "";
+  const attributes = options.attributes || "";
+  const leadingIcon = options.icon ? icon(options.icon, 18) : "";
+  return `<button type="button" class="button button-${variant} ${className}" data-action="${action}" ${attributes}>${leadingIcon}<span>${text}</span></button>`;
+}
+
+function selectedOptions(options, selected) {
+  return options.map((option) => `<option${option === selected ? " selected" : ""}>${escapeHtml(option)}</option>`).join("");
+}
+
+function screenHeader(eyebrow, title, action = "") {
+  return `<header class="screen-header"><div><span class="screen-eyebrow">${eyebrow}</span><h1>${title}</h1></div>${action}</header>`;
+}
+
+function renderLanding() {
+  app.innerHTML = landingTemplate.innerHTML;
+  hydrateTemplateIcons();
+}
+
+function renderOnboarding() {
+  const step = ui.onboardingStep;
+  const form = ui.onboardingForm;
+  const schedule = ui.onboardingSchedule;
+  const total = 5;
+  let panel = "";
+
+  if (step === 1) {
+    panel = `
+      <div class="step-panel">
+        <span class="section-kicker">BEFORE WE BEGIN</span>
+        <h1>Let’s keep this useful and safe.</h1>
+        <p class="lead">PureAthletic provides general training guidance. It does not diagnose injury, provide treatment, or replace a qualified professional.</p>
+        <label class="check-card">
+          <input type="checkbox" data-scope="onboarding" data-field="ageConfirmed"${form.ageConfirmed ? " checked" : ""}>
+          <span><strong>I confirm I am 18 or older</strong><small>The first prototype is limited to adult athletes.</small></span>
+        </label>
+        <label class="check-card">
+          <input type="checkbox" data-scope="onboarding" data-field="disclaimerAccepted"${form.disclaimerAccepted ? " checked" : ""}>
+          <span><strong>I understand the guidance boundary</strong><small>Pain or injury concerns need qualified support.</small></span>
+        </label>
+      </div>`;
+  }
+
+  if (step === 2) {
+    panel = `
+      <div class="step-panel">
+        <span class="section-kicker">YOUR FOOTBALL</span>
+        <h1>Tell us about your game.</h1>
+        <div class="field">
+          <label for="name">Preferred name</label>
+          <input id="name" data-scope="onboarding" data-field="name" value="${escapeHtml(form.name)}" placeholder="Sam">
+        </div>
+        <div class="field">
+          <label for="position">Position</label>
+          <select id="position" data-scope="onboarding" data-field="position">${selectedOptions(["Goalkeeper", "Defender", "Midfielder", "Forward", "Utility player"], form.position)}</select>
+        </div>
+        <div class="field">
+          <label>Training experience</label>
+          <div class="choice-grid">
+            ${["Beginner", "Intermediate", "Advanced"].map((item) => `<button type="button" class="choice ${form.experience === item ? "selected" : ""}" data-action="set-experience" data-value="${item}">${item}</button>`).join("")}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  if (step === 3) {
+    const goals = [
+      ["Match readiness", "Feel prepared around fixtures"],
+      ["Strength", "Build force and robustness"],
+      ["Speed", "Improve acceleration and pace"],
+      ["Endurance", "Sustain repeated effort"],
+      ["General fitness", "Build a balanced base"]
+    ];
+    panel = `
+      <div class="step-panel">
+        <span class="section-kicker">PRIMARY GOAL</span>
+        <h1>What matters most right now?</h1>
+        <div class="stacked-choices">
+          ${goals.map(([title, detail]) => `
+            <button type="button" class="radio-card ${form.goal === title ? "selected" : ""}" data-action="set-goal" data-value="${title}">
+              <span class="radio-dot"></span><span><strong>${title}</strong><small>${detail}</small></span>
+            </button>`).join("")}
+        </div>
+      </div>`;
+  }
+
+  if (step === 4) {
+    panel = `
+      <div class="step-panel">
+        <span class="section-kicker">YOUR WEEK</span>
+        <h1>Add the commitments that stay fixed.</h1>
+        ${scheduleCard("TEAM PRACTICE", "practice", schedule, "onboardingSchedule")}
+        ${scheduleCard("MATCH", "match", schedule, "onboardingSchedule")}
+        <p class="hint">${icon("shield", 17)} These commitments will never be moved automatically.</p>
+      </div>`;
+  }
+
+  if (step === 5) {
+    panel = `
+      <div class="step-panel">
+        <span class="section-kicker">REVIEW</span>
+        <h1>Your first week is ready to build.</h1>
+        <div class="review-list">
+          <div><span>Athlete</span><strong>${escapeHtml(form.name.trim() || "Sam")} · ${escapeHtml(form.position)}</strong></div>
+          <div><span>Primary goal</span><strong>${escapeHtml(form.goal)}</strong></div>
+          <div><span>Team practice</span><strong>${escapeHtml(schedule.practiceDay)} · ${escapeHtml(schedule.practiceTime)}</strong></div>
+          <div><span>Match</span><strong>${escapeHtml(schedule.matchDay)} · ${escapeHtml(schedule.matchTime)}</strong></div>
+          <div><span>Plan shape</span><strong>2 sessions · 2 recovery/rest days</strong></div>
+        </div>
+        <div class="info-card">${icon("shield")}<div><strong>Match protection applied</strong><p>We will avoid hard lower-body work immediately before your match.</p></div></div>
+      </div>`;
+  }
+
+  const canContinue = step !== 1 || (form.ageConfirmed && form.disclaimerAccepted);
+  return `
+    <main class="focused-page">
+      <header class="focused-header">
+        <button type="button" class="icon-button" data-action="onboarding-back" aria-label="Back">${icon("back")}</button>
+        ${brand()}
+        <button type="button" class="text-button" data-action="exit-onboarding">Exit</button>
+      </header>
+      <section class="form-shell">
+        <div class="progress-meta"><span>STEP ${step} OF ${total}</span><span>${Math.round((step / total) * 100)}%</span></div>
+        <div class="progress-track"><span style="width:${(step / total) * 100}%"></span></div>
+        ${panel}
+        <div class="form-actions">
+          <button type="button" class="button button-primary" data-action="onboarding-next"${canContinue ? "" : " disabled"}>
+            <span>${step === total ? "Generate my plan" : "Continue"} <span aria-hidden="true">→</span></span>
+          </button>
+        </div>
+      </section>
+    </main>`;
+}
+
+function scheduleCard(label, prefix, schedule, scope) {
+  const dayField = `${prefix}Day`;
+  const timeField = `${prefix}Time`;
+  return `
+    <div class="schedule-card">
+      ${pill(label, "dark")}
+      <div class="two-fields">
+        <div class="field"><label>Day</label><select data-scope="${scope}" data-field="${dayField}">${selectedOptions(weekdays, schedule[dayField])}</select></div>
+        <div class="field"><label>Time</label><input type="time" data-scope="${scope}" data-field="${timeField}" value="${escapeHtml(schedule[timeField])}"></div>
+      </div>
+    </div>`;
+}
+
+function renderAppShell(content) {
+  const navigation = navItems.map(([id, iconName, label]) => `
+    <button type="button" class="${ui.screen === id ? "active" : ""}" data-action="navigate" data-screen="${id}">
+      ${icon(iconName)}<span>${label}</span>
+    </button>`).join("");
+  const userName = data.user.name || "Athlete";
+
+  return `
+    <div class="app-shell">
+      <aside class="side-nav">
+        ${brand()}
+        <nav>${navigation}</nav>
+        <div class="side-user">
+          <span class="avatar">${escapeHtml(userName.slice(0, 1).toUpperCase())}</span>
+          <div><strong>${escapeHtml(userName)}</strong><small>${escapeHtml(data.user.position)}</small></div>
+          <button type="button" data-action="reset-demo" aria-label="Reset demo">${icon("refresh", 16)}</button>
+        </div>
+      </aside>
+      <div class="app-content">${content}${renderHistory()}</div>
+      <nav class="bottom-nav">${navigation}</nav>
+    </div>`;
+}
+
+function renderToday() {
+  const rec = data.recommendation;
+  const safety = rec.status === "Safety";
+  const recommendationActions = !data.checkInDone && !safety
+    ? button('Complete check-in <span aria-hidden="true">→</span>', "open-checkin")
+    : safety
+      ? button("Review guidance", "review-safety", { variant: "light" })
+      : `<div class="button-row">${button("Start workout", "open-workout")}${button("25-min version", "open-short-workout", { variant: "light" })}</div>`;
+  const explanation = safety
+    ? "Safety rules take priority over the weekly goal and cannot be bypassed."
+    : data.checkInDone
+      ? "Your check-in supports this session, and it fits the clearest strength window before Saturday’s match."
+      : "Check in first so the session can respond to today’s sleep, energy, soreness, stress, and pain.";
+
+  return `
+    <main class="screen">
+      ${screenHeader("TUESDAY, 28 JULY", `Good afternoon, ${escapeHtml(data.user.name)}.`, `<span class="readiness-dot">${data.checkInDone ? "Check-in done" : "Check-in due"}</span>`)}
+      <div class="dashboard-grid">
+        <section class="recommendation-card ${safety ? "safety-card" : ""}">
+          <div class="card-topline"><span class="eyebrow">${safety ? "SAFETY GUIDANCE" : "TODAY’S RECOMMENDATION"}</span>${pill(rec.status, safety ? "warning" : "lime")}</div>
+          <div class="recommendation-icon">${icon(safety ? "alert" : rec.type === "Recovery" ? "shield" : "bolt", 28)}</div>
+          <span class="session-type">${escapeHtml(rec.type)}</span>
+          <h2>${escapeHtml(rec.title)}</h2>
+          ${safety ? "" : `<div class="session-meta"><span>${icon("clock", 17)} ${rec.duration} min</span><span>${escapeHtml(rec.intensity)}</span></div>`}
+          <p>${escapeHtml(rec.purpose)}</p>
+          ${recommendationActions}
+        </section>
+        <div class="dashboard-side">
+          <section class="plain-card explanation"><span class="eyebrow">WHY THIS TODAY?</span><p>${explanation}</p></section>
+          <section class="plain-card next-card">
+            <div><span class="eyebrow">NEXT FIXED COMMITMENT</span><h3>Team practice</h3><p>${escapeHtml(data.schedule.practiceDay)} · ${escapeHtml(data.schedule.practiceTime)} · 90 min</p></div>
+            <span class="round-icon">${icon("week")}</span>
+          </section>
+          <section class="plain-card progress-mini">
+            <span class="eyebrow">THIS WEEK</span>
+            <div class="big-number">${data.activities.length}<small> activities logged</small></div>
+            <div class="mini-track"><span style="width:${Math.min(100, data.activities.length * 24)}%"></span></div>
+          </section>
+          <button type="button" class="log-another" data-action="open-unplanned-log">${icon("plus")} Log another activity</button>
+        </div>
+      </div>
+    </main>`;
+}
+
+function renderCheckIn() {
+  const scales = [
+    ["sleep", "Sleep quality", "Poor", "Great"],
+    ["energy", "Energy", "Low", "High"],
+    ["soreness", "Muscle soreness", "None", "Severe"],
+    ["stress", "Stress", "Low", "High"]
+  ];
+  const form = ui.checkinForm;
+  const scaleMarkup = scales.map(([key, label, low, high]) => `
+    <div class="scale-field">
+      <div class="scale-label"><label>${label}</label><strong>${form[key]} / 5</strong></div>
+      <div class="scale-buttons">
+        ${[1, 2, 3, 4, 5].map((value) => `<button type="button" class="${form[key] === value ? "selected" : ""}" data-action="set-checkin-scale" data-field="${key}" data-value="${value}">${value}</button>`).join("")}
+      </div>
+      <div class="scale-ends"><span>${low}</span><span>${high}</span></div>
+    </div>`).join("");
+  const painWarning = ["Moderate", "Severe"].includes(form.pain)
+    ? `<p class="inline-warning">${icon("alert", 17)} This will replace intense optional training with conservative safety guidance.</p>`
+    : "";
+
+  return `
+    <main class="focused-page checkin-page">
+      <header class="focused-header"><button type="button" class="icon-button" data-action="back-today" aria-label="Back to Today">${icon("back")}</button><span class="focused-title">Daily check-in</span><span class="time-hint">~30 sec</span></header>
+      <section class="checkin-shell">
+        <div class="checkin-intro">${pill("TODAY", "lime")}<h1>How ready do you feel?</h1><p>There are no good or bad answers. This helps shape the most appropriate next step.</p></div>
+        <div class="checkin-card">
+          ${scaleMarkup}
+          <div class="pain-field">
+            <div class="scale-label"><label>Pain today</label>${icon("shield", 18)}</div>
+            <div class="pain-options">${["None", "Mild", "Moderate", "Severe"].map((pain) => `<button type="button" class="${form.pain === pain ? "selected" : ""} ${["Moderate", "Severe"].includes(pain) ? "caution" : ""}" data-action="set-checkin-pain" data-value="${pain}">${pain}</button>`).join("")}</div>
+            ${painWarning}
+          </div>
+          ${button('Save check-in <span aria-hidden="true">→</span>', "submit-checkin", { className: "full" })}
+        </div>
+      </section>
+    </main>`;
+}
+
+function outcomeCopy(kind) {
+  if (kind === "poor") return { kicker: "RECOMMENDATION UPDATED", title: "A lighter day fits better.", body: "Today’s low sleep and energy make recovery the more appropriate choice before team practice.", before: "45-min strength", after: "20-min mobility + recovery" };
+  if (kind === "moderate") return { kicker: "SAFETY ACTION", title: "Intense training removed.", body: "You reported moderate pain. PureAthletic cannot assess an injury or tell you when it is safe to return.", before: "45-min strength", after: "Conservative guidance" };
+  if (kind === "severe") return { kicker: "STOP TRAINING", title: "Seek qualified advice.", body: "You reported severe pain. Stop training and seek advice from a qualified healthcare or sports professional.", before: "45-min strength", after: "No workout recommended" };
+  return { kicker: "CHECK-IN SAVED", title: "Today’s plan still fits.", body: "Your readiness supports the planned session and no safety rule was triggered.", before: null, after: null };
+}
+
+function renderOutcome() {
+  const kind = ui.outcome;
+  const copy = outcomeCopy(kind);
+  const pain = ["moderate", "severe"].includes(kind);
+  return `
+    <main class="outcome-page ${pain ? "outcome-safety" : ""}">
+      <div class="outcome-card">
+        <span class="outcome-icon ${pain ? "warning" : ""}">${icon(pain ? "alert" : "check", 28)}</span>
+        <span class="section-kicker">${copy.kicker}</span>
+        <h1>${copy.title}</h1>
+        <p>${copy.body}</p>
+        ${copy.before ? `<div class="change-block"><div><small>BEFORE</small><strong>${copy.before}</strong></div><span>↓</span><div><small>NOW</small><strong>${copy.after}</strong></div></div>` : ""}
+        ${pain ? `<div class="boundary-note">${icon("shield")}<p>Team commitments remain visible, but their presence is not clearance to participate. Safety actions cannot be directly undone.</p></div>` : ""}
+        ${button(pain ? "Return to Today" : kind === "good" ? "View workout" : "View updated Today", "continue-outcome")}
+      </div>
+    </main>`;
+}
+
+function renderWorkout(short = false) {
+  const shown = short ? exercises.slice(0, 4) : exercises;
+  return `
+    <main class="focused-page workout-page">
+      <header class="focused-header"><button type="button" class="icon-button" data-action="back-today" aria-label="Back">${icon("back")}</button><span class="focused-title">${short ? "Shorter workout" : "Workout detail"}</span>${pill(short ? "25 MIN" : "45 MIN")}</header>
+      <section class="workout-shell">
+        <div class="workout-hero">
+          <div>${pill("STRENGTH", "lime")}<h1>${short ? "Lower-body essentials" : "Lower-body foundation"}</h1><p>${short ? "The essential work, kept focused for a tighter day." : "Build useful lower-body strength with enough recovery before Saturday’s match."}</p></div>
+          <div class="difficulty"><span>DIFFICULTY</span><strong>Moderate</strong><div><i></i><i></i><i class="muted"></i><i class="muted"></i></div></div>
+        </div>
+        <div class="exercise-list">
+          ${shown.map((exercise, index) => `
+            <button type="button" class="exercise-row ${ui.workoutDone.includes(index) ? "done" : ""}" data-action="toggle-exercise" data-index="${index}">
+              <span class="exercise-number">${ui.workoutDone.includes(index) ? icon("check", 17) : String(index + 1).padStart(2, "0")}</span>
+              <span><strong>${exercise.name}</strong><small>${exercise.detail}</small></span>${icon("arrow")}
+            </button>`).join("")}
+        </div>
+        <div class="workout-note">${icon("shield")}<p>Use controlled movement and stop if an exercise causes pain. Approved alternatives can be selected during the session.</p></div>
+        <div class="sticky-actions">
+          ${button("Finish and log", "open-planned-log", { attributes: 'data-status="Completed"' })}
+          ${button("Log modifications", "open-planned-log", { variant: "secondary", attributes: 'data-status="Modified"' })}
+          <button type="button" class="text-button danger-text" data-action="open-planned-log" data-status="Skipped">Skip session</button>
+        </div>
+      </section>
+    </main>`;
+}
+
+function renderActivityLog() {
+  const form = ui.logForm;
+  const unplanned = ui.logConfig.unplanned;
+  return `
+    <main class="focused-page log-page">
+      <header class="focused-header"><button type="button" class="icon-button" data-action="back-today" aria-label="Back">${icon("back")}</button><span class="focused-title">${unplanned ? "Log another activity" : "Log your session"}</span><span></span></header>
+      <section class="log-shell">
+        <div class="log-heading"><span class="section-kicker">${unplanned ? "UNPLANNED ACTIVITY" : "TODAY’S SESSION"}</span><h1>${unplanned ? "What did you do?" : "Lower-body foundation"}</h1></div>
+        <div class="form-card">
+          ${unplanned ? `<div class="field"><label>Activity type</label><select data-scope="log" data-field="type">${selectedOptions(["Team practice", "Match", "Strength", "Speed", "Conditioning", "Recovery"], form.type)}</select></div>` : ""}
+          ${unplanned ? "" : `<div class="field"><label>Outcome</label><div class="segmented">${["Completed", "Modified", "Skipped"].map((status) => `<button type="button" class="${form.status === status ? "selected" : ""}" data-action="set-log-status" data-value="${status}">${status}</button>`).join("")}</div></div>`}
+          ${form.status === "Skipped" ? "" : `
+            <div class="two-fields">
+              <div class="field"><label>Duration</label><div class="input-suffix"><input type="number" min="1" data-scope="log" data-field="duration" value="${form.duration}"><span>min</span></div></div>
+              <div class="field"><label>Effort</label><div class="input-suffix"><input type="number" min="1" max="10" data-scope="log" data-field="effort" value="${form.effort}"><span>/ 10</span></div></div>
+            </div>`}
+          <div class="field"><label>Pain during or after</label><div class="pain-options compact">${["None", "Mild", "Moderate", "Severe"].map((pain) => `<button type="button" class="${form.pain === pain ? "selected" : ""}" data-action="set-log-pain" data-value="${pain}">${pain}</button>`).join("")}</div></div>
+          <div class="field"><label for="notes">Notes <small>Optional</small></label><textarea id="notes" rows="3" data-scope="log" data-field="notes" placeholder="${form.status === "Modified" ? "What did you change?" : "Anything useful to remember?"}">${escapeHtml(form.notes)}</textarea></div>
+          ${unplanned ? `<p class="hint">${icon("refresh", 17)} A high-load activity may change the next 24–48 hours.</p>` : ""}
+          ${button('Save activity <span aria-hidden="true">→</span>', "save-activity", { className: "full" })}
+        </div>
+      </section>
+    </main>`;
+}
+
+function renderAdjustment() {
+  const pending = ui.pending;
+  const isSchedule = pending.kind === "schedule";
+  const newDay = isSchedule ? pending.schedule.matchDay : "";
+  const newTime = isSchedule ? pending.schedule.matchTime : "";
+  return `
+    <main class="outcome-page adjustment-page">
+      <div class="adjustment-card">
+        <span class="section-kicker">REVIEW PLAN CHANGES</span>
+        <h1>${isSchedule ? "Your schedule changes the week." : "Recovery needs a little more room."}</h1>
+        <p>${isSchedule ? `Your ${escapeHtml(newDay)} match stays fixed. We adjusted optional work around it.` : "The high-effort team session you logged increases today’s load. Fixed commitments remain unchanged."}</p>
+        <div class="change-comparison">
+          <div><small>${isSchedule ? "BEFORE" : "WED 29"}</small>${pill(isSchedule ? "SATURDAY MATCH" : "PLANNED")}<h3>${isSchedule ? "Match · Saturday" : "Conditioning"}</h3><span>${isSchedule ? "15:00" : "35 min · Moderate"}</span></div>
+          <span class="change-arrow">→</span>
+          <div class="new"><small>${isSchedule ? "AFTER" : "WED 29"}</small>${pill(isSchedule ? `${newDay.toUpperCase()} MATCH` : "RECOVERY", "lime")}<h3>${isSchedule ? `Match · ${escapeHtml(newDay)}` : "Mobility reset"}</h3><span>${isSchedule ? escapeHtml(newTime) : "20 min · Easy"}</span></div>
+        </div>
+        <div class="reason-box"><span class="round-icon">${icon("shield")}</span><div><strong>Why this changed</strong><p>${isSchedule ? "Optional lower-body work is kept away from the updated match day." : "This avoids consecutive high-load days while preserving team practice and the match."}</p></div></div>
+        <div class="button-row">${button("Apply changes", "apply-adjustment")}${button("Keep current plan", "dismiss-adjustment", { variant: "secondary" })}</div>
+      </div>
+    </main>`;
+}
+
+function renderWeek() {
+  const rows = data.plan.map((item) => {
+    const interactive = !item.fixed && item.type !== "Rest";
+    const meta = `${item.time ? `${item.time} · ` : ""}${item.duration ? `${item.duration} min · ` : ""}${item.intensity}`;
+    return `
+      <button type="button" class="plan-row" ${interactive ? 'data-action="open-workout"' : ""}>
+        <span class="day-dot ${item.fixed ? "fixed" : item.type.toLowerCase()}"></span>
+        <span class="plan-day">${escapeHtml(item.day)}</span>
+        <span class="plan-main"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(meta)}</small></span>
+        ${pill(item.fixed ? item.type.toUpperCase() : item.status.toUpperCase(), item.fixed ? "dark" : item.type === "Recovery" ? "lime" : "neutral")}
+        ${interactive ? icon("arrow", 18) : ""}
+      </button>`;
+  }).join("");
+
+  return `
+    <main class="screen">
+      ${screenHeader("ROLLING PLAN", "Your next 7 days", '<button type="button" class="date-control">28 Jul — 3 Aug</button>')}
+      <section class="week-card">
+        <div class="week-summary">
+          <div><span class="eyebrow">WEEK SHAPE</span><strong>2 focused sessions</strong><p>with protected recovery around your match</p></div>
+          <div class="load-bars" aria-label="Training load preview">${[2, 1, 4, 1, 5, 1, 3].map((height, index) => `<span style="height:${height * 11}px" class="${index === 4 ? "match" : ""}"></span>`).join("")}</div>
+        </div>
+        <div class="plan-list">${rows}</div>
+        <div class="week-legend"><span><i class="legend-fixed"></i> Fixed team commitment</span><span><i class="legend-plan"></i> PureAthletic recommendation</span></div>
+      </section>
+    </main>`;
+}
+
+function renderProgress() {
+  const completed = data.activities.filter((activity) => activity.status === "Completed").length;
+  const modified = data.activities.filter((activity) => activity.status === "Modified").length;
+  const minutes = data.activities.reduce((sum, activity) => sum + Number(activity.duration || 0), 0);
+
+  if (!data.activities.length) {
+    return `
+      <main class="screen">
+        ${screenHeader("21 — 27 JULY", "Your week, in context.", '<button type="button" class="date-control">Previous week</button>')}
+        <section class="empty-state"><span class="empty-icon">${icon("progress", 32)}</span><h2>Your first review is taking shape.</h2><p>Log a few sessions and check-ins. After seven days, useful patterns will appear here.</p></section>
+      </main>`;
+  }
+
+  const loads = data.activities.slice(-5).map((activity) => Math.min(100, Math.round((activity.duration * activity.effort) / 8)));
+  const bars = [34, 52, 46, 66, ...loads].slice(-7).map((height) => `<i style="height:${Math.max(12, height)}%"></i>`).join("");
+  const completePercent = Math.max(15, (completed / data.activities.length) * 100);
+  return `
+    <main class="screen">
+      ${screenHeader("21 — 27 JULY", "Your week, in context.", '<button type="button" class="date-control">Previous week</button>')}
+      <div class="progress-layout">
+        <section class="stat-card accent-stat"><span class="eyebrow">APPROPRIATE CONSISTENCY</span><div class="stat-main"><strong>${completed + modified}</strong><span>sessions completed<br>or modified</span></div><p>Rest and recovery count when they are the appropriate recommendation.</p></section>
+        <section class="stat-card"><span class="eyebrow">TRAINING TIME</span><div class="stat-main"><strong>${minutes}</strong><span>minutes<br>logged</span></div><div class="trend-bars">${bars}</div></section>
+        <section class="stat-card"><span class="eyebrow">SESSION OUTCOMES</span><div class="donut-row"><div class="donut" style="--complete:${completePercent}%"><span>${data.activities.length}</span></div><div class="donut-legend"><span><i class="complete"></i> Completed <strong>${completed}</strong></span><span><i class="modified"></i> Modified <strong>${modified}</strong></span><span><i class="other"></i> Other <strong>${data.activities.length - completed - modified}</strong></span></div></div></section>
+        <section class="stat-card wide-stat"><div><span class="eyebrow">NOTABLE THIS WEEK</span><h2>You made the plan fit real life.</h2><p>${data.adjustments.length ? "The week adapted after new activity while keeping your team commitments fixed." : "Your logged sessions are starting to create a clearer picture of the week."}</p></div><span class="achievement">${icon("bolt", 28)}</span></section>
+      </div>
+    </main>`;
+}
+
+function renderProfile() {
+  const userName = data.user.name || "Athlete";
+  return `
+    <main class="screen">
+      ${screenHeader("ATHLETE PROFILE", "Your setup")}
+      <div class="profile-grid">
+        <section class="profile-card">
+          <div class="profile-identity"><span class="large-avatar">${escapeHtml(userName.slice(0, 1).toUpperCase())}</span><div><h2>${escapeHtml(userName)}</h2><p>${escapeHtml(data.user.position)} · ${escapeHtml(data.user.experience)}</p>${pill(data.user.goal.toUpperCase(), "lime")}</div></div>
+          <div class="profile-facts"><div><span>Availability</span><strong>${data.user.availability.length} days / week</strong></div><div><span>Equipment</span><strong>${data.user.equipment.length} options</strong></div></div>
+        </section>
+        <section class="settings-card">
+          <span class="settings-label">TRAINING SETUP</span>
+          ${settingsRow("profile", "Athlete details", "Position, experience, primary goal")}
+          ${settingsRow("week", "Team schedule", `${data.schedule.practiceDay} practice · ${data.schedule.matchDay} match`, "edit-schedule")}
+          ${settingsRow("bolt", "Equipment & availability", "What you can use and when")}
+          <span class="settings-label">PREFERENCES & DATA</span>
+          <button type="button" data-action="toggle-notifications"><span class="settings-icon">${icon("today")}</span><span><strong>Check-in reminders</strong><small>${ui.notifications ? "On · before optional training" : "Off"}</small></span><span class="toggle ${ui.notifications ? "on" : ""}"><i></i></span></button>
+          ${settingsRow("download", "Export my data", "Download this prototype’s local data", "export-data")}
+          ${settingsRow("refresh", "Restart demo", "Restore the seeded prototype", "reset-demo")}
+          ${settingsRow("trash", "Delete local account", "Clears all prototype data", "delete-data", "danger-row")}
+        </section>
+      </div>
+    </main>`;
+}
+
+function settingsRow(iconName, title, detail, action = "", className = "") {
+  return `<button type="button" class="${className}" ${action ? `data-action="${action}"` : ""}><span class="settings-icon">${icon(iconName)}</span><span><strong>${title}</strong><small>${detail}</small></span>${icon("arrow")}</button>`;
+}
+
+function renderScheduleEditor() {
+  const schedule = ui.scheduleForm;
+  return `
+    <main class="focused-page">
+      <header class="focused-header"><button type="button" class="icon-button" data-action="back-profile" aria-label="Back">${icon("back")}</button><span class="focused-title">Team schedule</span><span></span></header>
+      <section class="form-shell schedule-editor">
+        <span class="section-kicker">FIXED COMMITMENTS</span><h1>Keep the week accurate.</h1><p class="lead">Changes here may reshape optional sessions. You will review everything before it is applied.</p>
+        ${scheduleCard("TEAM PRACTICE", "practice", schedule, "schedule")}
+        ${scheduleCard("MATCH", "match", schedule, "schedule")}
+        <div class="info-card">${icon("shield")}<div><strong>Fixed means fixed</strong><p>PureAthletic can move optional sessions around these entries, but never moves team commitments automatically.</p></div></div>
+        ${button("Review schedule changes", "preview-schedule")}
+      </section>
+    </main>`;
+}
+
+function renderHistory() {
+  if (!data.adjustments.length) return "";
+  const adjustment = data.adjustments[0];
+  return `
+    <aside class="history-toast">
+      <div><span class="eyebrow">RECENT PLAN CHANGE</span><strong>${escapeHtml(adjustment.title)}</strong><small>${escapeHtml(adjustment.reason)}</small></div>
+      ${adjustment.undoable ? `<button type="button" data-action="undo-adjustment" data-id="${adjustment.id}">Undo</button>` : ""}
+    </aside>`;
+}
+
+function render() {
+  if (ui.screen === "landing") {
+    renderLanding();
+    return;
+  }
+
+  const focusedScreens = {
+    onboarding: renderOnboarding,
+    checkin: renderCheckIn,
+    outcome: renderOutcome,
+    safety: renderOutcome,
+    workout: () => renderWorkout(false),
+    "short-workout": () => renderWorkout(true),
+    log: renderActivityLog,
+    adjustment: renderAdjustment,
+    schedule: renderScheduleEditor
+  };
+
+  if (focusedScreens[ui.screen]) {
+    app.innerHTML = focusedScreens[ui.screen]();
+    return;
+  }
+
+  const appScreens = {
+    today: renderToday,
+    week: renderWeek,
+    progress: renderProgress,
+    profile: renderProfile
+  };
+  app.innerHTML = renderAppShell((appScreens[ui.screen] || renderToday)());
+}
+
+function setScreen(screen) {
+  ui.screen = screen;
+  window.scrollTo({ top: 0, behavior: "instant" });
+  render();
+}
+
+function enterDemo() {
+  data = clone(demoState);
+  saveData();
+  setScreen("today");
+}
+
+function finishOnboarding() {
+  const user = clone(ui.onboardingForm);
+  user.name = user.name.trim() || "Sam";
+  data = {
+    ...clone(demoState),
+    onboarded: true,
+    user,
+    schedule: clone(ui.onboardingSchedule)
+  };
+  saveData();
+  setScreen("today");
+}
+
+function submitCheckIn() {
+  const form = clone(ui.checkinForm);
+  let kind = "good";
+  let recommendation = clone(data.recommendation);
+  let adjustment = null;
+
+  if (form.pain === "Severe") {
+    kind = "severe";
+    recommendation = { ...recommendation, type: "Safety", title: "Stop training and seek advice", status: "Safety", duration: 0, purpose: "Severe pain was reported. No workout is recommended." };
+    adjustment = { id: Date.now(), title: "Workout removed for severe pain", reason: "Safety rule · severe pain", undoable: false };
+  } else if (form.pain === "Moderate") {
+    kind = "moderate";
+    recommendation = { ...recommendation, type: "Safety", title: "Intense training removed", status: "Safety", duration: 0, purpose: "Moderate pain was reported. Review conservative guidance before deciding what to do." };
+    adjustment = { id: Date.now(), title: "Intense workout removed", reason: "Safety rule · moderate pain", undoable: false };
+  } else if (form.sleep <= 2 && form.energy <= 2) {
+    kind = "poor";
+    recommendation = { ...recommendation, type: "Recovery", title: "Mobility + recovery", status: "Recovery", duration: 20, intensity: "Easy", purpose: "Low sleep and energy make a lighter recovery session the better fit today." };
+    adjustment = { id: Date.now(), title: "Strength replaced with recovery", reason: "Very poor readiness", undoable: true, beforeRecommendation: data.recommendation };
+  }
+
+  data = {
+    ...data,
+    checkInDone: true,
+    checkIn: form,
+    recommendation,
+    adjustments: adjustment ? [adjustment, ...data.adjustments] : data.adjustments
+  };
+  ui.outcome = kind;
+  saveData();
+  setScreen("outcome");
+}
+
+function openLog(unplanned, status = "Completed") {
+  ui.logConfig = { unplanned, status };
+  ui.logForm = {
+    type: unplanned ? "Team practice" : "Strength",
+    status: unplanned ? "Completed" : status,
+    duration: unplanned ? 75 : 42,
+    effort: unplanned ? 8 : 6,
+    pain: "None",
+    notes: ""
+  };
+  setScreen("log");
+}
+
+function saveActivity() {
+  const form = clone(ui.logForm);
+  const activity = {
+    ...form,
+    id: Date.now(),
+    title: ui.logConfig.unplanned ? form.type : data.recommendation.title,
+    date: "Tue 28"
+  };
+  const activities = [activity, ...data.activities];
+  const plan = data.plan.map((item) => item.id === "tue" && !ui.logConfig.unplanned ? { ...item, status: form.status } : item);
+  const nextData = { ...data, activities, plan };
+
+  if (["Moderate", "Severe"].includes(form.pain)) {
+    const severe = form.pain === "Severe";
+    nextData.recommendation = {
+      ...data.recommendation,
+      type: "Safety",
+      title: severe ? "Stop training and seek advice" : "Intense training removed",
+      status: "Safety",
+      duration: 0,
+      purpose: `${form.pain} pain was reported after activity. Review the safety guidance.`
+    };
+    nextData.adjustments = [{ id: Date.now() + 1, title: "Future intense work restricted", reason: `Safety rule · ${form.pain.toLowerCase()} pain`, undoable: false }, ...data.adjustments];
+    data = nextData;
+    ui.outcome = severe ? "severe" : "moderate";
+    saveData();
+    setScreen("outcome");
+    return;
+  }
+
+  data = nextData;
+  saveData();
+  if (form.duration >= 60 && form.effort >= 8) {
+    ui.pending = { kind: "activity", originalPlan: clone(data.plan) };
+    setScreen("adjustment");
+  } else {
+    setScreen("today");
+  }
+}
+
+function applyAdjustment() {
+  const pending = ui.pending;
+  if (pending.kind === "schedule") {
+    const updatedPlan = data.plan.map((item) => item.id === "sat"
+      ? { ...item, day: `${pending.schedule.matchDay.slice(0, 3).toUpperCase()} · UPDATED`, time: pending.schedule.matchTime }
+      : item);
+    const adjustment = { id: Date.now(), title: `Match moved to ${pending.schedule.matchDay}`, reason: "Team schedule changed", undoable: true, beforePlan: data.plan, beforeSchedule: data.schedule };
+    data = { ...data, schedule: pending.schedule, plan: updatedPlan, adjustments: [adjustment, ...data.adjustments] };
+  } else {
+    const updatedPlan = data.plan.map((item) => item.id === "wed"
+      ? { ...item, type: "Recovery", title: "Mobility reset", duration: 20, intensity: "Easy", status: "Recovery" }
+      : item);
+    const adjustment = { id: Date.now(), title: "Recovery replaced conditioning", reason: "Consecutive high-load days avoided", undoable: true, beforePlan: pending.originalPlan };
+    data = { ...data, plan: updatedPlan, adjustments: [adjustment, ...data.adjustments] };
+  }
+  ui.pending = null;
+  saveData();
+  setScreen("week");
+}
+
+function undoAdjustment(id) {
+  const adjustment = data.adjustments.find((item) => item.id === id);
+  if (!adjustment || !adjustment.undoable) return;
+  data = {
+    ...data,
+    plan: adjustment.beforePlan || data.plan,
+    schedule: adjustment.beforeSchedule || data.schedule,
+    recommendation: adjustment.beforeRecommendation || data.recommendation,
+    adjustments: data.adjustments.filter((item) => item.id !== id)
+  };
+  saveData();
+  render();
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "pureathletic-prototype-data.json";
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function valueForInput(target) {
+  if (target.type === "checkbox") return target.checked;
+  if (target.type === "number") return Number(target.value);
+  return target.value;
+}
+
+function updateBoundField(target) {
+  const { scope, field } = target.dataset;
+  if (!scope || !field) return;
+  const scopes = {
+    onboarding: ui.onboardingForm,
+    onboardingSchedule: ui.onboardingSchedule,
+    log: ui.logForm,
+    schedule: ui.scheduleForm
+  };
+  if (scopes[scope]) scopes[scope][field] = valueForInput(target);
+}
+
+app.addEventListener("input", (event) => {
+  updateBoundField(event.target);
+});
+
+app.addEventListener("change", (event) => {
+  updateBoundField(event.target);
+  if (event.target.type === "checkbox") render();
+});
+
+app.addEventListener("click", (event) => {
+  const target = event.target.closest("[data-action]");
+  if (!target) return;
+  const action = target.dataset.action;
+
+  if (action === "start-onboarding") {
+    ui.onboardingStep = 1;
+    ui.onboardingForm = clone(onboardingSeed.user);
+    ui.onboardingSchedule = clone(demoState.schedule);
+    setScreen("onboarding");
+  } else if (action === "enter-demo") {
+    enterDemo();
+  } else if (action === "exit-onboarding") {
+    setScreen("landing");
+  } else if (action === "onboarding-back") {
+    if (ui.onboardingStep === 1) setScreen("landing");
+    else {
+      ui.onboardingStep -= 1;
+      render();
+    }
+  } else if (action === "onboarding-next") {
+    if (ui.onboardingStep < 5) {
+      ui.onboardingStep += 1;
+      render();
+    } else {
+      finishOnboarding();
+    }
+  } else if (action === "set-experience") {
+    ui.onboardingForm.experience = target.dataset.value;
+    render();
+  } else if (action === "set-goal") {
+    ui.onboardingForm.goal = target.dataset.value;
+    render();
+  } else if (action === "navigate") {
+    setScreen(target.dataset.screen);
+  } else if (action === "open-checkin") {
+    ui.checkinForm = { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" };
+    setScreen("checkin");
+  } else if (action === "set-checkin-scale") {
+    ui.checkinForm[target.dataset.field] = Number(target.dataset.value);
+    render();
+  } else if (action === "set-checkin-pain") {
+    ui.checkinForm.pain = target.dataset.value;
+    render();
+  } else if (action === "submit-checkin") {
+    submitCheckIn();
+  } else if (action === "review-safety") {
+    ui.outcome = data.checkIn?.pain === "Severe" ? "severe" : "moderate";
+    setScreen("safety");
+  } else if (action === "continue-outcome") {
+    setScreen(ui.outcome === "good" ? "workout" : "today");
+  } else if (action === "open-workout") {
+    ui.workoutDone = [];
+    setScreen("workout");
+  } else if (action === "open-short-workout") {
+    ui.workoutDone = [];
+    setScreen("short-workout");
+  } else if (action === "toggle-exercise") {
+    const index = Number(target.dataset.index);
+    ui.workoutDone = ui.workoutDone.includes(index)
+      ? ui.workoutDone.filter((item) => item !== index)
+      : [...ui.workoutDone, index];
+    render();
+  } else if (action === "open-planned-log") {
+    openLog(false, target.dataset.status);
+  } else if (action === "open-unplanned-log") {
+    openLog(true);
+  } else if (action === "set-log-status") {
+    ui.logForm.status = target.dataset.value;
+    render();
+  } else if (action === "set-log-pain") {
+    ui.logForm.pain = target.dataset.value;
+    render();
+  } else if (action === "save-activity") {
+    saveActivity();
+  } else if (action === "apply-adjustment") {
+    applyAdjustment();
+  } else if (action === "dismiss-adjustment") {
+    ui.pending = null;
+    setScreen("today");
+  } else if (action === "edit-schedule") {
+    ui.scheduleForm = clone(data.schedule);
+    setScreen("schedule");
+  } else if (action === "preview-schedule") {
+    ui.pending = { kind: "schedule", schedule: clone(ui.scheduleForm) };
+    setScreen("adjustment");
+  } else if (action === "toggle-notifications") {
+    ui.notifications = !ui.notifications;
+    render();
+  } else if (action === "export-data") {
+    exportData();
+  } else if (action === "delete-data") {
+    if (window.confirm("Delete all local prototype data? This cannot be undone.")) {
+      localStorage.removeItem(STORAGE_KEY);
+      data = clone(onboardingSeed);
+      setScreen("landing");
+    }
+  } else if (action === "reset-demo") {
+    if (window.confirm("Restart with the original seeded demo data?")) enterDemo();
+  } else if (action === "undo-adjustment") {
+    undoAdjustment(Number(target.dataset.id));
+  } else if (action === "back-profile") {
+    setScreen("profile");
+  } else if (action === "back-today") {
+    setScreen("today");
+  }
+});
+
+render();

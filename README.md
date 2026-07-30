@@ -2,6 +2,26 @@
 
 PureAthletic is an adaptive training planner designed to help athletes train with greater structure and make better next-session decisions. It turns an athlete's goals, schedule, training history, and recovery feedback into a practical weekly plan, then adjusts that plan as circumstances change.
 
+## Run the prototype
+
+The active prototype uses traditional, dependency-free web files:
+
+- `index.html` contains the document structure and landing-page content.
+- `styles.css` contains all visual styling.
+- `app.js` contains the interactive screens, application state, and browser storage.
+
+Start any static web server in the project directory. For example:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open `http://localhost:8000`. You can also open `index.html` directly,
+although a local server is recommended for consistent browser behavior.
+
+The previous Next.js/React implementation is preserved in
+[`archive/nextjs`](archive/nextjs).
+
 ## Product specification
 
 The focused version-one scope, user journey, safety boundaries, data model, and delivery milestones are defined in the [Product Requirements](docs/product-requirements.md).

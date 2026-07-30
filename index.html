@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#14211d">
+    <meta
+      name="description"
+      content="A functional prototype for adaptive football training plans."
+    >
+    <title>PureAthletic — Train for what comes next</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div id="app" aria-live="polite"></div>
+
+    <!--
+      The landing page is ordinary HTML. app.js copies this template into #app
+      and uses plain DOM events to make its buttons interactive.
+    -->
+    <template id="landing-view">
+      <main class="landing">
+        <header class="landing-header">
+          <div class="brand">
+            <span class="brand-mark" data-icon="bolt"></span>
+            <span>PureAthletic</span>
+          </div>
+          <button class="text-button" type="button" data-action="enter-demo">
+            Explore demo
+          </button>
+        </header>
+
+        <section class="hero">
+          <div class="hero-copy">
+            <span class="pill pill-lime">Built around your football week</span>
+            <h1>Train for what<br>comes next.</h1>
+            <p>
+              Get a clear seven-day plan that adapts to your schedule, your
+              activity, and how ready you feel today.
+            </p>
+            <div class="hero-actions">
+              <button class="button button-primary" type="button" data-action="start-onboarding">
+                <span>Create my plan <span aria-hidden="true">→</span></span>
+              </button>
+              <button class="button button-secondary" type="button" data-action="enter-demo">
+                <span>View seeded demo</span>
+              </button>
+            </div>
+            <div class="trust-row">
+              <span><i data-icon="check"></i> Practices &amp; matches stay fixed</span>
+              <span><i data-icon="check"></i> Every change is explained</span>
+            </div>
+          </div>
+
+          <div class="hero-preview" aria-label="Preview of today's recommendation">
+            <div class="preview-top"><span>Today</span><span>Tue 28</span></div>
+            <div class="preview-card">
+              <span class="eyebrow">TODAY’S RECOMMENDATION</span>
+              <div class="preview-icon" data-icon="bolt"></div>
+              <span class="pill pill-lime">Strength</span>
+              <h2>Lower-body<br>foundation</h2>
+              <p>45 min · Moderate</p>
+              <div class="preview-button">Complete check-in</div>
+            </div>
+            <div class="preview-next">
+              <span class="eyebrow">UP NEXT</span>
+              <strong>Team practice</strong>
+              <span>Thursday · 19:00</span>
+            </div>
+          </div>
+        </section>
+
+        <footer class="landing-footer">
+          <span>General training guidance for adults aged 18 or older.</span>
+          <span>Prototype · No medical diagnosis</span>
+        </footer>
+      </main>
+    </template>
+
+    <noscript>
+      <p class="javascript-notice">
+        PureAthletic needs JavaScript enabled for its interactive training planner.
+      </p>
+    </noscript>
+  </body>
+</html>
