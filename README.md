@@ -19,8 +19,9 @@ python3 -m http.server 8000
 Then open `http://localhost:8000`. You can also open `index.html` directly,
 although a local server is recommended for consistent browser behavior.
 
-For static hosting, `npm run build` copies those same three files into `dist/`.
-The build script uses only Node.js itself and installs no packages or frameworks.
+For static hosting, `npm run build` copies those same three files into `dist/`
+and generates a small static-file hosting adapter. The build script uses only
+Node.js itself and installs no packages or frameworks.
 
 The previous Next.js/React implementation is preserved in
 [`archive/nextjs`](archive/nextjs).
