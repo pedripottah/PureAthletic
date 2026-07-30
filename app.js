@@ -6,11 +6,13 @@
  * There is no React, Next.js, build step, or package dependency here. Each
  * render function returns an HTML string, render() puts it in #app, and the
  * event listeners at the bottom handle interaction with normal DOM APIs.
+ * 
+ * of course this is vibe-coded but i just wanna try and have the willingness to learn
  */
 
-const STORAGE_KEY = "pureathletic-prototype-v1";
-const app = document.querySelector("#app");
-const landingTemplate = document.querySelector("#landing-view");
+const STORAGE_KEY = "pureathletic-prototype-v1"; /* name used to save data in browser */
+const app = document.querySelector("#app"); /* aka <div id="app"> */
+const landingTemplate = document.querySelector("#landing-view");  /* aka <template id="landing-view"> */
 
 const initialPlan = [
   { id: "tue", day: "TODAY · TUE 28", type: "Strength", title: "Lower-body foundation", duration: 45, intensity: "Moderate", status: "Planned", fixed: false },
@@ -20,10 +22,10 @@ const initialPlan = [
   { id: "sat", day: "SAT 1", type: "Match", title: "League match", duration: 90, intensity: "Match", status: "Fixed", fixed: true, time: "15:00" },
   { id: "sun", day: "SUN 2", type: "Recovery", title: "Post-match recovery", duration: 25, intensity: "Easy", status: "Recovery", fixed: false },
   { id: "mon", day: "MON 3", type: "Speed", title: "Acceleration quality", duration: 35, intensity: "Moderate", status: "Planned", fixed: false }
-];
+]; /*  This is the initial seven-day training plan. Each object represents one day. this is like a demo */
 
-const demoState = {
-  onboarded: true,
+const demoState = { /* demoState shows an example account. This is loaded when clicking Explore demo */
+  onboarded: false, /* The demo user has already completed the app's initial setup */
   user: {
     name: "Sam",
     ageConfirmed: true,
