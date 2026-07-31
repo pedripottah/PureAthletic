@@ -179,12 +179,12 @@ p {
   overflow: hidden;
   transform: translateY(var(--motion-translate-y)) scale(var(--motion-scale));
   transition:
-    color 180ms ease,
-    background 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    filter 180ms ease,
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    color 220ms ease,
+    background 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    filter 220ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .motion-control:hover {
@@ -216,7 +216,7 @@ p {
 }
 
 .motion-card {
-  transition: box-shadow 240ms ease, border-color 240ms ease;
+  transition: box-shadow 270ms ease, border-color 270ms ease;
   will-change: transform;
 }
 
@@ -701,7 +701,7 @@ p {
 }
 
 .radio-card.motion-control {
-  transition-duration: 280ms;
+  transition-duration: 320ms;
 }
 
 .radio-card.motion-control:hover {

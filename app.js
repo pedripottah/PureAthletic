@@ -318,8 +318,8 @@ function animateViewEntry() {
         { opacity: 1, transform: "translateY(0)" }
       ],
       {
-        duration: 480,
-        delay: Math.min(index * 55, 385),
+        duration: 540,
+        delay: Math.min(index * 62, 434),
         easing: "cubic-bezier(0.22, 1, 0.36, 1)",
         fill: "backwards"
       }
@@ -335,8 +335,8 @@ function animateDataDetails() {
         { opacity: 1, transform: "scaleY(1)" }
       ],
       {
-        duration: 520,
-        delay: 180 + index * 45,
+        duration: 580,
+        delay: 190 + index * 50,
         easing: "cubic-bezier(0.22, 1, 0.36, 1)",
         fill: "backwards"
       }
@@ -348,7 +348,7 @@ function animateDataDetails() {
     if (!Number.isFinite(finalValue) || finalValue <= 0) return;
 
     const startedAt = performance.now();
-    const duration = 620;
+    const duration = 680;
     metric.textContent = "0";
 
     function updateMetric(now) {
@@ -400,7 +400,7 @@ function animateButtonArrow(button, forward) {
       { transform: forward ? "translateX(4px)" : "translateX(0)" }
     ],
     {
-      duration: 220,
+      duration: 250,
       easing: "cubic-bezier(0.22, 1, 0.36, 1)",
       fill: "forwards"
     }
@@ -437,7 +437,7 @@ function installCardMotion() {
             { transform: raised ? "translateY(-4px)" : "translateY(0)" }
           ],
           {
-            duration: raised ? 240 : 300,
+            duration: raised ? 270 : 340,
             easing: "cubic-bezier(0.22, 1, 0.36, 1)",
             fill: "forwards"
           }
