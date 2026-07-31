@@ -392,6 +392,19 @@ p {
   transform: rotate(1.5deg);
 }
 
+.motion-preview {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.motion-preview .preview-card {
+  transform: translateZ(18px);
+}
+
+.motion-preview .preview-next {
+  transform: translateZ(10px);
+}
+
 .hero-preview::before {
   position: absolute;
   inset: -3rem -4rem auto auto;
@@ -684,10 +697,18 @@ p {
 .radio-card:not(.selected):hover {
   background: #fbfcf8;
   border-color: #b8c3ba;
-  box-shadow: 0 8px 22px rgba(20, 33, 29, 0.07);
+  box-shadow: 0 6px 16px rgba(20, 33, 29, 0.05);
 }
 
-.radio-card > span:last-child {
+.radio-card.motion-control {
+  transition-duration: 280ms;
+}
+
+.radio-card.motion-control:hover {
+  --motion-translate-y: -1px;
+}
+
+.radio-copy {
   display: grid;
   gap: 0.22rem;
 }

@@ -378,10 +378,13 @@ function addButtonRipple(button, event) {
 
   const animation = ripple.animate(
     [
-      { opacity: 0.2, transform: "scale(0.12)" },
+      { opacity: 0.1, transform: "scale(0.12)" },
       { opacity: 0, transform: "scale(1)" }
     ],
-    { duration: 520, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+    {
+      duration: 700,
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+    }
   );
   animation.onfinish = () => ripple.remove();
 }
@@ -405,23 +408,9 @@ function animateButtonArrow(button, forward) {
 }
 
 function installButtonMotion() {
-  const selector = [
-    ".button",
-    ".icon-button",
-    ".text-button",
-    ".choice",
-    ".radio-card",
-    ".scale-buttons button",
-    ".pain-options button",
-    ".segmented button",
-    ".log-another",
-    ".date-control",
-    ".side-nav nav button",
-    ".bottom-nav button"
-  ].join(",");
   const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  app.querySelectorAll(selector).forEach((button) => {
+  app.querySelectorAll("button").forEach((button) => {
     button.classList.add("motion-control");
     button.addEventListener("pointerdown", (event) => addButtonRipple(button, event));
 
@@ -435,15 +424,9 @@ function installButtonMotion() {
 function installCardMotion() {
   if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
-  app.querySelectorAll(".hero-preview, .plain-card, .stat-card, .profile-card, .week-card, .empty-state")
+  app.querySelectorAll(".plain-card, .stat-card, .profile-card, .week-card, .empty-state")
     .forEach((card) => {
       let animation;
-      const restingTransform = card.matches(".hero-preview")
-        ? "rotate(1.5deg)"
-        : "translateY(0)";
-      const raisedTransform = card.matches(".hero-preview")
-        ? "rotate(1.5deg) translateY(-4px)"
-        : "translateY(-4px)";
 
       function moveCard(raised) {
         if (animation) animation.cancel();
@@ -451,7 +434,7 @@ function installCardMotion() {
         const nextAnimation = card.animate(
           [
             { transform: currentTransform },
-            { transform: raised ? raisedTransform : restingTransform }
+            { transform: raised ? "translateY(-4px)" : "translateY(0)" }
           ],
           {
             duration: raised ? 240 : 300,
@@ -473,11 +456,56 @@ function installCardMotion() {
     });
 }
 
+function installPreviewHover() {
+  const preview = app.querySelector(".hero-preview");
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (!preview || !finePointer) return;
+
+  let animation;
+
+  function startPreviewHover() {
+    if (animation) animation.cancel();
+    animation = preview.animate([
+      { transform: "perspective(900px) translateY(-4px) rotate(1.5deg) rotateX(0) rotateY(0)" },
+      { transform: "perspective(900px) translateY(-4px) rotate(1deg) rotateX(-0.7deg) rotateY(5deg)" },
+      { transform: "perspective(900px) translateY(-4px) rotate(1.5deg) rotateX(0) rotateY(0)" },
+      { transform: "perspective(900px) translateY(-4px) rotate(2deg) rotateX(0.7deg) rotateY(-4deg)" },
+      { transform: "perspective(900px) translateY(-4px) rotate(1.5deg) rotateX(0) rotateY(0)" }
+    ], {
+      duration: 2200,
+      easing: "ease-in-out",
+      iterations: Infinity,
+      fill: "both"
+    });
+  }
+
+  function stopPreviewHover() {
+    const currentTransform = getComputedStyle(preview).transform;
+    if (animation) animation.cancel();
+    const resetAnimation = preview.animate([
+      { transform: currentTransform },
+      { transform: "perspective(900px) translateY(0) rotate(1.5deg) rotateX(0) rotateY(0)" }
+    ], {
+      duration: 380,
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+    });
+    animation = resetAnimation;
+    resetAnimation.onfinish = () => {
+      if (animation === resetAnimation) resetAnimation.cancel();
+    };
+  }
+
+  preview.classList.add("motion-preview");
+  preview.addEventListener("pointerenter", startPreviewHover);
+  preview.addEventListener("pointerleave", stopPreviewHover);
+}
+
 function initializeMotion() {
   if (prefersReducedMotion()) return;
 
   installButtonMotion();
   installCardMotion();
+  installPreviewHover();
 
   const viewKey = motionViewKey();
   if (viewKey === lastMotionView) return;
@@ -606,7 +634,7 @@ function renderOnboarding() {
           <!-- [title, detail] destructures each pair into two named variables. -->
           ${goals.map(([title, detail]) => `
             <button type="button" class="radio-card ${form.goal === title ? "selected" : ""}" data-action="set-goal" data-value="${title}">
-              <span class="radio-dot"></span><span><strong>${title}</strong><small>${detail}</small></span>
+              <span class="radio-dot"></span><span class="radio-copy"><strong>${title}</strong><small>${detail}</small></span>
             </button>`).join("")}
         </div>
       </div>`;
@@ -1327,6 +1355,13 @@ function updateBoundField(target) {
   if (scopes[scope]) scopes[scope][field] = valueForInput(target);
 }
 
+function syncSelectedButtons(action, selectedValue, field = "") {
+  app.querySelectorAll(`[data-action="${action}"]`).forEach((choice) => {
+    if (field && choice.dataset.field !== field) return;
+    choice.classList.toggle("selected", choice.dataset.value === selectedValue);
+  });
+}
+
 // =============================================================================
 // EVENT LISTENERS
 // =============================================================================
@@ -1384,10 +1419,10 @@ app.addEventListener("click", (event) => {
     }
   } else if (action === "set-experience") {
     ui.onboardingForm.experience = target.dataset.value;
-    render();
+    syncSelectedButtons("set-experience", target.dataset.value);
   } else if (action === "set-goal") {
     ui.onboardingForm.goal = target.dataset.value;
-    render();
+    syncSelectedButtons("set-goal", target.dataset.value);
   } else if (action === "navigate") {
     setScreen(target.dataset.screen);
   } else if (action === "open-checkin") {
@@ -1395,10 +1430,22 @@ app.addEventListener("click", (event) => {
     setScreen("checkin");
   } else if (action === "set-checkin-scale") {
     ui.checkinForm[target.dataset.field] = Number(target.dataset.value);
-    render();
+    syncSelectedButtons("set-checkin-scale", target.dataset.value, target.dataset.field);
+    target.closest(".scale-field").querySelector(".scale-label strong").textContent = `${target.dataset.value} / 5`;
   } else if (action === "set-checkin-pain") {
     ui.checkinForm.pain = target.dataset.value;
-    render();
+    syncSelectedButtons("set-checkin-pain", target.dataset.value);
+    const painField = target.closest(".pain-field");
+    const existingWarning = painField.querySelector(".inline-warning");
+    const needsWarning = ["Moderate", "Severe"].includes(target.dataset.value);
+    if (needsWarning && !existingWarning) {
+      painField.insertAdjacentHTML(
+        "beforeend",
+        `<p class="inline-warning">${icon("alert", 17)} This will replace intense optional training with conservative safety guidance.</p>`
+      );
+    } else if (!needsWarning && existingWarning) {
+      existingWarning.remove();
+    }
   } else if (action === "submit-checkin") {
     submitCheckIn();
   } else if (action === "review-safety") {
@@ -1420,7 +1467,11 @@ app.addEventListener("click", (event) => {
     ui.workoutDone = ui.workoutDone.includes(index)
       ? ui.workoutDone.filter((item) => item !== index)
       : [...ui.workoutDone, index];
-    render();
+    const completed = ui.workoutDone.includes(index);
+    target.classList.toggle("done", completed);
+    target.querySelector(".exercise-number").innerHTML = completed
+      ? icon("check", 17)
+      : String(index + 1).padStart(2, "0");
   } else if (action === "open-planned-log") {
     openLog(false, target.dataset.status);
   } else if (action === "open-unplanned-log") {
@@ -1430,7 +1481,7 @@ app.addEventListener("click", (event) => {
     render();
   } else if (action === "set-log-pain") {
     ui.logForm.pain = target.dataset.value;
-    render();
+    syncSelectedButtons("set-log-pain", target.dataset.value);
   } else if (action === "save-activity") {
     saveActivity();
   } else if (action === "apply-adjustment") {
@@ -1446,7 +1497,10 @@ app.addEventListener("click", (event) => {
     setScreen("adjustment");
   } else if (action === "toggle-notifications") {
     ui.notifications = !ui.notifications;
-    render();
+    target.querySelector("small").textContent = ui.notifications
+      ? "On · before optional training"
+      : "Off";
+    target.querySelector(".toggle").classList.toggle("on", ui.notifications);
   } else if (action === "export-data") {
     exportData();
   } else if (action === "delete-data") {
