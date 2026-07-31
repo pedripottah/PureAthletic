@@ -262,6 +262,233 @@ function hydrateTemplateIcons() {
   });
 }
 
+// =============================================================================
+// MOTION AND MICRO-INTERACTIONS
+// =============================================================================
+
+/*
+ * Motion is added after every render because render() replaces the current DOM.
+ * The animations use the Web Animations API, so JavaScript controls when they
+ * start while CSS continues to own PureAthletic's existing visual theme.
+ */
+let lastMotionView = "";
+
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function motionViewKey() {
+  return ui.screen === "onboarding"
+    ? `${ui.screen}-${ui.onboardingStep}`
+    : ui.screen;
+}
+
+function animateViewEntry() {
+  const selectors = [
+    ".landing-header > *",
+    ".hero-copy > *",
+    ".hero-preview",
+    ".landing-footer > *",
+    ".focused-header > *",
+    ".step-panel > *",
+    ".form-actions",
+    ".checkin-intro > *",
+    ".checkin-card",
+    ".workout-hero > *",
+    ".exercise-list",
+    ".workout-note",
+    ".sticky-actions",
+    ".log-heading > *",
+    ".form-card",
+    ".outcome-card > *",
+    ".adjustment-card > *",
+    ".screen-header > *",
+    ".dashboard-grid > *",
+    ".week-card",
+    ".progress-layout > *",
+    ".profile-grid > *",
+    ".history-toast"
+  ];
+  const elements = [...new Set(app.querySelectorAll(selectors.join(",")))];
+
+  elements.forEach((element, index) => {
+    element.animate(
+      [
+        { opacity: 0, transform: "translateY(16px)" },
+        { opacity: 1, transform: "translateY(0)" }
+      ],
+      {
+        duration: 480,
+        delay: Math.min(index * 55, 385),
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        fill: "backwards"
+      }
+    );
+  });
+}
+
+function animateDataDetails() {
+  app.querySelectorAll(".load-bars span, .trend-bars i").forEach((bar, index) => {
+    bar.animate(
+      [
+        { opacity: 0.35, transform: "scaleY(0.12)" },
+        { opacity: 1, transform: "scaleY(1)" }
+      ],
+      {
+        duration: 520,
+        delay: 180 + index * 45,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        fill: "backwards"
+      }
+    );
+  });
+
+  app.querySelectorAll(".stat-main > strong").forEach((metric) => {
+    const finalValue = Number(metric.textContent);
+    if (!Number.isFinite(finalValue) || finalValue <= 0) return;
+
+    const startedAt = performance.now();
+    const duration = 620;
+    metric.textContent = "0";
+
+    function updateMetric(now) {
+      if (!metric.isConnected) return;
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      metric.textContent = String(Math.round(finalValue * eased));
+      if (progress < 1) requestAnimationFrame(updateMetric);
+    }
+
+    requestAnimationFrame(updateMetric);
+  });
+}
+
+function addButtonRipple(button, event) {
+  if (button.disabled || event.button !== 0) return;
+
+  const bounds = button.getBoundingClientRect();
+  const diameter = Math.max(bounds.width, bounds.height) * 2;
+  const ripple = document.createElement("span");
+  ripple.className = "motion-ripple";
+  ripple.style.width = `${diameter}px`;
+  ripple.style.height = `${diameter}px`;
+  ripple.style.left = `${event.clientX - bounds.left - diameter / 2}px`;
+  ripple.style.top = `${event.clientY - bounds.top - diameter / 2}px`;
+  button.append(ripple);
+
+  const animation = ripple.animate(
+    [
+      { opacity: 0.2, transform: "scale(0.12)" },
+      { opacity: 0, transform: "scale(1)" }
+    ],
+    { duration: 520, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+  );
+  animation.onfinish = () => ripple.remove();
+}
+
+function animateButtonArrow(button, forward) {
+  const arrow = [...button.querySelectorAll('[aria-hidden="true"]')]
+    .find((element) => element.textContent.trim() === "→");
+  if (!arrow) return;
+
+  arrow.animate(
+    [
+      { transform: forward ? "translateX(0)" : "translateX(4px)" },
+      { transform: forward ? "translateX(4px)" : "translateX(0)" }
+    ],
+    {
+      duration: 220,
+      easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+      fill: "forwards"
+    }
+  );
+}
+
+function installButtonMotion() {
+  const selector = [
+    ".button",
+    ".icon-button",
+    ".text-button",
+    ".choice",
+    ".radio-card",
+    ".scale-buttons button",
+    ".pain-options button",
+    ".segmented button",
+    ".log-another",
+    ".date-control",
+    ".side-nav nav button",
+    ".bottom-nav button"
+  ].join(",");
+  const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  app.querySelectorAll(selector).forEach((button) => {
+    button.classList.add("motion-control");
+    button.addEventListener("pointerdown", (event) => addButtonRipple(button, event));
+
+    if (!finePointer || button.disabled) return;
+
+    button.addEventListener("pointerenter", () => animateButtonArrow(button, true));
+    button.addEventListener("pointerleave", () => animateButtonArrow(button, false));
+  });
+}
+
+function installCardMotion() {
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+  app.querySelectorAll(".hero-preview, .plain-card, .stat-card, .profile-card, .week-card, .empty-state")
+    .forEach((card) => {
+      let animation;
+      const restingTransform = card.matches(".hero-preview")
+        ? "rotate(1.5deg)"
+        : "translateY(0)";
+      const raisedTransform = card.matches(".hero-preview")
+        ? "rotate(1.5deg) translateY(-4px)"
+        : "translateY(-4px)";
+
+      function moveCard(raised) {
+        if (animation) animation.cancel();
+        const currentTransform = getComputedStyle(card).transform;
+        const nextAnimation = card.animate(
+          [
+            { transform: currentTransform },
+            { transform: raised ? raisedTransform : restingTransform }
+          ],
+          {
+            duration: raised ? 240 : 300,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            fill: "forwards"
+          }
+        );
+        animation = nextAnimation;
+        if (!raised) {
+          nextAnimation.onfinish = () => {
+            if (animation === nextAnimation) nextAnimation.cancel();
+          };
+        }
+      }
+
+      card.classList.add("motion-card");
+      card.addEventListener("pointerenter", () => moveCard(true));
+      card.addEventListener("pointerleave", () => moveCard(false));
+    });
+}
+
+function initializeMotion() {
+  if (prefersReducedMotion()) return;
+
+  installButtonMotion();
+  installCardMotion();
+
+  const viewKey = motionViewKey();
+  if (viewKey === lastMotionView) return;
+  lastMotionView = viewKey;
+
+  requestAnimationFrame(() => {
+    animateViewEntry();
+    animateDataDetails();
+  });
+}
+
 // The next helpers return small reusable pieces of HTML as template strings.
 function brand() {
   return `<div class="brand"><span class="brand-mark">${icon("bolt", 18)}</span><span>PureAthletic</span></div>`;
@@ -832,6 +1059,7 @@ function renderHistory() {
 function render() {
   if (ui.screen === "landing") {
     renderLanding();
+    initializeMotion();
     return;
   }
 
@@ -850,6 +1078,7 @@ function render() {
   // A function is stored as the object's value, then () calls that function.
   if (focusedScreens[ui.screen]) {
     app.innerHTML = focusedScreens[ui.screen]();
+    initializeMotion();
     return;
   }
 
@@ -860,6 +1089,7 @@ function render() {
     profile: renderProfile
   };
   app.innerHTML = renderAppShell((appScreens[ui.screen] || renderToday)());
+  initializeMotion();
 }
 
 /*

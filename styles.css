@@ -89,11 +89,17 @@ p {
   border: 1px solid transparent;
   border-radius: 0.85rem;
   font-weight: 750;
-  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease,
+    transform 180ms ease;
 }
 
 .button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .button:disabled {
@@ -110,6 +116,7 @@ p {
 
 .button-primary:hover {
   background: #21312b;
+  box-shadow: 0 12px 28px rgba(20, 33, 29, 0.2);
 }
 
 .button-secondary {
@@ -118,10 +125,20 @@ p {
   border-color: #bac3bb;
 }
 
+.button-secondary:hover {
+  background: rgba(20, 33, 29, 0.06);
+  border-color: #8f9b93;
+}
+
 .button-light {
   color: var(--ink);
   background: #fff;
   border-color: rgba(20, 33, 29, 0.14);
+}
+
+.button-light:hover {
+  background: var(--soft);
+  border-color: rgba(20, 33, 29, 0.24);
 }
 
 .button.full {
@@ -135,6 +152,7 @@ p {
   border: 0;
   font-size: 0.88rem;
   font-weight: 700;
+  transition: color 180ms ease, background 180ms ease, transform 180ms ease;
 }
 
 .icon-button {
@@ -145,6 +163,66 @@ p {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 50%;
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.icon-button:hover {
+  background: var(--lime-soft);
+  border-color: #b8d770;
+  box-shadow: 0 8px 22px rgba(20, 33, 29, 0.1);
+}
+
+.motion-control {
+  --motion-translate-y: 0px;
+  --motion-scale: 1;
+  position: relative;
+  overflow: hidden;
+  transform: translateY(var(--motion-translate-y)) scale(var(--motion-scale));
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.motion-control:hover {
+  --motion-translate-y: -1.5px;
+}
+
+.motion-control:active {
+  --motion-translate-y: 1px;
+  --motion-scale: 0.985;
+}
+
+.motion-control:disabled {
+  --motion-translate-y: 0px;
+  --motion-scale: 1;
+}
+
+.motion-control > *:not(.motion-ripple) {
+  position: relative;
+  z-index: 1;
+}
+
+.motion-ripple {
+  position: absolute;
+  z-index: 0;
+  background: currentColor;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: scale(0);
+}
+
+.motion-card {
+  transition: box-shadow 240ms ease, border-color 240ms ease;
+  will-change: transform;
+}
+
+.motion-card:hover {
+  border-color: #ccd5cd;
+  box-shadow: 0 22px 52px rgba(18, 32, 27, 0.12);
 }
 
 .pill {
@@ -214,6 +292,12 @@ p {
 
 .landing-header .text-button {
   color: #fff;
+  border-radius: 0.65rem;
+}
+
+.landing-header .text-button:hover {
+  color: var(--lime);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .hero {
@@ -230,10 +314,11 @@ p {
 .hero-copy h1 {
   max-width: 750px;
   margin: 1.5rem 0;
-  font-size: clamp(4rem, 8vw, 7.6rem);
+  font-size: clamp(4rem, 7vw, 7rem);
   font-weight: 800;
-  letter-spacing: -0.075em;
+  letter-spacing: -0.05em;
   line-height: 0.88;
+  white-space: nowrap;
 }
 
 .hero-copy > p {
@@ -259,9 +344,21 @@ p {
   background: var(--lime);
 }
 
+.hero-actions .button-primary:hover,
+.recommendation-card .button-primary:hover {
+  background: var(--lime-2);
+  box-shadow: 0 14px 34px rgba(201, 248, 92, 0.16);
+  filter: brightness(1.03);
+}
+
 .hero-actions .button-secondary {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.24);
+}
+
+.hero-actions .button-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.42);
 }
 
 .trust-row {
@@ -556,6 +653,11 @@ p {
   border-color: var(--ink);
 }
 
+.choice:not(.selected):hover {
+  background: var(--lime-soft);
+  border-color: #b8d770;
+}
+
 .stacked-choices {
   display: grid;
   gap: 0.65rem;
@@ -577,6 +679,12 @@ p {
 .radio-card.selected {
   background: var(--lime-soft);
   border-color: #a8c967;
+}
+
+.radio-card:not(.selected):hover {
+  background: #fbfcf8;
+  border-color: #b8c3ba;
+  box-shadow: 0 8px 22px rgba(20, 33, 29, 0.07);
 }
 
 .radio-card > span:last-child {
@@ -821,6 +929,12 @@ p {
   content: "";
 }
 
+.date-control:hover {
+  color: var(--ink);
+  background: var(--lime-soft);
+  border-color: #b8d770;
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(310px, 0.75fr);
@@ -1011,6 +1125,11 @@ p {
   font-weight: 750;
 }
 
+.log-another:hover {
+  background: var(--lime-soft);
+  border-color: #91a985;
+}
+
 .checkin-page {
   color: #fff;
   background: var(--ink);
@@ -1101,6 +1220,13 @@ p {
   color: var(--ink);
   background: var(--lime);
   border-color: #9abe4f;
+}
+
+.scale-buttons button:not(.selected):hover,
+.pain-options button:not(.selected):hover {
+  color: var(--ink);
+  background: var(--lime-soft);
+  border-color: #b8d770;
 }
 
 .scale-ends {
@@ -1413,6 +1539,11 @@ p {
 .segmented button.selected {
   background: #fff;
   box-shadow: 0 2px 8px rgba(20, 33, 29, 0.1);
+}
+
+.segmented button:not(.selected):hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.65);
 }
 
 .input-suffix {
@@ -2094,6 +2225,11 @@ p {
     color: #58791e;
   }
 
+  .bottom-nav button:hover {
+    color: var(--ink);
+    background: var(--lime-soft);
+  }
+
   .screen {
     width: min(100% - 2rem, 720px);
     padding: 1.5rem 0 6rem;
@@ -2142,7 +2278,7 @@ p {
   }
 
   .hero-copy h1 {
-    font-size: clamp(3.6rem, 17vw, 5.4rem);
+    font-size: clamp(3.2rem, 15.5vw, 5.4rem);
   }
 
   .hero-preview {
