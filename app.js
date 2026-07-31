@@ -23,7 +23,8 @@
 // =============================================================================
 
 // This is the name used to save and retrieve the app's data in localStorage.
-const STORAGE_KEY = "pureathletic-prototype-v1";
+const STORAGE_KEY = "pureathletic-prototype-v2";
+const YOUTH_DATA_BASE = "data/youth-football";
 
 // querySelector() connects JavaScript to elements that already exist in index.html.
 const app = document.querySelector("#app"); // The <div id="app"> where screens appear.
@@ -37,14 +38,14 @@ const landingTemplate = document.querySelector("#landing-view"); // Reusable lan
  * The initial seven-day plan.
  * This is an array: an ordered list surrounded by [].
  * Each item is an object: a group of related properties surrounded by {}.
- * Example: initialPlan[0].title gives "Lower-body foundation".
+ * Example: initialPlan[0].title gives "Football strength foundations".
  */
 const initialPlan = [
-  { id: "tue", day: "TODAY · TUE 28", type: "Strength", title: "Lower-body foundation", duration: 45, intensity: "Moderate", status: "Planned", fixed: false },
+  { id: "tue", day: "TODAY · TUE 28", type: "Strength", title: "Football strength foundations", duration: 30, intensity: "Moderate", status: "Planned", fixed: false },
   { id: "wed", day: "WED 29", type: "Rest", title: "Full rest", duration: 0, intensity: "Easy", status: "Rest", fixed: false },
-  { id: "thu", day: "THU 30", type: "Team practice", title: "Team training", duration: 90, intensity: "Team-led", status: "Fixed", fixed: true, time: "19:00" },
+  { id: "practice", day: "THU 30", type: "Team practice", title: "Team training", duration: 90, intensity: "Team-led", status: "Fixed", fixed: true, time: "19:00" },
   { id: "fri", day: "FRI 31", type: "Recovery", title: "Mobility reset", duration: 20, intensity: "Easy", status: "Recovery", fixed: false },
-  { id: "sat", day: "SAT 1", type: "Match", title: "League match", duration: 90, intensity: "Match", status: "Fixed", fixed: true, time: "15:00" },
+  { id: "match", day: "SAT 1", type: "Match", title: "League match", duration: 90, intensity: "Match", status: "Fixed", fixed: true, time: "15:00" },
   { id: "sun", day: "SUN 2", type: "Recovery", title: "Post-match recovery", duration: 25, intensity: "Easy", status: "Recovery", fixed: false },
   { id: "mon", day: "MON 3", type: "Speed", title: "Acceleration quality", duration: 35, intensity: "Moderate", status: "Planned", fixed: false }
 ];
@@ -57,7 +58,8 @@ const demoState = {
   onboarded: true, // The example user has completed onboarding.
   user: {
     name: "Sam",
-    ageConfirmed: true,
+    ageGroup: "U14",
+    guardianConfirmed: true,
     disclaimerAccepted: true,
     position: "Midfielder",
     experience: "Intermediate",
@@ -69,11 +71,19 @@ const demoState = {
   recommendation: {
     id: "tue",
     type: "Strength",
-    title: "Lower-body foundation",
-    duration: 45,
+    title: "Football strength foundations",
+    duration: 30,
     intensity: "Moderate",
     status: "Planned",
-    purpose: "Build useful lower-body strength with enough recovery before Saturday’s match."
+    goalId: "strength",
+    ageBandId: "u13-u15",
+    purpose: "Build controlled football-strength foundations with enough recovery before Saturday’s match.",
+    explanation: "Selected for U14, Intermediate, and Strength, then placed away from the fixed Saturday match.",
+    activities: [
+      { name: "Mobility and control", detail: "Dynamic ankle, hip, and upper-body movement followed by unloaded squat, hinge, and landing positions." },
+      { name: "Technique-first circuit", detail: "Squat-to-target, supported reverse lunge, incline push-up, calf raise, and dead bug with clean technique." },
+      { name: "Easy movement", detail: "Walk, reset, and record any exercise that needed an easier option." }
+    ]
   },
   plan: initialPlan,
   activities: [
@@ -82,8 +92,10 @@ const demoState = {
   ],
   adjustments: [],
   schedule: {
+    practiceEnabled: true,
     practiceDay: "Thursday",
     practiceTime: "19:00",
+    matchEnabled: true,
     matchDay: "Saturday",
     matchTime: "15:00"
   }
@@ -97,7 +109,8 @@ const onboardingSeed = {
   onboarded: false,
   user: {
     name: "",
-    ageConfirmed: false,
+    ageGroup: "U13",
+    guardianConfirmed: false,
     disclaimerAccepted: false,
     position: "Midfielder",
     experience: "Beginner",
@@ -118,15 +131,37 @@ const onboardingSeed = {
  * Each object supplies the title and smaller detail text for one workout row.
  */
 const exercises = [
-  { name: "Dynamic movement series", detail: "8 min warm-up" },
-  { name: "Split squat", detail: "3 × 8 each side" },
-  { name: "Hip hinge", detail: "3 × 10" },
-  { name: "Calf raise", detail: "3 × 12" },
-  { name: "Trunk + mobility", detail: "9 min finish" }
+  { name: "Mobility and control", detail: "Dynamic movement and unloaded technique rehearsal." },
+  { name: "Technique-first circuit", detail: "Controlled squat, lunge, push, calf, and core patterns." },
+  { name: "Easy movement", detail: "Walk, reset, and record technique notes." }
 ];
 
 // These values are reused to build choices instead of repeating the HTML by hand.
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const teamAgeGroups = Array.from({ length: 13 }, (_, index) => `U${index + 5}`);
+const goalIdsByLabel = {
+  "Match readiness": "match_readiness",
+  Strength: "strength",
+  Speed: "speed",
+  Endurance: "endurance",
+  "General fitness": "general_fitness"
+};
+
+const youthRecommendationDataPromise = Promise.all(
+  ["taxonomy.json", "routine-catalog.json", "recommendation-index.json"].map(
+    async (fileName) => {
+      const response = await fetch(`${YOUTH_DATA_BASE}/${fileName}`);
+      if (!response.ok) {
+        throw new Error(`Could not load ${fileName}`);
+      }
+      return response.json();
+    }
+  )
+).then(([taxonomy, routineCatalog, recommendationIndex]) => ({
+  taxonomy,
+  routineCatalog,
+  recommendationIndex
+})).catch(() => null);
 
 /*
  * Each inner array describes one navigation button:
@@ -168,7 +203,8 @@ let ui = {
   logConfig: { unplanned: false, status: "Completed" },
   logForm: null,
   pending: null,
-  notifications: true
+  notifications: true,
+  generatingPlan: false
 };
 
 // =============================================================================
@@ -192,7 +228,15 @@ function loadData() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     // `saved ? A : B` returns A when saved exists and B when it does not.
-    return saved ? JSON.parse(saved) : clone(onboardingSeed);
+    if (!saved) return clone(onboardingSeed);
+
+    const restored = JSON.parse(saved);
+    if (restored.user?.experience === "Advanced") {
+      localStorage.removeItem(STORAGE_KEY);
+      return clone(onboardingSeed);
+    }
+
+    return restored;
   } catch {
     // Corrupted or unavailable saved data should not stop the app from opening.
     localStorage.removeItem(STORAGE_KEY);
@@ -547,6 +591,216 @@ function selectedOptions(options, selected) {
   return options.map((option) => `<option${option === selected ? " selected" : ""}>${escapeHtml(option)}</option>`).join("");
 }
 
+function sessionTypeLabel(sessionType) {
+  const labels = {
+    active_play: "Active play",
+    mixed_play: "Football play",
+    speed_play: "Speed play"
+  };
+
+  return labels[sessionType]
+    || sessionType
+      .split("_")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+}
+
+function recommendationFromCatalog(user, catalog) {
+  const experience = user.experience.toLowerCase();
+  const goalId = goalIdsByLabel[user.goal] || "general_fitness";
+  const ageBand = catalog.taxonomy.ageBands.find((candidate) =>
+    candidate.teamAgeGroups.includes(user.ageGroup)
+  );
+
+  if (!ageBand || !["beginner", "intermediate"].includes(experience)) {
+    throw new Error("The selected age group or experience is not available.");
+  }
+
+  const routineId =
+    catalog.recommendationIndex.index[ageBand.id][experience][goalId];
+  const routine = catalog.routineCatalog.routines.find(
+    (candidate) => candidate.id === routineId
+  );
+
+  if (!routine) {
+    throw new Error("The selected routine is missing from the catalog.");
+  }
+
+  return {
+    id: routine.id,
+    type: sessionTypeLabel(routine.sessionType),
+    title: routine.title,
+    duration: routine.durationMinutesByLevel[experience],
+    intensity:
+      routine.intensityByLevel[experience].charAt(0).toUpperCase()
+      + routine.intensityByLevel[experience].slice(1),
+    status: "Planned",
+    goalId,
+    ageBandId: ageBand.id,
+    purpose: routine.purpose,
+    explanation: `Selected from the U5–U17 catalog for ${user.ageGroup}, ${user.experience}, and ${user.goal}. Fixed commitments are then used to place and protect the session.`,
+    progression: routine.levelProgressions[experience],
+    supervision: routine.supervision,
+    activities: routine.blocks.map((block) => ({
+      name: block.title,
+      detail: block.activities.join(" ")
+    }))
+  };
+}
+
+function fallbackRecommendation(user) {
+  const fallbacks = {
+    "Match readiness": {
+      type: "Technical",
+      title: "Match confidence touches",
+      purpose: "Use familiar, low-fatigue ball actions so you arrive confident and fresh."
+    },
+    Strength: {
+      type: "Strength",
+      title: "Body-control foundations",
+      purpose: "Practise supervised, technique-first football strength and movement control."
+    },
+    Speed: {
+      type: "Speed",
+      title: "React, accelerate and stop",
+      purpose: "Practise a few short accelerations and controlled stops with full recovery."
+    },
+    Endurance: {
+      type: "Conditioning",
+      title: "Ball interval games",
+      purpose: "Build repeatable football movement through short ball rounds and easy recovery."
+    },
+    "General fitness": {
+      type: "Mixed",
+      title: "Football foundations",
+      purpose: "Combine ball skill, movement control, and an easy football-focused finish."
+    }
+  };
+  const selected = fallbacks[user.goal] || fallbacks["General fitness"];
+
+  return {
+    id: `fallback-${goalIdsByLabel[user.goal] || "general_fitness"}`,
+    ...selected,
+    duration: user.ageGroup === "U5" || user.ageGroup === "U6" ? 15 : 20,
+    intensity: "Easy",
+    status: "Planned",
+    goalId: goalIdsByLabel[user.goal] || "general_fitness",
+    purpose: selected.purpose,
+    explanation: `A conservative offline fallback selected for ${user.ageGroup} and ${user.goal}.`,
+    activities: [
+      { name: "Easy preparation", detail: "Start with comfortable movement and familiar ball touches." },
+      { name: selected.title, detail: selected.purpose },
+      { name: "Easy finish", detail: "Walk, breathe comfortably, and stop if anything feels wrong." }
+    ]
+  };
+}
+
+function commitmentEnabled(schedule, prefix) {
+  return schedule?.[`${prefix}Enabled`] !== false;
+}
+
+function activeCommitments(schedule) {
+  const commitments = [];
+
+  if (commitmentEnabled(schedule, "practice")) {
+    commitments.push({
+      type: "Team practice",
+      day: schedule.practiceDay,
+      time: schedule.practiceTime
+    });
+  }
+  if (commitmentEnabled(schedule, "match")) {
+    commitments.push({
+      type: "Match",
+      day: schedule.matchDay,
+      time: schedule.matchTime
+    });
+  }
+
+  return commitments;
+}
+
+function commitmentSummary(schedule) {
+  const commitments = activeCommitments(schedule);
+  return commitments.length
+    ? commitments
+      .map((item) => `${item.type}: ${item.day} · ${item.time}`)
+      .join(" · ")
+    : "No fixed commitments";
+}
+
+function nextFixedCommitment(schedule) {
+  return activeCommitments(schedule)[0] || null;
+}
+
+function planWithRecommendationAndSchedule(recommendation, schedule, sourcePlan = initialPlan) {
+  return sourcePlan.map((item) => {
+    if (item.id === "tue") {
+      return {
+        ...item,
+        type: recommendation.type,
+        title: recommendation.title,
+        duration: recommendation.duration,
+        intensity: recommendation.intensity,
+        status: "Planned",
+        fixed: false
+      };
+    }
+
+    if (item.id === "practice") {
+      return commitmentEnabled(schedule, "practice")
+        ? {
+          ...item,
+          day: `${schedule.practiceDay.slice(0, 3).toUpperCase()} · FIXED`,
+          time: schedule.practiceTime,
+          type: "Team practice",
+          title: "Team training",
+          duration: 90,
+          intensity: "Team-led",
+          status: "Fixed",
+          fixed: true
+        }
+        : {
+          ...item,
+          type: "Rest",
+          title: "Open day",
+          duration: 0,
+          intensity: "Easy",
+          status: "Rest",
+          fixed: false,
+          time: ""
+        };
+    }
+
+    if (item.id === "match") {
+      return commitmentEnabled(schedule, "match")
+        ? {
+          ...item,
+          day: `${schedule.matchDay.slice(0, 3).toUpperCase()} · FIXED`,
+          time: schedule.matchTime,
+          type: "Match",
+          title: "Match",
+          duration: 90,
+          intensity: "Match",
+          status: "Fixed",
+          fixed: true
+        }
+        : {
+          ...item,
+          type: "Rest",
+          title: "Open day",
+          duration: 0,
+          intensity: "Easy",
+          status: "Rest",
+          fixed: false,
+          time: ""
+        };
+    }
+
+    return item;
+  });
+}
+
 // A shared heading used by several main app screens.
 function screenHeader(eyebrow, title, action = "") {
   return `<header class="screen-header"><div><span class="screen-eyebrow">${eyebrow}</span><h1>${title}</h1></div>${action}</header>`;
@@ -582,15 +836,15 @@ function renderOnboarding() {
     panel = `
       <div class="step-panel">
         <span class="section-kicker">BEFORE WE BEGIN</span>
-        <h1>Let’s keep this useful and safe.</h1>
-        <p class="lead">PureAthletic provides general training guidance. It does not diagnose injury, provide treatment, or replace a qualified professional.</p>
+        <h1>Let’s keep junior training useful and safe.</h1>
+        <p class="lead">PureAthletic provides general, age-group training guidance for U5–U17 footballers. It does not diagnose injury, provide treatment, or replace a qualified professional.</p>
         <label class="check-card">
-          <input type="checkbox" data-scope="onboarding" data-field="ageConfirmed"${form.ageConfirmed ? " checked" : ""}>
-          <span><strong>I confirm I am 18 or older</strong><small>The first prototype is limited to adult athletes.</small></span>
+          <input type="checkbox" data-scope="onboarding" data-field="guardianConfirmed"${form.guardianConfirmed ? " checked" : ""}>
+          <span><strong>A parent or guardian approves this setup</strong><small>A responsible adult must know when and where every junior session takes place.</small></span>
         </label>
         <label class="check-card">
           <input type="checkbox" data-scope="onboarding" data-field="disclaimerAccepted"${form.disclaimerAccepted ? " checked" : ""}>
-          <span><strong>I understand the guidance boundary</strong><small>Pain or injury concerns need qualified support.</small></span>
+          <span><strong>We understand the guidance boundary</strong><small>Pain, illness, injury concerns, or return-to-play decisions need qualified support.</small></span>
         </label>
       </div>`;
   }
@@ -605,13 +859,21 @@ function renderOnboarding() {
           <input id="name" data-scope="onboarding" data-field="name" value="${escapeHtml(form.name)}" placeholder="Sam">
         </div>
         <div class="field">
+          <label for="age-group">Team age group</label>
+          <select id="age-group" data-scope="onboarding" data-field="ageGroup">${selectedOptions(teamAgeGroups, form.ageGroup)}</select>
+          <small class="field-note">Choose the registered team group. A date of birth is not needed for this prototype.</small>
+        </div>
+        <div class="field">
           <label for="position">Position</label>
           <select id="position" data-scope="onboarding" data-field="position">${selectedOptions(["Goalkeeper", "Defender", "Midfielder", "Forward", "Utility player"], form.position)}</select>
         </div>
         <div class="field">
           <label>Training experience</label>
           <div class="choice-grid">
-            ${["Beginner", "Intermediate", "Advanced"].map((item) => `<button type="button" class="choice ${form.experience === item ? "selected" : ""}" data-action="set-experience" data-value="${item}">${item}</button>`).join("")}
+            ${["Beginner", "Intermediate"].map((item) => `<button type="button" class="choice ${form.experience === item ? "selected" : ""}" data-action="set-experience" data-value="${item}"><span>${item}</span></button>`).join("")}
+            <button type="button" class="choice choice-unavailable" disabled aria-disabled="true" aria-label="Advanced recommendations are in development">
+              <span>Advanced</span><small>In development</small>
+            </button>
           </div>
         </div>
       </div>`;
@@ -645,9 +907,10 @@ function renderOnboarding() {
       <div class="step-panel">
         <span class="section-kicker">YOUR WEEK</span>
         <h1>Add the commitments that stay fixed.</h1>
+        <p class="lead">Add a team practice, a match, both, or neither. You can change these later.</p>
         ${scheduleCard("TEAM PRACTICE", "practice", schedule, "onboardingSchedule")}
         ${scheduleCard("MATCH", "match", schedule, "onboardingSchedule")}
-        <p class="hint">${icon("shield", 17)} These commitments will never be moved automatically.</p>
+        <p class="hint">${icon("shield", 17)} Added commitments will never be moved automatically. Leaving both empty is okay.</p>
       </div>`;
   }
 
@@ -657,18 +920,20 @@ function renderOnboarding() {
         <span class="section-kicker">REVIEW</span>
         <h1>Your first week is ready to build.</h1>
         <div class="review-list">
-          <div><span>Athlete</span><strong>${escapeHtml(form.name.trim() || "Sam")} · ${escapeHtml(form.position)}</strong></div>
+          <div><span>Athlete</span><strong>${escapeHtml(form.name.trim() || "Sam")} · ${escapeHtml(form.ageGroup)} · ${escapeHtml(form.position)}</strong></div>
+          <div><span>Experience</span><strong>${escapeHtml(form.experience)}</strong></div>
           <div><span>Primary goal</span><strong>${escapeHtml(form.goal)}</strong></div>
-          <div><span>Team practice</span><strong>${escapeHtml(schedule.practiceDay)} · ${escapeHtml(schedule.practiceTime)}</strong></div>
-          <div><span>Match</span><strong>${escapeHtml(schedule.matchDay)} · ${escapeHtml(schedule.matchTime)}</strong></div>
-          <div><span>Plan shape</span><strong>2 sessions · 2 recovery/rest days</strong></div>
+          <div><span>Fixed commitments</span><strong>${escapeHtml(commitmentSummary(schedule))}</strong></div>
+          <div><span>Plan logic</span><strong>Age group + experience + primary goal + schedule</strong></div>
         </div>
-        <div class="info-card">${icon("shield")}<div><strong>Match protection applied</strong><p>We will avoid hard lower-body work immediately before your match.</p></div></div>
+        <div class="info-card">${icon("shield")}<div><strong>Junior safeguards applied</strong><p>Age-group limits, supervision, readiness, recovery, and any fixed match or practice take priority over the selected goal.</p></div></div>
       </div>`;
   }
 
   // Step 1 stays disabled until both required checkboxes are selected.
-  const canContinue = step !== 1 || (form.ageConfirmed && form.disclaimerAccepted);
+  const canContinue =
+    !ui.generatingPlan
+    && (step !== 1 || (form.guardianConfirmed && form.disclaimerAccepted));
   return `
     <main class="focused-page">
       <header class="focused-header">
@@ -682,7 +947,7 @@ function renderOnboarding() {
         ${panel}
         <div class="form-actions">
           <button type="button" class="button button-primary" data-action="onboarding-next"${canContinue ? "" : " disabled"}>
-            <span>${step === total ? "Generate my plan" : "Continue"} <span aria-hidden="true">→</span></span>
+            <span>${ui.generatingPlan ? "Building your plan…" : step === total ? "Generate my plan" : "Continue"} ${ui.generatingPlan ? "" : '<span aria-hidden="true">→</span>'}</span>
           </button>
         </div>
       </section>
@@ -697,9 +962,25 @@ function renderOnboarding() {
 function scheduleCard(label, prefix, schedule, scope) {
   const dayField = `${prefix}Day`;
   const timeField = `${prefix}Time`;
+  const enabled = commitmentEnabled(schedule, prefix);
+
+  if (!enabled) {
+    return `
+      <div class="schedule-card schedule-card-empty">
+        <div class="schedule-card-heading">
+          ${pill(label, "neutral")}
+          <button type="button" class="commitment-action" data-action="add-commitment" data-prefix="${prefix}" data-scope="${scope}">${icon("plus", 16)} Add</button>
+        </div>
+        <p>No ${label.toLowerCase()} added.</p>
+      </div>`;
+  }
+
   return `
     <div class="schedule-card">
-      ${pill(label, "dark")}
+      <div class="schedule-card-heading">
+        ${pill(label, "dark")}
+        <button type="button" class="commitment-action remove" data-action="remove-commitment" data-prefix="${prefix}" data-scope="${scope}">Remove</button>
+      </div>
       <div class="two-fields">
         <div class="field"><label>Day</label><select data-scope="${scope}" data-field="${dayField}">${selectedOptions(weekdays, schedule[dayField])}</select></div>
         <div class="field"><label>Time</label><input type="time" data-scope="${scope}" data-field="${timeField}" value="${escapeHtml(schedule[timeField])}"></div>
@@ -742,16 +1023,17 @@ function renderAppShell(content) {
 function renderToday() {
   const rec = data.recommendation;
   const safety = rec.status === "Safety";
+  const nextCommitment = nextFixedCommitment(data.schedule);
   const recommendationActions = !data.checkInDone && !safety
     ? button('Complete check-in <span aria-hidden="true">→</span>', "open-checkin")
     : safety
       ? button("Review guidance", "review-safety", { variant: "light" })
-      : `<div class="button-row">${button("Start workout", "open-workout")}${button("25-min version", "open-short-workout", { variant: "light" })}</div>`;
+      : `<div class="button-row">${button("Start routine", "open-workout")}${button(`${Math.max(12, Math.round(rec.duration * 0.7))}-min version`, "open-short-workout", { variant: "light" })}</div>`;
   const explanation = safety
     ? "Safety rules take priority over the weekly goal and cannot be bypassed."
     : data.checkInDone
-      ? "Your check-in supports this session, and it fits the clearest strength window before Saturday’s match."
-      : "Check in first so the session can respond to today’s sleep, energy, soreness, stress, and pain.";
+      ? rec.explanation || "Your check-in supports this age- and goal-matched routine."
+      : `${rec.explanation || `Selected for ${data.user.ageGroup}, ${data.user.experience}, and ${data.user.goal}.`} Check in first so it can respond to today’s readiness.`;
 
   return `
     <main class="screen">
@@ -769,7 +1051,7 @@ function renderToday() {
         <div class="dashboard-side">
           <section class="plain-card explanation"><span class="eyebrow">WHY THIS TODAY?</span><p>${explanation}</p></section>
           <section class="plain-card next-card">
-            <div><span class="eyebrow">NEXT FIXED COMMITMENT</span><h3>Team practice</h3><p>${escapeHtml(data.schedule.practiceDay)} · ${escapeHtml(data.schedule.practiceTime)} · 90 min</p></div>
+            <div><span class="eyebrow">NEXT FIXED COMMITMENT</span><h3>${nextCommitment ? escapeHtml(nextCommitment.type) : "Nothing added"}</h3><p>${nextCommitment ? `${escapeHtml(nextCommitment.day)} · ${escapeHtml(nextCommitment.time)} · fixed` : "Add a practice or match from your profile when needed."}</p></div>
             <span class="round-icon">${icon("week")}</span>
           </section>
           <section class="plain-card progress-mini">
@@ -804,8 +1086,8 @@ function renderCheckIn() {
       </div>
       <div class="scale-ends"><span>${low}</span><span>${high}</span></div>
     </div>`).join("");
-  const painWarning = ["Moderate", "Severe"].includes(form.pain)
-    ? `<p class="inline-warning">${icon("alert", 17)} This will replace intense optional training with conservative safety guidance.</p>`
+  const painWarning = form.pain !== "None"
+    ? `<p class="inline-warning">${icon("alert", 17)} Any reported pain pauses automated junior training and asks for responsible-adult review.</p>`
     : "";
 
   return `
@@ -817,7 +1099,7 @@ function renderCheckIn() {
           ${scaleMarkup}
           <div class="pain-field">
             <div class="scale-label"><label>Pain today</label>${icon("shield", 18)}</div>
-            <div class="pain-options">${["None", "Mild", "Moderate", "Severe"].map((pain) => `<button type="button" class="${form.pain === pain ? "selected" : ""} ${["Moderate", "Severe"].includes(pain) ? "caution" : ""}" data-action="set-checkin-pain" data-value="${pain}">${pain}</button>`).join("")}</div>
+            <div class="pain-options">${["None", "Mild", "Moderate", "Severe"].map((pain) => `<button type="button" class="${form.pain === pain ? "selected" : ""} ${pain !== "None" ? "caution" : ""}" data-action="set-checkin-pain" data-value="${pain}">${pain}</button>`).join("")}</div>
             ${painWarning}
           </div>
           ${button('Save check-in <span aria-hidden="true">→</span>', "submit-checkin", { className: "full" })}
@@ -831,9 +1113,10 @@ function renderCheckIn() {
  * Returning an object keeps the text decision separate from the outcome HTML.
  */
 function outcomeCopy(kind) {
-  if (kind === "poor") return { kicker: "RECOMMENDATION UPDATED", title: "A lighter day fits better.", body: "Today’s low sleep and energy make recovery the more appropriate choice before team practice.", before: "45-min strength", after: "20-min mobility + recovery" };
-  if (kind === "moderate") return { kicker: "SAFETY ACTION", title: "Intense training removed.", body: "You reported moderate pain. PureAthletic cannot assess an injury or tell you when it is safe to return.", before: "45-min strength", after: "Conservative guidance" };
-  if (kind === "severe") return { kicker: "STOP TRAINING", title: "Seek qualified advice.", body: "You reported severe pain. Stop training and seek advice from a qualified healthcare or sports professional.", before: "45-min strength", after: "No workout recommended" };
+  if (kind === "poor") return { kicker: "RECOMMENDATION UPDATED", title: "A lighter day fits better.", body: "Today’s low sleep and energy make recovery more appropriate than the planned routine.", before: "Planned routine", after: "20-min mobility + recovery" };
+  if (kind === "pain") return { kicker: "RESPONSIBLE-ADULT REVIEW", title: "Pause the routine.", body: "Pain was reported. Stop the automated routine and tell a parent, guardian, coach, or another responsible adult. Seek qualified healthcare advice when appropriate.", before: "Planned routine", after: "No automated workout" };
+  if (kind === "moderate") return { kicker: "SAFETY ACTION", title: "Intense training removed.", body: "You reported moderate pain. PureAthletic cannot assess an injury or tell you when it is safe to return.", before: "Planned routine", after: "Conservative guidance" };
+  if (kind === "severe") return { kicker: "STOP TRAINING", title: "Seek qualified advice.", body: "You reported severe pain. Stop training and tell a parent or guardian. Seek advice from a qualified healthcare or sports professional.", before: "Planned routine", after: "No workout recommended" };
   return { kicker: "CHECK-IN SAVED", title: "Today’s plan still fits.", body: "Your readiness supports the planned session and no safety rule was triggered.", before: null, after: null };
 }
 
@@ -841,7 +1124,7 @@ function outcomeCopy(kind) {
 function renderOutcome() {
   const kind = ui.outcome;
   const copy = outcomeCopy(kind);
-  const pain = ["moderate", "severe"].includes(kind);
+  const pain = ["pain", "moderate", "severe"].includes(kind);
   return `
     <main class="outcome-page ${pain ? "outcome-safety" : ""}">
       <div class="outcome-card">
@@ -861,14 +1144,22 @@ function renderOutcome() {
  * When `short` is true, slice(0, 4) returns only the first four exercises.
  */
 function renderWorkout(short = false) {
-  const shown = short ? exercises.slice(0, 4) : exercises;
+  const routineExercises = data.recommendation.activities?.length
+    ? data.recommendation.activities
+    : exercises;
+  const shown = short
+    ? routineExercises.slice(0, Math.max(2, routineExercises.length - 1))
+    : routineExercises;
+  const duration = short
+    ? Math.max(12, Math.round(data.recommendation.duration * 0.7))
+    : data.recommendation.duration;
   return `
     <main class="focused-page workout-page">
-      <header class="focused-header"><button type="button" class="icon-button" data-action="back-today" aria-label="Back">${icon("back")}</button><span class="focused-title">${short ? "Shorter workout" : "Workout detail"}</span>${pill(short ? "25 MIN" : "45 MIN")}</header>
+      <header class="focused-header"><button type="button" class="icon-button" data-action="back-today" aria-label="Back">${icon("back")}</button><span class="focused-title">${short ? "Shorter routine" : "Routine detail"}</span>${pill(`${duration} MIN`)}</header>
       <section class="workout-shell">
         <div class="workout-hero">
-          <div>${pill("STRENGTH", "lime")}<h1>${short ? "Lower-body essentials" : "Lower-body foundation"}</h1><p>${short ? "The essential work, kept focused for a tighter day." : "Build useful lower-body strength with enough recovery before Saturday’s match."}</p></div>
-          <div class="difficulty"><span>DIFFICULTY</span><strong>Moderate</strong><div><i></i><i></i><i class="muted"></i><i class="muted"></i></div></div>
+          <div>${pill(data.recommendation.type.toUpperCase(), "lime")}<h1>${short ? `${escapeHtml(data.recommendation.title)} · short` : escapeHtml(data.recommendation.title)}</h1><p>${short ? "The essential blocks, kept focused for a tighter day." : escapeHtml(data.recommendation.purpose)}</p></div>
+          <div class="difficulty"><span>LEVEL</span><strong>${escapeHtml(data.user.experience)}</strong><div><i></i><i class="${data.user.experience === "Beginner" ? "muted" : ""}"></i><i class="muted"></i><i class="muted"></i></div></div>
         </div>
         <div class="exercise-list">
           <!-- map() turns every exercise object into one clickable HTML row. -->
@@ -878,7 +1169,7 @@ function renderWorkout(short = false) {
               <span><strong>${exercise.name}</strong><small>${exercise.detail}</small></span>${icon("arrow")}
             </button>`).join("")}
         </div>
-        <div class="workout-note">${icon("shield")}<p>Use controlled movement and stop if an exercise causes pain. Approved alternatives can be selected during the session.</p></div>
+        <div class="workout-note">${icon("shield")}<p>A responsible adult must know about the session. Follow the listed supervision level, use controlled movement, and stop for pain, dizziness, unusual breathing difficulty, or feeling unwell.</p></div>
         <div class="sticky-actions">
           ${button("Finish and log", "open-planned-log", { attributes: 'data-status="Completed"' })}
           ${button("Log modifications", "open-planned-log", { variant: "secondary", attributes: 'data-status="Modified"' })}
@@ -899,7 +1190,7 @@ function renderActivityLog() {
     <main class="focused-page log-page">
       <header class="focused-header"><button type="button" class="icon-button" data-action="back-today" aria-label="Back">${icon("back")}</button><span class="focused-title">${unplanned ? "Log another activity" : "Log your session"}</span><span></span></header>
       <section class="log-shell">
-        <div class="log-heading"><span class="section-kicker">${unplanned ? "UNPLANNED ACTIVITY" : "TODAY’S SESSION"}</span><h1>${unplanned ? "What did you do?" : "Lower-body foundation"}</h1></div>
+        <div class="log-heading"><span class="section-kicker">${unplanned ? "UNPLANNED ACTIVITY" : "TODAY’S SESSION"}</span><h1>${unplanned ? "What did you do?" : escapeHtml(data.recommendation.title)}</h1></div>
         <div class="form-card">
           ${unplanned ? `<div class="field"><label>Activity type</label><select data-scope="log" data-field="type">${selectedOptions(["Team practice", "Match", "Strength", "Speed", "Conditioning", "Recovery"], form.type)}</select></div>` : ""}
           ${unplanned ? "" : `<div class="field"><label>Outcome</label><div class="segmented">${["Completed", "Modified", "Skipped"].map((status) => `<button type="button" class="${form.status === status ? "selected" : ""}" data-action="set-log-status" data-value="${status}">${status}</button>`).join("")}</div></div>`}
@@ -924,20 +1215,24 @@ function renderActivityLog() {
 function renderAdjustment() {
   const pending = ui.pending;
   const isSchedule = pending.kind === "schedule";
-  const newDay = isSchedule ? pending.schedule.matchDay : "";
-  const newTime = isSchedule ? pending.schedule.matchTime : "";
+  const beforeSummary = isSchedule
+    ? commitmentSummary(data.schedule)
+    : "Conditioning · 35 min · Moderate";
+  const afterSummary = isSchedule
+    ? commitmentSummary(pending.schedule)
+    : "Mobility reset · 20 min · Easy";
   return `
     <main class="outcome-page adjustment-page">
       <div class="adjustment-card">
         <span class="section-kicker">REVIEW PLAN CHANGES</span>
         <h1>${isSchedule ? "Your schedule changes the week." : "Recovery needs a little more room."}</h1>
-        <p>${isSchedule ? `Your ${escapeHtml(newDay)} match stays fixed. We adjusted optional work around it.` : "The high-effort team session you logged increases today’s load. Fixed commitments remain unchanged."}</p>
+        <p>${isSchedule ? "Added commitments stay fixed; removed commitments stop affecting the plan. Optional work is recalculated around what remains." : "The high-effort team session you logged increases today’s load. Fixed commitments remain unchanged."}</p>
         <div class="change-comparison">
-          <div><small>${isSchedule ? "BEFORE" : "WED 29"}</small>${pill(isSchedule ? "SATURDAY MATCH" : "PLANNED")}<h3>${isSchedule ? "Match · Saturday" : "Conditioning"}</h3><span>${isSchedule ? "15:00" : "35 min · Moderate"}</span></div>
+          <div><small>${isSchedule ? "BEFORE" : "WED 29"}</small>${pill(isSchedule ? "CURRENT" : "PLANNED")}<h3>${isSchedule ? "Fixed commitments" : "Conditioning"}</h3><span>${escapeHtml(beforeSummary)}</span></div>
           <span class="change-arrow">→</span>
-          <div class="new"><small>${isSchedule ? "AFTER" : "WED 29"}</small>${pill(isSchedule ? `${newDay.toUpperCase()} MATCH` : "RECOVERY", "lime")}<h3>${isSchedule ? `Match · ${escapeHtml(newDay)}` : "Mobility reset"}</h3><span>${isSchedule ? escapeHtml(newTime) : "20 min · Easy"}</span></div>
+          <div class="new"><small>${isSchedule ? "AFTER" : "WED 29"}</small>${pill(isSchedule ? "UPDATED" : "RECOVERY", "lime")}<h3>${isSchedule ? "Fixed commitments" : "Mobility reset"}</h3><span>${escapeHtml(afterSummary)}</span></div>
         </div>
-        <div class="reason-box"><span class="round-icon">${icon("shield")}</span><div><strong>Why this changed</strong><p>${isSchedule ? "Optional lower-body work is kept away from the updated match day." : "This avoids consecutive high-load days while preserving team practice and the match."}</p></div></div>
+        <div class="reason-box"><span class="round-icon">${icon("shield")}</span><div><strong>Why this changed</strong><p>${isSchedule ? "The recommendation system only protects practices and matches that are currently added." : "This avoids consecutive high-load days while preserving team commitments."}</p></div></div>
         <div class="button-row">${button("Apply changes", "apply-adjustment")}${button("Keep current plan", "dismiss-adjustment", { variant: "secondary" })}</div>
       </div>
     </main>`;
@@ -948,6 +1243,10 @@ function renderAdjustment() {
  * The callback passed to map() can do several calculations before returning HTML.
  */
 function renderWeek() {
+  const focusedSessions = data.plan.filter(
+    (item) => !item.fixed && !["Rest", "Recovery"].includes(item.type)
+  ).length;
+  const hasMatch = commitmentEnabled(data.schedule, "match");
   const rows = data.plan.map((item) => {
     const interactive = !item.fixed && item.type !== "Rest";
     // Nested template strings add time and duration only when those values exist.
@@ -967,8 +1266,8 @@ function renderWeek() {
       ${screenHeader("ROLLING PLAN", "Your next 7 days", '<button type="button" class="date-control">28 Jul — 3 Aug</button>')}
       <section class="week-card">
         <div class="week-summary">
-          <div><span class="eyebrow">WEEK SHAPE</span><strong>2 focused sessions</strong><p>with protected recovery around your match</p></div>
-          <div class="load-bars" aria-label="Training load preview">${[2, 1, 4, 1, 5, 1, 3].map((height, index) => `<span style="height:${height * 11}px" class="${index === 4 ? "match" : ""}"></span>`).join("")}</div>
+          <div><span class="eyebrow">WEEK SHAPE</span><strong>${focusedSessions} focused session${focusedSessions === 1 ? "" : "s"}</strong><p>${hasMatch ? "with recovery protected around your match" : "balanced around the commitments you added"}</p></div>
+          <div class="load-bars" aria-label="Training load preview">${[2, 1, 4, 1, hasMatch ? 5 : 1, 1, 3].map((height, index) => `<span style="height:${height * 11}px" class="${hasMatch && index === 4 ? "match" : ""}"></span>`).join("")}</div>
         </div>
         <div class="plan-list">${rows}</div>
         <div class="week-legend"><span><i class="legend-fixed"></i> Fixed team commitment</span><span><i class="legend-plan"></i> PureAthletic recommendation</span></div>
@@ -1017,13 +1316,13 @@ function renderProfile() {
       ${screenHeader("ATHLETE PROFILE", "Your setup")}
       <div class="profile-grid">
         <section class="profile-card">
-          <div class="profile-identity"><span class="large-avatar">${escapeHtml(userName.slice(0, 1).toUpperCase())}</span><div><h2>${escapeHtml(userName)}</h2><p>${escapeHtml(data.user.position)} · ${escapeHtml(data.user.experience)}</p>${pill(data.user.goal.toUpperCase(), "lime")}</div></div>
+          <div class="profile-identity"><span class="large-avatar">${escapeHtml(userName.slice(0, 1).toUpperCase())}</span><div><h2>${escapeHtml(userName)}</h2><p>${escapeHtml(data.user.ageGroup)} · ${escapeHtml(data.user.position)} · ${escapeHtml(data.user.experience)}</p>${pill(data.user.goal.toUpperCase(), "lime")}</div></div>
           <div class="profile-facts"><div><span>Availability</span><strong>${data.user.availability.length} days / week</strong></div><div><span>Equipment</span><strong>${data.user.equipment.length} options</strong></div></div>
         </section>
         <section class="settings-card">
           <span class="settings-label">TRAINING SETUP</span>
           ${settingsRow("profile", "Athlete details", "Position, experience, primary goal")}
-          ${settingsRow("week", "Team schedule", `${data.schedule.practiceDay} practice · ${data.schedule.matchDay} match`, "edit-schedule")}
+          ${settingsRow("week", "Team schedule", commitmentSummary(data.schedule), "edit-schedule")}
           ${settingsRow("bolt", "Equipment & availability", "What you can use and when")}
           <span class="settings-label">PREFERENCES & DATA</span>
           <button type="button" data-action="toggle-notifications"><span class="settings-icon">${icon("today")}</span><span><strong>Check-in reminders</strong><small>${ui.notifications ? "On · before optional training" : "Off"}</small></span><span class="toggle ${ui.notifications ? "on" : ""}"><i></i></span></button>
@@ -1050,10 +1349,10 @@ function renderScheduleEditor() {
     <main class="focused-page">
       <header class="focused-header"><button type="button" class="icon-button" data-action="back-profile" aria-label="Back">${icon("back")}</button><span class="focused-title">Team schedule</span><span></span></header>
       <section class="form-shell schedule-editor">
-        <span class="section-kicker">FIXED COMMITMENTS</span><h1>Keep the week accurate.</h1><p class="lead">Changes here may reshape optional sessions. You will review everything before it is applied.</p>
+        <span class="section-kicker">FIXED COMMITMENTS</span><h1>Keep the week accurate.</h1><p class="lead">Add, remove, or leave both commitment types empty. Changes may reshape optional routines, and you will review them first.</p>
         ${scheduleCard("TEAM PRACTICE", "practice", schedule, "schedule")}
         ${scheduleCard("MATCH", "match", schedule, "schedule")}
-        <div class="info-card">${icon("shield")}<div><strong>Fixed means fixed</strong><p>PureAthletic can move optional sessions around these entries, but never moves team commitments automatically.</p></div></div>
+        <div class="info-card">${icon("shield")}<div><strong>Fixed means fixed</strong><p>PureAthletic can move optional sessions around entries you add, but never moves those commitments automatically.</p></div></div>
         ${button("Review schedule changes", "preview-schedule")}
       </section>
     </main>`;
@@ -1146,15 +1445,35 @@ function enterDemo() {
  * `...clone(demoState)` uses spread syntax to copy all demo properties first;
  * the properties below it then replace onboarded, user, and schedule.
  */
-function finishOnboarding() {
+async function finishOnboarding() {
+  if (ui.generatingPlan) return;
+
+  ui.generatingPlan = true;
+  render();
+
   const user = clone(ui.onboardingForm);
   user.name = user.name.trim() || "Sam";
+  if (user.experience === "Advanced") user.experience = "Beginner";
+
+  const catalog = await youthRecommendationDataPromise;
+  const recommendation = catalog
+    ? recommendationFromCatalog(user, catalog)
+    : fallbackRecommendation(user);
+  const schedule = clone(ui.onboardingSchedule);
+
   data = {
     ...clone(demoState),
     onboarded: true,
     user,
-    schedule: clone(ui.onboardingSchedule)
+    recommendation,
+    schedule,
+    plan: planWithRecommendationAndSchedule(
+      recommendation,
+      schedule,
+      clone(initialPlan)
+    )
   };
+  ui.generatingPlan = false;
   saveData();
   setScreen("today");
 }
@@ -1174,14 +1493,14 @@ function submitCheckIn() {
     kind = "severe";
     recommendation = { ...recommendation, type: "Safety", title: "Stop training and seek advice", status: "Safety", duration: 0, purpose: "Severe pain was reported. No workout is recommended." };
     adjustment = { id: Date.now(), title: "Workout removed for severe pain", reason: "Safety rule · severe pain", undoable: false };
-  } else if (form.pain === "Moderate") {
-    kind = "moderate";
-    recommendation = { ...recommendation, type: "Safety", title: "Intense training removed", status: "Safety", duration: 0, purpose: "Moderate pain was reported. Review conservative guidance before deciding what to do." };
-    adjustment = { id: Date.now(), title: "Intense workout removed", reason: "Safety rule · moderate pain", undoable: false };
+  } else if (form.pain !== "None") {
+    kind = "pain";
+    recommendation = { ...recommendation, type: "Safety", title: "Pause training and tell an adult", status: "Safety", duration: 0, purpose: `${form.pain} pain was reported. Automated junior training is paused for responsible-adult review.` };
+    adjustment = { id: Date.now(), title: "Workout paused after pain report", reason: `Safety rule · ${form.pain.toLowerCase()} pain`, undoable: false };
   } else if (form.sleep <= 2 && form.energy <= 2) {
     kind = "poor";
     recommendation = { ...recommendation, type: "Recovery", title: "Mobility + recovery", status: "Recovery", duration: 20, intensity: "Easy", purpose: "Low sleep and energy make a lighter recovery session the better fit today." };
-    adjustment = { id: Date.now(), title: "Strength replaced with recovery", reason: "Very poor readiness", undoable: true, beforeRecommendation: data.recommendation };
+    adjustment = { id: Date.now(), title: "Planned routine replaced with recovery", reason: "Very poor readiness", undoable: true, beforeRecommendation: data.recommendation };
   }
 
   /*
@@ -1205,9 +1524,9 @@ function submitCheckIn() {
 function openLog(unplanned, status = "Completed") {
   ui.logConfig = { unplanned, status };
   ui.logForm = {
-    type: unplanned ? "Team practice" : "Strength",
+    type: unplanned ? "Team practice" : data.recommendation.type,
     status: unplanned ? "Completed" : status,
-    duration: unplanned ? 75 : 42,
+    duration: unplanned ? 75 : data.recommendation.duration,
     effort: unplanned ? 8 : 6,
     pain: "None",
     notes: ""
@@ -1232,20 +1551,20 @@ function saveActivity() {
   const plan = data.plan.map((item) => item.id === "tue" && !ui.logConfig.unplanned ? { ...item, status: form.status } : item);
   const nextData = { ...data, activities, plan };
 
-  // Moderate or severe pain takes the safety route and ends this function early.
-  if (["Moderate", "Severe"].includes(form.pain)) {
+  // Any reported pain takes the junior safety route and ends this function early.
+  if (form.pain !== "None") {
     const severe = form.pain === "Severe";
     nextData.recommendation = {
       ...data.recommendation,
       type: "Safety",
-      title: severe ? "Stop training and seek advice" : "Intense training removed",
+      title: severe ? "Stop training and seek advice" : "Pause training and tell an adult",
       status: "Safety",
       duration: 0,
       purpose: `${form.pain} pain was reported after activity. Review the safety guidance.`
     };
     nextData.adjustments = [{ id: Date.now() + 1, title: "Future intense work restricted", reason: `Safety rule · ${form.pain.toLowerCase()} pain`, undoable: false }, ...data.adjustments];
     data = nextData;
-    ui.outcome = severe ? "severe" : "moderate";
+    ui.outcome = severe ? "severe" : "pain";
     saveData();
     setScreen("outcome");
     return;
@@ -1271,10 +1590,19 @@ function saveActivity() {
 function applyAdjustment() {
   const pending = ui.pending;
   if (pending.kind === "schedule") {
-    const updatedPlan = data.plan.map((item) => item.id === "sat"
-      ? { ...item, day: `${pending.schedule.matchDay.slice(0, 3).toUpperCase()} · UPDATED`, time: pending.schedule.matchTime }
-      : item);
-    const adjustment = { id: Date.now(), title: `Match moved to ${pending.schedule.matchDay}`, reason: "Team schedule changed", undoable: true, beforePlan: data.plan, beforeSchedule: data.schedule };
+    const updatedPlan = planWithRecommendationAndSchedule(
+      data.recommendation,
+      pending.schedule,
+      data.plan
+    );
+    const adjustment = {
+      id: Date.now(),
+      title: "Fixed commitments updated",
+      reason: commitmentSummary(pending.schedule),
+      undoable: true,
+      beforePlan: data.plan,
+      beforeSchedule: data.schedule
+    };
     data = { ...data, schedule: pending.schedule, plan: updatedPlan, adjustments: [adjustment, ...data.adjustments] };
   } else {
     const updatedPlan = data.plan.map((item) => item.id === "wed"
@@ -1399,6 +1727,7 @@ app.addEventListener("click", (event) => {
     ui.onboardingStep = 1;
     ui.onboardingForm = clone(onboardingSeed.user);
     ui.onboardingSchedule = clone(demoState.schedule);
+    ui.generatingPlan = false;
     setScreen("onboarding");
   } else if (action === "enter-demo") {
     enterDemo();
@@ -1415,14 +1744,27 @@ app.addEventListener("click", (event) => {
       ui.onboardingStep += 1;
       render();
     } else {
-      finishOnboarding();
+      void finishOnboarding();
     }
   } else if (action === "set-experience") {
+    if (target.dataset.value === "Advanced") return;
     ui.onboardingForm.experience = target.dataset.value;
     syncSelectedButtons("set-experience", target.dataset.value);
   } else if (action === "set-goal") {
     ui.onboardingForm.goal = target.dataset.value;
     syncSelectedButtons("set-goal", target.dataset.value);
+  } else if (action === "add-commitment" || action === "remove-commitment") {
+    const scheduleScopes = {
+      onboardingSchedule: ui.onboardingSchedule,
+      schedule: ui.scheduleForm
+    };
+    const schedule = scheduleScopes[target.dataset.scope];
+    const prefix = target.dataset.prefix;
+
+    if (schedule && ["practice", "match"].includes(prefix)) {
+      schedule[`${prefix}Enabled`] = action === "add-commitment";
+      render();
+    }
   } else if (action === "navigate") {
     setScreen(target.dataset.screen);
   } else if (action === "open-checkin") {
@@ -1437,11 +1779,11 @@ app.addEventListener("click", (event) => {
     syncSelectedButtons("set-checkin-pain", target.dataset.value);
     const painField = target.closest(".pain-field");
     const existingWarning = painField.querySelector(".inline-warning");
-    const needsWarning = ["Moderate", "Severe"].includes(target.dataset.value);
+    const needsWarning = target.dataset.value !== "None";
     if (needsWarning && !existingWarning) {
       painField.insertAdjacentHTML(
         "beforeend",
-        `<p class="inline-warning">${icon("alert", 17)} This will replace intense optional training with conservative safety guidance.</p>`
+        `<p class="inline-warning">${icon("alert", 17)} Any reported pain pauses automated junior training and asks for responsible-adult review.</p>`
       );
     } else if (!needsWarning && existingWarning) {
       existingWarning.remove();
@@ -1450,7 +1792,7 @@ app.addEventListener("click", (event) => {
     submitCheckIn();
   } else if (action === "review-safety") {
     // Optional chaining (?.) safely reads pain even if checkIn does not exist.
-    ui.outcome = data.checkIn?.pain === "Severe" ? "severe" : "moderate";
+    ui.outcome = data.checkIn?.pain === "Severe" ? "severe" : "pain";
     setScreen("safety");
   } else if (action === "continue-outcome") {
     setScreen(ui.outcome === "good" ? "workout" : "today");

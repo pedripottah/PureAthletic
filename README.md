@@ -37,9 +37,41 @@ Supporting product-foundation documents:
 - [V1 User Flow](docs/user-flow.md)
 - [V1 Low-Fidelity Wireframes](docs/low-fidelity-wireframes.md)
 
+## U5–U17 training foundation
+
+The active research catalog for healthy U5–U17 footballers is stored in
+[`data/youth-football`](data/youth-football). It separates:
+
+- 17 reviewed source records and five distilled design principles;
+- four developmental age bands;
+- Beginner, Intermediate, and research-only Advanced progressions;
+- five primary goals;
+- 20 original age-band × goal routine outlines; and
+- a 60-combination recommendation index.
+
+Beginner and Intermediate recommendations are connected to onboarding.
+Advanced data remains organized in the catalog but is deliberately unavailable
+in the interface and selector. The earlier technique-first U12–U17 safety
+prototype remains in [`data/junior`](data/junior) while the new catalog is
+reviewed.
+
+Practitioner, safeguarding, privacy, legal, guardian-consent, and minor-account
+release gates are documented in the
+[Junior Training Content Standard](docs/junior-training-content-standard.md).
+
+Validate the content and recommendation behavior with:
+
+```bash
+npm run validate:training
+npm test
+```
+
 ## Who is it for?
 
-The first version is focused on adult amateur football players who train with a team and independently but do not have access to a personal strength and conditioning coach. Supporting other sports and junior athletes remains part of the long-term vision.
+The current research prototype is focused on junior footballers in team age
+groups U5–U17, with parent or guardian approval. It is not ready for an
+unsupervised public release involving minors; the documented practitioner,
+safeguarding, consent, privacy, and legal release gates still apply.
 
 ## Why PureAthletic?
 

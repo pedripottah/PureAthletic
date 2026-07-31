@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "draft_practitioner_legal_and_safeguarding_review_required",
+  "population": {
+    "minimumAge": 12,
+    "maximumAge": 17,
+    "guardianPermissionRequired": true,
+    "consentRecordRequiredBeforeRelease": true
+  },
+  "sources": [
+    {
+      "title": "WHO Guidelines on physical activity and sedentary behaviour",
+      "url": "https://www.who.int/publications/i/item/9789240014886"
+    },
+    {
+      "title": "CDC Physical Activity Guidelines for School-Aged Children and Adolescents",
+      "url": "https://www.cdc.gov/physical-activity-education/guidelines/index.html"
+    },
+    {
+      "title": "AAP Resistance Training for Children and Adolescents",
+      "url": "https://publications.aap.org/pediatrics/article/145/6/e20201011/76942/Resistance-Training-for-Children-and-Adolescents"
+    },
+    {
+      "title": "FIFA Ages 12-15: Optimising warm-ups",
+      "url": "https://www.fifatrainingcentre.com/en/practice/grassroots/grassroots-and-youth-football-essentials/grassroots-coaching-essentials/optimising-warm-ups-u12-to-u15.php"
+    }
+  ],
+  "releaseGates": {
+    "qualifiedSportsPractitionerReview": true,
+    "childSafeguardingReview": true,
+    "jurisdictionSpecificPrivacyReview": true,
+    "guardianConsentFlow": true,
+    "minorAccountAndCommunicationControls": true
+  },
+  "hardStops": {
+    "painLevelsRequiringAdultReview": ["mild", "moderate", "severe"],
+    "healthConcernRequiresAdultReview": true,
+    "redFlagSymptomsRequireAdultReview": true,
+    "redFlagSymptoms": [
+      "chest_pain",
+      "fainting",
+      "dizziness",
+      "unusual_shortness_of_breath",
+      "new_or_worsening_pain",
+      "feeling_unwell"
+    ],
+    "message": "Stop the session and tell a parent, guardian, coach, or another responsible adult. Seek advice from a qualified healthcare professional when appropriate."
+  },
+  "readinessRules": {
+    "lowEnergyAtOrBelow": 2,
+    "highSorenessAtOrAbove": 4,
+    "lowSleepAtOrBelow": 2,
+    "restrictedSessionTypes": ["recovery"],
+    "message": "Choose an easy recovery session or rest instead of adding a performance session."
+  },
+  "matchRules": {
+    "protectedWindowHours": 24,
+    "allowedSessionTypes": ["recovery", "technical"],
+    "maximumIntensity": "easy",
+    "maximumDurationMinutes": 25,
+    "message": "Keep activity easy close to a match and preserve energy for the fixed team commitment."
+  },
+  "recentLoadRules": {
+    "highLoadRecoveryWindowHours": 24,
+    "allowedSessionTypes": ["recovery", "technical"],
+    "maximumIntensity": "easy",
+    "message": "Avoid stacking another performance session within 24 hours of a high-load activity."
+  },
+  "weeklyRules": {
+    "maximumIndependentPerformanceSessions": 3,
+    "maximumStrengthSessions": 3,
+    "strengthSessionsShouldBeNonConsecutive": true,
+    "atLeastOneEasyOrRestDay": true,
+    "message": "The app should complement team football, school activity, rest, and free play rather than maximize extra sessions."
+  },
+  "sessionRules": {
+    "minimumDurationMinutes": 15,
+    "maximumDurationMinutes": 40,
+    "allowedIntensityLevels": ["easy", "moderate"],
+    "allowedTargetRpeMinimum": 2,
+    "allowedTargetRpeMaximum": 6,
+    "warmUpRequired": true,
+    "coolDownRequired": true
+  },
+  "supervisionRules": {
+    "qualifiedCoachSessionTypes": ["strength", "speed", "movement", "mixed"],
+    "guardianNearbySessionTypes": ["recovery", "technical", "conditioning"],
+    "message": "Strength, speed, and change-of-direction sessions require qualified adult supervision and technique feedback."
+  },
+  "progressionRules": {
+    "minimumSuccessfulSessionsBeforeProgression": 3,
+    "changeOneVariableAtATime": true,
+    "maximumResistanceIncreasePercent": 10,
+    "techniqueBeforeLoad": true,
+    "message": "Progress repetitions, duration, complexity, or resistance one at a time after consistently controlled sessions."
+  },
+  "prohibitedMethods": [
+    "one_repetition_maximum_testing",
+    "maximal_lifting",
+    "powerlifting",
+    "bodybuilding_programming",
+    "training_to_failure",
+    "punishment_exercise",
+    "unsupervised_loaded_strength_training",
+    "all_out_conditioning_tests"
+  ],
+  "contentBoundaries": {
+    "medicalDiagnosis": false,
+    "injuryRehabilitation": false,
+    "returnToPlayClearance": false,
+    "weightLossPrescription": false,
+    "supplementAdvice": false,
+    "guaranteedPerformanceClaims": false
+  },
+  "requiredMessages": {
+    "general": "These sessions are general training guidance for healthy youth footballers and are not medical care.",
+    "guardian": "A parent or guardian must approve participation and know when and where the session is taking place.",
+    "stop": "Stop immediately if pain, dizziness, faintness, chest discomfort, unusual breathing difficulty, or feeling unwell occurs.",
+    "supervision": "Use the supervision level shown for the routine. Technique quality matters more than repetitions, speed, or resistance."
+  }
+}

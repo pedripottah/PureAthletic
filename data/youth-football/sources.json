@@ -1,0 +1,207 @@
+{
+  "schemaVersion": "1.0.0",
+  "reviewedOn": "2026-07-31",
+  "methodology": {
+    "summary": "PureAthletic stores distilled, original training principles rather than copying proprietary drills. Governing-body and pediatric guidance defines safety boundaries. Coaching platforms inform age grouping, progression, and content organization.",
+    "sourcePriority": [
+      "governing_body",
+      "medical_and_public_health",
+      "coach_education_platform"
+    ],
+    "copyrightBoundary": "Do not reproduce paid session plans, diagrams, videos, or substantial source text. Store short factual summaries, source links, and original routine designs only."
+  },
+  "sources": [
+    {
+      "id": "fifa-grassroots-library-2026",
+      "publisher": "FIFA Training Centre",
+      "title": "Grassroots and youth football",
+      "url": "https://www.fifatrainingcentre.com/en/practice/grassroots.php",
+      "sourceType": "governing_body",
+      "appliesTo": ["u5-u8", "u9-u12", "u13-u15"],
+      "usedFor": ["age-specific design", "inclusive play", "session structure"]
+    },
+    {
+      "id": "fifa-play-practice-play-4-8",
+      "publisher": "FIFA Training Centre",
+      "title": "Ages 4-8: An introduction to Play-Practice-Play",
+      "url": "https://www.fifatrainingcentre.com/en/practice/grassroots/grassroots-and-youth-football-essentials/grassroots-coaching-essentials/an-introduction-to-play-practice-play.php",
+      "sourceType": "governing_body",
+      "publishedOn": "2025-11-04",
+      "appliesTo": ["u5-u8"],
+      "usedFor": ["play-led structure", "small-sided activity", "decision-making"]
+    },
+    {
+      "id": "fifa-ball-control-4-8",
+      "publisher": "FIFA Training Centre",
+      "title": "Ages 4-8: Coaching children to master ball control",
+      "url": "https://www.fifatrainingcentre.com/en/practice/grassroots/grassroots-and-youth-football-essentials/grassroots-coaching-essentials/coaching-children-to-master-ball-control.php",
+      "sourceType": "governing_body",
+      "publishedOn": "2025-09-23",
+      "appliesTo": ["u5-u8"],
+      "usedFor": ["frequent ball contact", "simple progression", "positive experimentation"]
+    },
+    {
+      "id": "fifa-numeric-progression-8-12",
+      "publisher": "FIFA Training Centre",
+      "title": "Ages 8-12: Learning through numeric progression games",
+      "url": "https://www.fifatrainingcentre.com/en/practice/grassroots/grassroots-and-youth-football-essentials/grassroots-coaching-essentials/learning-through-numeric-progression-games.php",
+      "sourceType": "governing_body",
+      "publishedOn": "2025-06-17",
+      "appliesTo": ["u9-u12"],
+      "usedFor": ["small-sided problem-solving", "simple tactics", "role rotation", "recovery breaks"]
+    },
+    {
+      "id": "fifa-progressive-method-12-15",
+      "publisher": "FIFA Training Centre",
+      "title": "Ages 12-15: Introduction to the progressive methodology",
+      "url": "https://www.fifatrainingcentre.com/en/practice/grassroots/grassroots-and-youth-football-essentials/grassroots-coaching-essentials/introduction-to-the-progressive-methodology.php",
+      "sourceType": "governing_body",
+      "publishedOn": "2025-08-26",
+      "appliesTo": ["u13-u15"],
+      "usedFor": ["technical foundation", "tactical introduction", "game application"]
+    },
+    {
+      "id": "fifa-warmups-12-15",
+      "publisher": "FIFA Training Centre",
+      "title": "Ages 12-15: Optimising warm-ups",
+      "url": "https://www.fifatrainingcentre.com/en/practice/grassroots/grassroots-and-youth-football-essentials/grassroots-coaching-essentials/optimising-warm-ups-u12-to-u15.php",
+      "sourceType": "governing_body",
+      "publishedOn": "2025-03-25",
+      "appliesTo": ["u13-u15", "u16-u17"],
+      "usedFor": ["dynamic activation", "gradual intensity", "football-specific transition"]
+    },
+    {
+      "id": "fifa-youth-strength-2026",
+      "publisher": "FIFA Training Centre",
+      "title": "Athleticism for young players: Functional lower-body strength",
+      "url": "https://www.fifatrainingcentre.com/en/practice/training-perspectives/athleticism-for-young-players/athleticism-for-young-players-functional-lower-body-strength.php",
+      "sourceType": "governing_body",
+      "publishedOn": "2026-01-06",
+      "appliesTo": ["u13-u15", "u16-u17"],
+      "usedFor": ["compact athleticism", "unilateral control", "technique before progression"]
+    },
+    {
+      "id": "fifa-youth-mobility-strength-2026",
+      "publisher": "FIFA Training Centre",
+      "title": "Athleticism for young players: Mobility and strength progressions",
+      "url": "https://www.fifatrainingcentre.com/en/practice/training-perspectives/athleticism-for-young-players/athleticism-for-young-players-mobility-and-strength-progressions.php",
+      "sourceType": "governing_body",
+      "publishedOn": "2026-07-28",
+      "appliesTo": ["u16-u17"],
+      "usedFor": ["bodyweight foundations", "controlled progression", "short football-compatible sessions"]
+    },
+    {
+      "id": "tcm-age-curricula",
+      "publisher": "The Coaching Manual",
+      "title": "Age-appropriate season curriculums",
+      "url": "https://www.thecoachingmanual.com/season-plan-curriculums-1",
+      "sourceType": "coach_education_platform",
+      "appliesTo": ["u5-u8", "u9-u12", "u13-u15", "u16-u17"],
+      "usedFor": ["age-specific curriculum", "gradual improvement", "ball mastery"]
+    },
+    {
+      "id": "tcm-age-philosophy",
+      "publisher": "The Coaching Manual",
+      "title": "How to choose a playing philosophy when coaching youth soccer",
+      "url": "https://content.thecoachingmanual.com/blog/how-to-choose-a-playing-philosophy-when-coaching-youth-soccer",
+      "sourceType": "coach_education_platform",
+      "publishedOn": "2019-08-28",
+      "appliesTo": ["u5-u8", "u9-u12", "u13-u15", "u16-u17"],
+      "usedFor": ["broad development bands", "fun before results", "age-adjusted complexity"]
+    },
+    {
+      "id": "football-dna-age-courses",
+      "publisher": "Football DNA",
+      "title": "Age-group coaching courses",
+      "url": "https://footballdna.co.uk/coaching-courses/",
+      "sourceType": "coach_education_platform",
+      "appliesTo": ["u5-u8", "u9-u12", "u13-u15", "u16-u17"],
+      "usedFor": ["developmental grouping", "behavioural needs", "technical progression"]
+    },
+    {
+      "id": "easy2coach-age-filtering",
+      "publisher": "easy2coach",
+      "title": "The right exercise for every age group",
+      "url": "https://www.easy2coach.net/academy/training/uebungen-altersklasse/",
+      "sourceType": "coach_education_platform",
+      "appliesTo": ["u5-u8", "u9-u12", "u13-u15", "u16-u17"],
+      "usedFor": ["filter by age", "filter by focus", "equipment and space metadata"]
+    },
+    {
+      "id": "easy2coach-session-structure",
+      "publisher": "easy2coach",
+      "title": "Football session planner",
+      "url": "https://www.easy2coach.net/en/training/",
+      "sourceType": "coach_education_platform",
+      "appliesTo": ["u5-u8", "u9-u12", "u13-u15", "u16-u17"],
+      "usedFor": ["warm-up-main-finish organization", "level tags", "session reuse"]
+    },
+    {
+      "id": "aap-youth-resistance-2020",
+      "publisher": "American Academy of Pediatrics",
+      "title": "Resistance Training for Children and Adolescents",
+      "url": "https://publications.aap.org/pediatrics/article/145/6/e20201011/76942/Resistance-Training-for-Children-and-Adolescents",
+      "sourceType": "medical_and_public_health",
+      "publishedOn": "2020-06-01",
+      "appliesTo": ["u9-u12", "u13-u15", "u16-u17"],
+      "usedFor": ["qualified supervision", "technique-first loading", "low-resistance beginner work"]
+    },
+    {
+      "id": "who-under-five-activity",
+      "publisher": "World Health Organization",
+      "title": "Guidelines on physical activity, sedentary behaviour and sleep for children under 5 years of age",
+      "url": "https://www.who.int/publications/i/item/9789241550536",
+      "sourceType": "medical_and_public_health",
+      "publishedOn": "2019-04-24",
+      "appliesTo": ["u5-u8"],
+      "usedFor": ["play-based movement", "whole-day activity context"]
+    },
+    {
+      "id": "who-youth-activity-5-17",
+      "publisher": "World Health Organization",
+      "title": "WHO guidelines on physical activity and sedentary behaviour",
+      "url": "https://www.who.int/publications/i/item/9789240014886",
+      "sourceType": "medical_and_public_health",
+      "publishedOn": "2020-11-25",
+      "appliesTo": ["u5-u8", "u9-u12", "u13-u15", "u16-u17"],
+      "usedFor": ["whole-day activity context", "age-appropriate enjoyable activity"]
+    },
+    {
+      "id": "fa-youth-heading-2024",
+      "publisher": "The Football Association",
+      "title": "Phase-out of deliberate heading in grassroots youth football",
+      "url": "https://www.thefa.com/news/2024/may/17/new-heading-rules-for-grassroots-football-youth-matches",
+      "sourceType": "governing_body",
+      "publishedOn": "2024-05-17",
+      "appliesTo": ["u5-u8", "u9-u12"],
+      "usedFor": ["exclude deliberate heading from younger routines"]
+    }
+  ],
+  "principles": [
+    {
+      "id": "play-led-foundation",
+      "summary": "For U5-U8, keep instructions short and use enjoyable play, frequent ball contact, exploration, and simple repetition.",
+      "sourceIds": ["fifa-play-practice-play-4-8", "fifa-ball-control-4-8", "tcm-age-philosophy"]
+    },
+    {
+      "id": "small-sided-problem-solving",
+      "summary": "For U9-U12, use high-involvement game-like tasks, simple numerical problems, role rotation, and sufficient recovery.",
+      "sourceIds": ["fifa-numeric-progression-8-12", "football-dna-age-courses"]
+    },
+    {
+      "id": "progressive-game-application",
+      "summary": "For U13-U15, move from technical confidence to guided tactical decisions and then game application.",
+      "sourceIds": ["fifa-progressive-method-12-15", "fifa-warmups-12-15"]
+    },
+    {
+      "id": "compact-athletic-development",
+      "summary": "For U16-U17, add short supervised mobility, core, unilateral strength, acceleration, and deceleration work that complements football.",
+      "sourceIds": ["fifa-youth-strength-2026", "fifa-youth-mobility-strength-2026", "aap-youth-resistance-2020"]
+    },
+    {
+      "id": "age-goal-level-filtering",
+      "summary": "Every recommendation must be filtered by age band, primary goal, experience, equipment, space, supervision, and schedule before ranking.",
+      "sourceIds": ["easy2coach-age-filtering", "easy2coach-session-structure", "tcm-age-curricula"]
+    }
+  ]
+}

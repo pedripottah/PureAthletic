@@ -85,8 +85,8 @@ Use visible text labels with any supporting icon:
 │  ✓ Adjusts when your week changes   │
 │  ✓ Explains every recommendation    │
 │                                     │
-│  General training guidance for      │
-│  adults aged 18 or older.           │
+│  General U5–U17 guidance with       │
+│  parent or guardian approval.       │
 └─────────────────────────────────────┘
 ```
 
@@ -155,7 +155,7 @@ Onboarding progress is saved after every step. Back navigation preserves all ent
 │                                     │
 │  Before we build your plan          │
 │                                     │
-│  [ ] I confirm I am 18 or older.    │
+│  [ ] Parent/guardian approves this. │
 │                                     │
 │  PureAthletic provides general      │
 │  training guidance. It does not     │
@@ -168,7 +168,9 @@ Onboarding progress is saved after every step. Back navigation preserves all ent
 └─────────────────────────────────────┘
 ```
 
-If the athlete cannot confirm they are at least 18, do not continue. Explain that the private beta is currently available only to adults and provide a route back to the landing page.
+Do not continue without parent or guardian approval. Public release remains
+blocked until the minor-specific practitioner, safeguarding, consent, privacy,
+legal, and account-control reviews are complete.
 
 ### WF-04 — Athlete basics
 
@@ -182,13 +184,16 @@ If the athlete cannot confirm they are at least 18, do not continue. Explain tha
 │  Preferred name                     │
 │  [_______________________________]  │
 │                                     │
+│  Team age group                     │
+│  [ U13                         ▾ ]  │
+│                                     │
 │  Position                           │
 │  [ Goalkeeper                  ▾ ]  │
 │                                     │
 │  Training experience               │
 │  ( ) Beginner                      │
 │  ( ) Intermediate                  │
-│  ( ) Advanced                      │
+│  (x) Advanced — In development     │
 │                                     │
 │  [ Continue ]                       │
 └─────────────────────────────────────┘

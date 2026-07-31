@@ -1,0 +1,405 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "draft_practitioner_review_required",
+  "population": {
+    "minimumAge": 12,
+    "maximumAge": 17
+  },
+  "sources": [
+    {
+      "title": "CDC Physical Activity Guidelines for School-Aged Children and Adolescents",
+      "url": "https://www.cdc.gov/physical-activity-education/guidelines/index.html"
+    },
+    {
+      "title": "AAP Resistance Training for Children and Adolescents",
+      "url": "https://publications.aap.org/pediatrics/article/145/6/e20201011/76942/Resistance-Training-for-Children-and-Adolescents"
+    },
+    {
+      "title": "FIFA Ages 12-15: Optimising warm-ups",
+      "url": "https://www.fifatrainingcentre.com/en/practice/grassroots/grassroots-and-youth-football-essentials/grassroots-coaching-essentials/optimising-warm-ups-u12-to-u15.php"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "easy-march-jog",
+      "name": "Easy march and jog",
+      "category": "warm_up",
+      "requiredEquipment": [],
+      "supervision": "guardian_nearby",
+      "instructions": [
+        "March forward for 30 seconds, then jog easily for 30 seconds.",
+        "Repeat while staying relaxed and able to speak in short sentences."
+      ],
+      "coachingCues": ["Stand tall", "Land quietly", "Build speed gradually"],
+      "defaultDose": {
+        "rounds": 3,
+        "workSeconds": 60,
+        "restSeconds": 15
+      },
+      "easierOption": "March for the whole interval.",
+      "harderOption": "Add gentle direction changes without increasing to an all-out pace."
+    },
+    {
+      "id": "dynamic-mobility-flow",
+      "name": "Dynamic mobility flow",
+      "category": "warm_up",
+      "requiredEquipment": [],
+      "supervision": "guardian_nearby",
+      "instructions": [
+        "Perform ankle rocks, hip openers, arm circles, and controlled leg swings.",
+        "Move continuously and stay within a comfortable range."
+      ],
+      "coachingCues": ["Move slowly at first", "No bouncing into range", "Keep movements comfortable"],
+      "defaultDose": {
+        "rounds": 1,
+        "workSeconds": 240,
+        "restSeconds": 0
+      },
+      "easierOption": "Use a smaller range of motion.",
+      "harderOption": "Add a slow walking lunge with an easy reach."
+    },
+    {
+      "id": "ball-foundation-touches",
+      "name": "Ball foundation touches",
+      "category": "technical",
+      "requiredEquipment": ["football", "open_space"],
+      "supervision": "guardian_nearby",
+      "instructions": [
+        "Alternate inside touches, outside touches, and sole rolls.",
+        "Keep the ball close and work with both feet."
+      ],
+      "coachingCues": ["Small controlled touches", "Look up regularly", "Use both feet"],
+      "defaultDose": {
+        "rounds": 4,
+        "workSeconds": 45,
+        "restSeconds": 30
+      },
+      "easierOption": "Walk and pause between touch patterns.",
+      "harderOption": "Use a smaller space while keeping control."
+    },
+    {
+      "id": "wall-pass-first-touch",
+      "name": "Wall pass and first touch",
+      "category": "technical",
+      "requiredEquipment": ["football", "wall_or_partner"],
+      "supervision": "guardian_nearby",
+      "instructions": [
+        "Pass against a safe wall or to a partner.",
+        "Use the first touch to move the ball slightly to the side, then pass again."
+      ],
+      "coachingCues": ["Plant foot beside the ball", "Receive softly", "Alternate feet"],
+      "defaultDose": {
+        "rounds": 4,
+        "workSeconds": 60,
+        "restSeconds": 30
+      },
+      "easierOption": "Stop the ball before each pass.",
+      "harderOption": "Use two touches while maintaining accuracy."
+    },
+    {
+      "id": "cone-dribble-turn",
+      "name": "Marker dribble and turn",
+      "category": "technical",
+      "requiredEquipment": ["football", "markers", "open_space"],
+      "supervision": "guardian_nearby",
+      "instructions": [
+        "Dribble to a marker, perform a controlled turn, and return.",
+        "Change the turning foot each repetition."
+      ],
+      "coachingCues": ["Slow down before the turn", "Keep the ball within reach", "Accelerate smoothly after turning"],
+      "defaultDose": {
+        "rounds": 6,
+        "distanceMetres": 8,
+        "restSeconds": 20
+      },
+      "easierOption": "Walk through the turn.",
+      "harderOption": "Use a different turn each repetition."
+    },
+    {
+      "id": "bodyweight-box-squat",
+      "name": "Bodyweight squat to target",
+      "category": "strength",
+      "requiredEquipment": ["stable_target"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Stand in front of a stable bench or chair with feet around shoulder width.",
+        "Sit back under control, touch the target lightly, then stand tall."
+      ],
+      "coachingCues": ["Knees follow toes", "Whole foot stays down", "Stop the set before technique changes"],
+      "defaultDose": {
+        "sets": 2,
+        "repetitions": 10,
+        "restSeconds": 60
+      },
+      "easierOption": "Use a higher target and fewer repetitions.",
+      "harderOption": "Lower the target slightly while keeping the same control."
+    },
+    {
+      "id": "supported-reverse-lunge",
+      "name": "Supported reverse lunge",
+      "category": "strength",
+      "requiredEquipment": ["stable_support"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Hold a stable support and step one foot backward.",
+        "Lower only as far as comfortable, then push through the front foot to return."
+      ],
+      "coachingCues": ["Move straight down", "Front knee follows toes", "Keep the movement controlled"],
+      "defaultDose": {
+        "sets": 2,
+        "repetitionsPerSide": 6,
+        "restSeconds": 60
+      },
+      "easierOption": "Use a shorter step and smaller range.",
+      "harderOption": "Use less hand support without adding weight."
+    },
+    {
+      "id": "glute-bridge",
+      "name": "Glute bridge",
+      "category": "strength",
+      "requiredEquipment": ["exercise_mat"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Lie on the back with knees bent and feet flat.",
+        "Lift the hips until the body forms a comfortable straight line, pause, and lower."
+      ],
+      "coachingCues": ["Push through both feet", "Keep ribs relaxed", "Do not over-arch the back"],
+      "defaultDose": {
+        "sets": 2,
+        "repetitions": 10,
+        "restSeconds": 45
+      },
+      "easierOption": "Use a smaller lift.",
+      "harderOption": "Pause for two seconds at the top."
+    },
+    {
+      "id": "calf-raise",
+      "name": "Supported calf raise",
+      "category": "strength",
+      "requiredEquipment": ["stable_support"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Hold a stable support and rise onto the balls of both feet.",
+        "Pause briefly, then lower slowly."
+      ],
+      "coachingCues": ["Stay tall", "Keep weight even", "Use a controlled tempo"],
+      "defaultDose": {
+        "sets": 2,
+        "repetitions": 12,
+        "restSeconds": 45
+      },
+      "easierOption": "Use fewer repetitions.",
+      "harderOption": "Pause for two seconds at the top."
+    },
+    {
+      "id": "incline-push-up",
+      "name": "Incline push-up",
+      "category": "strength",
+      "requiredEquipment": ["stable_support"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Place hands on a stable raised surface and step back into a straight-body position.",
+        "Lower the chest toward the surface, then press away."
+      ],
+      "coachingCues": ["Keep the body in one line", "Elbows angle slightly back", "Choose a height that allows control"],
+      "defaultDose": {
+        "sets": 2,
+        "repetitions": 8,
+        "restSeconds": 60
+      },
+      "easierOption": "Use a higher surface.",
+      "harderOption": "Use a slightly lower surface."
+    },
+    {
+      "id": "resistance-band-row",
+      "name": "Resistance-band row",
+      "category": "strength",
+      "requiredEquipment": ["resistance_band", "secure_anchor"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Use a light band attached to a secure anchor checked by an adult.",
+        "Pull the handles toward the ribs, pause, and return slowly."
+      ],
+      "coachingCues": ["Stand tall", "Shoulders stay relaxed", "Use a light band that preserves technique"],
+      "defaultDose": {
+        "sets": 2,
+        "repetitions": 10,
+        "restSeconds": 60
+      },
+      "easierOption": "Use a lighter band or stand closer to the anchor.",
+      "harderOption": "Add two repetitions before increasing resistance."
+    },
+    {
+      "id": "dead-bug",
+      "name": "Dead bug",
+      "category": "strength",
+      "requiredEquipment": ["exercise_mat"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Lie on the back with arms up and knees bent.",
+        "Slowly lower the opposite arm and leg, return, and change sides."
+      ],
+      "coachingCues": ["Move slowly", "Keep the lower back comfortable", "Use a smaller range if needed"],
+      "defaultDose": {
+        "sets": 2,
+        "repetitionsPerSide": 6,
+        "restSeconds": 45
+      },
+      "easierOption": "Move only one arm or one leg at a time.",
+      "harderOption": "Pause briefly before returning."
+    },
+    {
+      "id": "side-plank-knees",
+      "name": "Side plank from knees",
+      "category": "strength",
+      "requiredEquipment": ["exercise_mat"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Lie on one side with knees bent and elbow beneath the shoulder.",
+        "Lift the hips, hold with normal breathing, then change sides."
+      ],
+      "coachingCues": ["Shoulder stays away from ear", "Body forms a straight line from head to knees", "Stop before shaking changes position"],
+      "defaultDose": {
+        "sets": 2,
+        "holdSecondsPerSide": 15,
+        "restSeconds": 45
+      },
+      "easierOption": "Hold for 10 seconds.",
+      "harderOption": "Build the hold toward 25 seconds."
+    },
+    {
+      "id": "single-leg-balance-reach",
+      "name": "Single-leg balance reach",
+      "category": "balance",
+      "requiredEquipment": ["stable_support"],
+      "supervision": "guardian_nearby",
+      "instructions": [
+        "Stand beside a support on one foot with the knee softly bent.",
+        "Reach the free foot forward, sideways, and backward, then change legs."
+      ],
+      "coachingCues": ["Use the support when needed", "Keep the standing knee aligned", "Move slowly"],
+      "defaultDose": {
+        "sets": 2,
+        "repetitionsPerDirectionPerSide": 4,
+        "restSeconds": 30
+      },
+      "easierOption": "Keep one hand on the support.",
+      "harderOption": "Use fingertip support only."
+    },
+    {
+      "id": "march-skip-mechanics",
+      "name": "March and skip mechanics",
+      "category": "speed",
+      "requiredEquipment": ["open_space"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "March for 10 metres with an opposite arm and knee action.",
+        "Return and repeat as a gentle skip without racing."
+      ],
+      "coachingCues": ["Tall posture", "Foot lands beneath the body", "Rhythm before speed"],
+      "defaultDose": {
+        "sets": 2,
+        "distanceMetres": 10,
+        "restSeconds": 40
+      },
+      "easierOption": "Use marching only.",
+      "harderOption": "Increase rhythm slightly while staying coordinated."
+    },
+    {
+      "id": "controlled-acceleration-10m",
+      "name": "Controlled 10-metre acceleration",
+      "category": "speed",
+      "requiredEquipment": ["markers", "open_space"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Start from a balanced athletic stance.",
+        "Accelerate smoothly for 10 metres at a fast but controlled effort, then walk back."
+      ],
+      "coachingCues": ["Push the ground behind", "Build speed smoothly", "Full walk-back recovery"],
+      "defaultDose": {
+        "repetitions": 4,
+        "distanceMetres": 10,
+        "restSeconds": 60
+      },
+      "easierOption": "Use a 6-metre acceleration at a moderate effort.",
+      "harderOption": "Add one repetition only after consistent technique."
+    },
+    {
+      "id": "deceleration-stick",
+      "name": "Deceleration and balance",
+      "category": "change_of_direction",
+      "requiredEquipment": ["markers", "open_space"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Jog toward a marker, slow down over several short steps, and finish balanced.",
+        "Hold the finish for two seconds before walking back."
+      ],
+      "coachingCues": ["Lower gradually", "Use several braking steps", "Knees follow toes"],
+      "defaultDose": {
+        "repetitions": 5,
+        "distanceMetres": 8,
+        "restSeconds": 40
+      },
+      "easierOption": "Approach at a slower jog.",
+      "harderOption": "Approach slightly faster without shortening the braking area."
+    },
+    {
+      "id": "lateral-shuffle-stick",
+      "name": "Lateral shuffle and balance",
+      "category": "change_of_direction",
+      "requiredEquipment": ["markers", "open_space"],
+      "supervision": "qualified_coach",
+      "instructions": [
+        "Shuffle sideways between two markers without crossing the feet.",
+        "Stop balanced at each marker and change direction."
+      ],
+      "coachingCues": ["Stay low but comfortable", "Push from the outside foot", "Control before speed"],
+      "defaultDose": {
+        "sets": 2,
+        "repetitionsPerSide": 4,
+        "distanceMetres": 4,
+        "restSeconds": 45
+      },
+      "easierOption": "Reduce the distance and move slowly.",
+      "harderOption": "Increase the pace slightly while keeping clean stops."
+    },
+    {
+      "id": "ball-tempo-interval",
+      "name": "Ball tempo interval",
+      "category": "conditioning",
+      "requiredEquipment": ["football", "markers", "open_space"],
+      "supervision": "guardian_nearby",
+      "instructions": [
+        "Dribble continuously around a simple marker course at a comfortable steady pace.",
+        "During recovery, walk with the ball and regain relaxed breathing."
+      ],
+      "coachingCues": ["Keep the ball controlled", "Use both feet", "Finish each interval able to continue with good technique"],
+      "defaultDose": {
+        "rounds": 6,
+        "workSeconds": 45,
+        "restSeconds": 45
+      },
+      "easierOption": "Use 30 seconds of work and 60 seconds of walking.",
+      "harderOption": "Add one interval before increasing pace."
+    },
+    {
+      "id": "easy-walk-cooldown",
+      "name": "Easy walk and reset",
+      "category": "cool_down",
+      "requiredEquipment": [],
+      "supervision": "guardian_nearby",
+      "instructions": [
+        "Walk slowly until breathing feels settled.",
+        "Finish with comfortable calf, thigh, and hip movements without forcing range."
+      ],
+      "coachingCues": ["Relax the shoulders", "Breathe normally", "Do not force stretches"],
+      "defaultDose": {
+        "rounds": 1,
+        "workSeconds": 240,
+        "restSeconds": 0
+      },
+      "easierOption": "Continue easy walking only.",
+      "harderOption": "No harder option is needed for a cooldown."
+    }
+  ]
+}

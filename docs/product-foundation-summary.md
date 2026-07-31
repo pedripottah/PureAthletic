@@ -4,11 +4,14 @@
 
 ## The product in one sentence
 
-PureAthletic helps adult amateur football players decide what training is appropriate to do next by creating a seven-day plan that responds to their schedule, completed activity, readiness, and pain feedback.
+PureAthletic helps junior footballers and their responsible adults decide what
+general training may be appropriate next by creating an age- and goal-aware
+seven-day plan that responds to fixed football commitments, completed activity,
+readiness, and pain feedback.
 
 ## Who V1 is for
 
-- Adults aged 18 or older
+- Team age groups U5–U17 with parent or guardian approval
 - Amateur football players
 - Athletes who have fixed team practices or matches
 - Athletes who also train independently

@@ -8,7 +8,7 @@
 
 | Decision | V1 choice | Status | Reason |
 | --- | --- | --- | --- |
-| Primary audience | Adults aged 18 or older who play amateur football, attend at least one team activity per week, and also train independently | Locked | This is specific enough to guide the product and avoids the safeguarding requirements associated with minors. |
+| Primary audience | Junior footballers in team age groups U5–U17, supported by a parent or guardian | Revised | Recommendations now require developmental age bands and minor-specific release gates. |
 | Primary user problem | Help the athlete decide what training is appropriate to do next around practices, matches, availability, and recovery | Locked | This is the clearest expression of the product's day-to-day value. |
 | Core product promise | Keep the athlete's next seven days realistic, balanced, and responsive to what they actually do | Locked | It keeps the experience focused on practical planning rather than broad performance analysis. |
 | Private-beta focus | Recruit athletes primarily interested in match readiness | Proposed; validate in interviews | Match readiness connects the plan directly to football commitments and makes the adaptive value easy to evaluate. |
@@ -30,7 +30,7 @@
 
 Onboarding will be a short, resumable sequence:
 
-1. Confirm age eligibility and accept the training-guidance disclaimer.
+1. Confirm parent or guardian approval and accept the training-guidance disclaimer.
 2. Enter preferred name, football position, and training experience.
 3. Choose one primary goal.
 4. Add recurring team practices and upcoming matches.
@@ -41,7 +41,7 @@ Onboarding will be a short, resumable sequence:
 
 | Decision | V1 choice | Status | Reason |
 | --- | --- | --- | --- |
-| Eligibility | Users must confirm they are at least 18 before proceeding | Locked | Minors are excluded from the private beta. |
+| Eligibility | Select a U5–U17 team age group and confirm parent or guardian approval | Revised | Public release remains blocked by practitioner, safeguarding, consent, privacy, legal, and minor-account reviews. |
 | Required fields | Require only information needed to generate a safe and useful plan | Locked | This supports the principle of minimizing data entry. |
 | Free text | Optional only; structured choices must be enough to generate a plan | Locked | Free text is harder to validate and may contain unnecessary sensitive information. |
 | Completion target | A typical athlete should finish onboarding in five minutes or less | Proposed; validate in usability tests | A short setup reduces abandonment while still gathering necessary planning inputs. |
@@ -181,4 +181,6 @@ The detailed [user flow](user-flow.md) and [low-fidelity wireframes](low-fidelit
 - Weekly review
 - Schedule editing and plan recalculation
 
-The next step is to turn the six routes defined in the low-fidelity wireframes into a clickable grayscale prototype and test them with representative adult amateur football players before visual design begins.
+The next step is to test the clickable prototype with qualified reviewers first,
+then with representative junior-player and parent/guardian pairs only after the
+minor-specific release gates are approved.

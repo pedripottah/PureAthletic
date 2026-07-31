@@ -1,0 +1,266 @@
+{
+  "schemaVersion": "1.0.0",
+  "scenarios": [
+    {
+      "id": "outside-age-range",
+      "context": {
+        "age": 11,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "equipment": [],
+        "availableMinutes": 30
+      },
+      "expected": {
+        "action": "not_eligible",
+        "reasonCodes": ["age_outside_junior_library"]
+      }
+    },
+    {
+      "id": "guardian-permission-missing",
+      "context": {
+        "age": 14,
+        "guardianPermissionConfirmed": false,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "equipment": [],
+        "availableMinutes": 30
+      },
+      "expected": {
+        "action": "guardian_permission_required",
+        "reasonCodes": ["guardian_permission_missing"]
+      }
+    },
+    {
+      "id": "pain-requires-adult-review",
+      "context": {
+        "age": 15,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "mild",
+        "equipment": ["football", "markers", "open_space"],
+        "availableMinutes": 30
+      },
+      "expected": {
+        "action": "adult_review_required",
+        "reasonCodes": ["pain_reported"]
+      }
+    },
+    {
+      "id": "red-flag-symptom-requires-adult-review",
+      "context": {
+        "age": 16,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "redFlagSymptoms": ["dizziness"],
+        "equipment": [],
+        "availableMinutes": 30
+      },
+      "expected": {
+        "action": "adult_review_required",
+        "reasonCodes": ["red_flag_symptom_reported"]
+      }
+    },
+    {
+      "id": "match-within-twelve-hours",
+      "context": {
+        "age": 14,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "energy": 4,
+        "soreness": 2,
+        "sleep": 4,
+        "hoursUntilMatch": 12,
+        "hoursSinceHighLoad": 48,
+        "equipment": ["football", "markers", "open_space", "stable_support"],
+        "availableMinutes": 30,
+        "goal": "match_readiness",
+        "experience": "beginner",
+        "independentPerformanceSessionsLast7Days": 1
+      },
+      "expected": {
+        "action": "recommend",
+        "reasonCodes": ["match_within_protected_window"],
+        "allowedSessionTypes": ["recovery", "technical"],
+        "maximumIntensity": "easy"
+      }
+    },
+    {
+      "id": "recent-high-load-session",
+      "context": {
+        "age": 15,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "energy": 4,
+        "soreness": 2,
+        "sleep": 4,
+        "hoursUntilMatch": 72,
+        "hoursSinceHighLoad": 8,
+        "equipment": ["football", "markers", "open_space", "stable_support"],
+        "availableMinutes": 30,
+        "goal": "general_fitness",
+        "experience": "intermediate",
+        "independentPerformanceSessionsLast7Days": 1
+      },
+      "expected": {
+        "action": "recommend",
+        "reasonCodes": ["recent_high_load"],
+        "allowedSessionTypes": ["recovery", "technical"],
+        "maximumIntensity": "easy"
+      }
+    },
+    {
+      "id": "low-readiness-recovery-only",
+      "context": {
+        "age": 13,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "energy": 2,
+        "soreness": 4,
+        "sleep": 2,
+        "hoursUntilMatch": 72,
+        "hoursSinceHighLoad": 48,
+        "equipment": ["stable_support"],
+        "availableMinutes": 25,
+        "goal": "strength",
+        "experience": "beginner",
+        "independentPerformanceSessionsLast7Days": 1
+      },
+      "expected": {
+        "action": "recommend",
+        "reasonCodes": ["low_readiness"],
+        "allowedSessionTypes": ["recovery"],
+        "expectedRoutineIds": ["junior-recovery-reset-20"]
+      }
+    },
+    {
+      "id": "strength-goal-with-qualified-supervision",
+      "context": {
+        "age": 14,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "energy": 4,
+        "soreness": 2,
+        "sleep": 4,
+        "hoursUntilMatch": 72,
+        "hoursSinceHighLoad": 48,
+        "equipment": ["stable_target", "stable_support", "exercise_mat"],
+        "availableMinutes": 30,
+        "goal": "strength",
+        "experience": "beginner",
+        "independentPerformanceSessionsLast7Days": 1
+      },
+      "expected": {
+        "action": "recommend",
+        "expectedFirstRoutineId": "junior-strength-foundation-30",
+        "expectedRoutineIds": [
+          "junior-strength-foundation-30",
+          "junior-strength-start-20"
+        ]
+      }
+    },
+    {
+      "id": "strength-without-qualified-supervision",
+      "context": {
+        "age": 14,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": false,
+        "painLevel": "none",
+        "energy": 4,
+        "soreness": 2,
+        "sleep": 4,
+        "hoursUntilMatch": 72,
+        "hoursSinceHighLoad": 48,
+        "equipment": ["stable_target", "stable_support", "exercise_mat"],
+        "availableMinutes": 30,
+        "goal": "strength",
+        "experience": "beginner",
+        "independentPerformanceSessionsLast7Days": 1
+      },
+      "expected": {
+        "action": "recommend",
+        "expectedRoutineIds": ["junior-recovery-reset-20"],
+        "excludedRoutineReason": {
+          "routineId": "junior-strength-foundation-30",
+          "reason": "qualified_supervision"
+        }
+      }
+    },
+    {
+      "id": "speed-goal-with-space-and-coach",
+      "context": {
+        "age": 16,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "energy": 4,
+        "soreness": 1,
+        "sleep": 4,
+        "hoursUntilMatch": 72,
+        "hoursSinceHighLoad": 48,
+        "equipment": ["markers", "open_space", "stable_support"],
+        "availableMinutes": 25,
+        "goal": "speed",
+        "experience": "intermediate",
+        "independentPerformanceSessionsLast7Days": 1
+      },
+      "expected": {
+        "action": "recommend",
+        "expectedRoutineIds": [
+          "junior-acceleration-basics-20",
+          "junior-movement-control-25"
+        ]
+      }
+    },
+    {
+      "id": "insufficient-available-time",
+      "context": {
+        "age": 15,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "hoursUntilMatch": 72,
+        "hoursSinceHighLoad": 48,
+        "equipment": ["football", "markers", "open_space", "stable_support"],
+        "availableMinutes": 15,
+        "goal": "technical",
+        "experience": "beginner",
+        "independentPerformanceSessionsLast7Days": 1
+      },
+      "expected": {
+        "action": "rest",
+        "reasonCodes": ["no_compatible_routine"]
+      }
+    },
+    {
+      "id": "weekly-independent-session-cap",
+      "context": {
+        "age": 17,
+        "guardianPermissionConfirmed": true,
+        "qualifiedSupervisionAvailable": true,
+        "painLevel": "none",
+        "energy": 4,
+        "soreness": 2,
+        "sleep": 4,
+        "hoursUntilMatch": 72,
+        "hoursSinceHighLoad": 48,
+        "equipment": ["football", "markers", "open_space", "stable_support"],
+        "availableMinutes": 30,
+        "goal": "endurance",
+        "experience": "intermediate",
+        "independentPerformanceSessionsLast7Days": 3
+      },
+      "expected": {
+        "action": "recommend",
+        "reasonCodes": ["weekly_independent_session_cap"],
+        "allowedSessionTypes": ["recovery", "technical"],
+        "maximumIntensity": "easy"
+      }
+    }
+  ]
+}

@@ -1,0 +1,657 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "draft_practitioner_review_required",
+  "population": {
+    "minimumAge": 12,
+    "maximumAge": 17,
+    "sport": "football"
+  },
+  "routineDefaults": {
+    "guardianPermissionRequired": true,
+    "stopIfPainOrUnusualSymptoms": true,
+    "progressOnlyOneVariableAtATime": true,
+    "minimumSuccessfulSessionsBeforeProgression": 3
+  },
+  "routines": [
+    {
+      "id": "junior-recovery-reset-20",
+      "title": "Easy recovery reset",
+      "sessionType": "recovery",
+      "goals": ["general_fitness", "match_readiness", "recovery"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["beginner", "intermediate"],
+      "difficulty": "beginner",
+      "intensity": "easy",
+      "targetRpeRange": [2, 4],
+      "durationMinutes": 20,
+      "requiredEquipment": ["stable_support"],
+      "supervision": "guardian_nearby",
+      "matchBufferHours": 0,
+      "minimumHoursAfterHighLoad": 0,
+      "maximumSessionsPerWeek": 4,
+      "shorterVersionId": null,
+      "purpose": "Restore comfortable movement and balance without adding meaningful training load.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Ease in",
+          "items": [
+            {
+              "exerciseId": "easy-march-jog",
+              "dose": { "rounds": 2, "workSeconds": 60, "restSeconds": 15 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Mobility and balance",
+          "items": [
+            {
+              "exerciseId": "dynamic-mobility-flow",
+              "dose": { "rounds": 1, "workSeconds": 300, "restSeconds": 0 }
+            },
+            {
+              "exerciseId": "single-leg-balance-reach",
+              "dose": { "sets": 1, "repetitionsPerDirectionPerSide": 4, "restSeconds": 30 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Settle",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 300, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "Keep this session easy; improve movement quality rather than adding intensity."
+    },
+    {
+      "id": "junior-ball-basics-20",
+      "title": "Ball basics",
+      "sessionType": "technical",
+      "goals": ["technical", "general_fitness", "match_readiness"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["beginner", "intermediate"],
+      "difficulty": "beginner",
+      "intensity": "easy",
+      "targetRpeRange": [3, 4],
+      "durationMinutes": 20,
+      "requiredEquipment": ["football", "markers", "open_space"],
+      "supervision": "guardian_nearby",
+      "matchBufferHours": 6,
+      "minimumHoursAfterHighLoad": 0,
+      "maximumSessionsPerWeek": 4,
+      "shorterVersionId": null,
+      "purpose": "Build comfortable two-footed touches and controlled turning in a short individual session.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Move with the ball",
+          "items": [
+            {
+              "exerciseId": "easy-march-jog",
+              "dose": { "rounds": 2, "workSeconds": 45, "restSeconds": 15 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Touch and turn",
+          "items": [
+            {
+              "exerciseId": "ball-foundation-touches",
+              "dose": { "rounds": 4, "workSeconds": 40, "restSeconds": 30 }
+            },
+            {
+              "exerciseId": "cone-dribble-turn",
+              "dose": { "rounds": 6, "distanceMetres": 6, "restSeconds": 25 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Easy finish",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "After three controlled sessions, reduce the working space slightly or add one round, but not both."
+    },
+    {
+      "id": "junior-ball-skill-builder-30",
+      "title": "First-touch skill builder",
+      "sessionType": "technical",
+      "goals": ["technical", "match_readiness"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["beginner", "intermediate"],
+      "difficulty": "beginner",
+      "intensity": "moderate",
+      "targetRpeRange": [4, 5],
+      "durationMinutes": 30,
+      "requiredEquipment": ["football", "markers", "open_space", "wall_or_partner"],
+      "supervision": "guardian_nearby",
+      "matchBufferHours": 12,
+      "minimumHoursAfterHighLoad": 12,
+      "maximumSessionsPerWeek": 3,
+      "shorterVersionId": "junior-ball-basics-20",
+      "purpose": "Develop receiving, passing, scanning, and turning through repeatable technical practice.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Dynamic ball warm-up",
+          "items": [
+            {
+              "exerciseId": "dynamic-mobility-flow",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            },
+            {
+              "exerciseId": "ball-foundation-touches",
+              "dose": { "rounds": 2, "workSeconds": 45, "restSeconds": 30 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Receive and play",
+          "items": [
+            {
+              "exerciseId": "wall-pass-first-touch",
+              "dose": { "rounds": 5, "workSeconds": 60, "restSeconds": 30 }
+            },
+            {
+              "exerciseId": "cone-dribble-turn",
+              "dose": { "rounds": 8, "distanceMetres": 8, "restSeconds": 20 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Easy finish",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "After three accurate sessions, use two touches for some passing rounds before increasing pace."
+    },
+    {
+      "id": "junior-strength-start-20",
+      "title": "Strength technique starter",
+      "sessionType": "strength",
+      "goals": ["strength", "general_fitness", "match_readiness"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["beginner"],
+      "difficulty": "beginner",
+      "intensity": "moderate",
+      "targetRpeRange": [4, 6],
+      "durationMinutes": 20,
+      "requiredEquipment": ["stable_target", "stable_support", "exercise_mat"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 24,
+      "minimumHoursAfterHighLoad": 24,
+      "maximumSessionsPerWeek": 3,
+      "shorterVersionId": null,
+      "purpose": "Teach controlled whole-body strength patterns using body weight and simple support.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Prepare",
+          "items": [
+            {
+              "exerciseId": "easy-march-jog",
+              "dose": { "rounds": 2, "workSeconds": 60, "restSeconds": 15 }
+            },
+            {
+              "exerciseId": "dynamic-mobility-flow",
+              "dose": { "rounds": 1, "workSeconds": 180, "restSeconds": 0 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Technique circuit",
+          "items": [
+            {
+              "exerciseId": "bodyweight-box-squat",
+              "dose": { "sets": 1, "repetitions": 8, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "glute-bridge",
+              "dose": { "sets": 1, "repetitions": 10, "restSeconds": 45 }
+            },
+            {
+              "exerciseId": "incline-push-up",
+              "dose": { "sets": 1, "repetitions": 8, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "dead-bug",
+              "dose": { "sets": 1, "repetitionsPerSide": 6, "restSeconds": 45 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Reset",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 180, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "Complete three sessions with consistent technique before adding a second set."
+    },
+    {
+      "id": "junior-strength-foundation-30",
+      "title": "Whole-body strength foundation",
+      "sessionType": "strength",
+      "goals": ["strength", "general_fitness", "match_readiness"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["beginner", "intermediate"],
+      "difficulty": "beginner",
+      "intensity": "moderate",
+      "targetRpeRange": [5, 6],
+      "durationMinutes": 30,
+      "requiredEquipment": ["stable_target", "stable_support", "exercise_mat"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 24,
+      "minimumHoursAfterHighLoad": 24,
+      "maximumSessionsPerWeek": 3,
+      "shorterVersionId": "junior-strength-start-20",
+      "purpose": "Build balanced lower-body, upper-body, calf, and trunk strength with technique-first bodyweight exercises.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Dynamic preparation",
+          "items": [
+            {
+              "exerciseId": "easy-march-jog",
+              "dose": { "rounds": 3, "workSeconds": 60, "restSeconds": 15 }
+            },
+            {
+              "exerciseId": "dynamic-mobility-flow",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Whole-body circuit",
+          "items": [
+            {
+              "exerciseId": "bodyweight-box-squat",
+              "dose": { "sets": 2, "repetitions": 10, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "supported-reverse-lunge",
+              "dose": { "sets": 2, "repetitionsPerSide": 6, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "incline-push-up",
+              "dose": { "sets": 2, "repetitions": 8, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "calf-raise",
+              "dose": { "sets": 2, "repetitions": 12, "restSeconds": 45 }
+            },
+            {
+              "exerciseId": "dead-bug",
+              "dose": { "sets": 2, "repetitionsPerSide": 6, "restSeconds": 45 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Easy reset",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "After three well-controlled sessions, add up to two repetitions to one exercise at a time."
+    },
+    {
+      "id": "junior-strength-band-30",
+      "title": "Band and bodyweight strength",
+      "sessionType": "strength",
+      "goals": ["strength", "general_fitness"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["intermediate"],
+      "difficulty": "intermediate",
+      "intensity": "moderate",
+      "targetRpeRange": [5, 6],
+      "durationMinutes": 30,
+      "requiredEquipment": ["stable_target", "stable_support", "exercise_mat", "resistance_band", "secure_anchor"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 24,
+      "minimumHoursAfterHighLoad": 24,
+      "maximumSessionsPerWeek": 2,
+      "shorterVersionId": "junior-strength-start-20",
+      "purpose": "Add light pulling resistance to a balanced technique-first strength session.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Prepare",
+          "items": [
+            {
+              "exerciseId": "easy-march-jog",
+              "dose": { "rounds": 3, "workSeconds": 60, "restSeconds": 15 }
+            },
+            {
+              "exerciseId": "dynamic-mobility-flow",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Band and bodyweight circuit",
+          "items": [
+            {
+              "exerciseId": "bodyweight-box-squat",
+              "dose": { "sets": 2, "repetitions": 10, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "resistance-band-row",
+              "dose": { "sets": 2, "repetitions": 10, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "supported-reverse-lunge",
+              "dose": { "sets": 2, "repetitionsPerSide": 6, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "side-plank-knees",
+              "dose": { "sets": 2, "holdSecondsPerSide": 15, "restSeconds": 45 }
+            },
+            {
+              "exerciseId": "calf-raise",
+              "dose": { "sets": 2, "repetitions": 12, "restSeconds": 45 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Easy reset",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "Add repetitions before resistance; any resistance increase must be small and checked by the supervising coach."
+    },
+    {
+      "id": "junior-acceleration-basics-20",
+      "title": "Acceleration basics",
+      "sessionType": "speed",
+      "goals": ["speed", "match_readiness"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["beginner", "intermediate"],
+      "difficulty": "beginner",
+      "intensity": "moderate",
+      "targetRpeRange": [5, 6],
+      "durationMinutes": 20,
+      "requiredEquipment": ["markers", "open_space"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 24,
+      "minimumHoursAfterHighLoad": 24,
+      "maximumSessionsPerWeek": 2,
+      "shorterVersionId": null,
+      "purpose": "Practice posture, rhythm, and short acceleration with full recovery and no all-out sprinting.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Dynamic preparation",
+          "items": [
+            {
+              "exerciseId": "easy-march-jog",
+              "dose": { "rounds": 3, "workSeconds": 60, "restSeconds": 15 }
+            },
+            {
+              "exerciseId": "dynamic-mobility-flow",
+              "dose": { "rounds": 1, "workSeconds": 180, "restSeconds": 0 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Rhythm and acceleration",
+          "items": [
+            {
+              "exerciseId": "march-skip-mechanics",
+              "dose": { "sets": 2, "distanceMetres": 10, "restSeconds": 40 }
+            },
+            {
+              "exerciseId": "controlled-acceleration-10m",
+              "dose": { "repetitions": 4, "distanceMetres": 10, "restSeconds": 60 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Walk down",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "After three technically consistent sessions, add one acceleration while keeping full walk-back recovery."
+    },
+    {
+      "id": "junior-movement-control-25",
+      "title": "Stop and change direction",
+      "sessionType": "movement",
+      "goals": ["speed", "technical", "match_readiness"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["beginner", "intermediate"],
+      "difficulty": "beginner",
+      "intensity": "moderate",
+      "targetRpeRange": [4, 6],
+      "durationMinutes": 25,
+      "requiredEquipment": ["markers", "open_space", "stable_support"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 24,
+      "minimumHoursAfterHighLoad": 24,
+      "maximumSessionsPerWeek": 2,
+      "shorterVersionId": null,
+      "purpose": "Build controlled braking, balance, and lateral movement before adding faster changes of direction.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Prepare to move",
+          "items": [
+            {
+              "exerciseId": "easy-march-jog",
+              "dose": { "rounds": 3, "workSeconds": 60, "restSeconds": 15 }
+            },
+            {
+              "exerciseId": "dynamic-mobility-flow",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Control first",
+          "items": [
+            {
+              "exerciseId": "deceleration-stick",
+              "dose": { "repetitions": 5, "distanceMetres": 8, "restSeconds": 40 }
+            },
+            {
+              "exerciseId": "lateral-shuffle-stick",
+              "dose": { "sets": 2, "repetitionsPerSide": 4, "distanceMetres": 4, "restSeconds": 45 }
+            },
+            {
+              "exerciseId": "single-leg-balance-reach",
+              "dose": { "sets": 1, "repetitionsPerDirectionPerSide": 4, "restSeconds": 30 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Walk down",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "Improve balance and braking consistency before increasing approach speed."
+    },
+    {
+      "id": "junior-ball-conditioning-25",
+      "title": "Ball conditioning intervals",
+      "sessionType": "conditioning",
+      "goals": ["endurance", "general_fitness", "technical"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["beginner", "intermediate"],
+      "difficulty": "beginner",
+      "intensity": "moderate",
+      "targetRpeRange": [4, 6],
+      "durationMinutes": 25,
+      "requiredEquipment": ["football", "markers", "open_space"],
+      "supervision": "guardian_nearby",
+      "matchBufferHours": 24,
+      "minimumHoursAfterHighLoad": 24,
+      "maximumSessionsPerWeek": 2,
+      "shorterVersionId": "junior-ball-basics-20",
+      "purpose": "Develop steady football movement and ball control through short work-and-walk intervals.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Ball preparation",
+          "items": [
+            {
+              "exerciseId": "easy-march-jog",
+              "dose": { "rounds": 2, "workSeconds": 60, "restSeconds": 15 }
+            },
+            {
+              "exerciseId": "ball-foundation-touches",
+              "dose": { "rounds": 2, "workSeconds": 40, "restSeconds": 30 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Tempo intervals",
+          "items": [
+            {
+              "exerciseId": "ball-tempo-interval",
+              "dose": { "rounds": 6, "workSeconds": 45, "restSeconds": 45 }
+            },
+            {
+              "exerciseId": "cone-dribble-turn",
+              "dose": { "rounds": 6, "distanceMetres": 8, "restSeconds": 25 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Easy finish",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 240, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "Add one interval after three comfortable sessions; do not increase intervals and pace together."
+    },
+    {
+      "id": "junior-football-builder-40",
+      "title": "Complete football foundations",
+      "sessionType": "mixed",
+      "goals": ["match_readiness", "general_fitness", "technical"],
+      "ageRange": [12, 17],
+      "experienceLevels": ["intermediate"],
+      "difficulty": "intermediate",
+      "intensity": "moderate",
+      "targetRpeRange": [5, 6],
+      "durationMinutes": 40,
+      "requiredEquipment": ["football", "markers", "open_space", "stable_target", "stable_support", "exercise_mat"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 36,
+      "minimumHoursAfterHighLoad": 24,
+      "maximumSessionsPerWeek": 2,
+      "shorterVersionId": "junior-ball-basics-20",
+      "purpose": "Combine technical touches, controlled strength, and short acceleration in one supervised foundation session.",
+      "blocks": [
+        {
+          "role": "warm_up",
+          "title": "Football warm-up",
+          "items": [
+            {
+              "exerciseId": "dynamic-mobility-flow",
+              "dose": { "rounds": 1, "workSeconds": 300, "restSeconds": 0 }
+            },
+            {
+              "exerciseId": "ball-foundation-touches",
+              "dose": { "rounds": 3, "workSeconds": 45, "restSeconds": 30 }
+            }
+          ]
+        },
+        {
+          "role": "main",
+          "title": "Strength and movement",
+          "items": [
+            {
+              "exerciseId": "bodyweight-box-squat",
+              "dose": { "sets": 2, "repetitions": 8, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "incline-push-up",
+              "dose": { "sets": 2, "repetitions": 8, "restSeconds": 60 }
+            },
+            {
+              "exerciseId": "dead-bug",
+              "dose": { "sets": 2, "repetitionsPerSide": 6, "restSeconds": 45 }
+            },
+            {
+              "exerciseId": "march-skip-mechanics",
+              "dose": { "sets": 2, "distanceMetres": 10, "restSeconds": 40 }
+            },
+            {
+              "exerciseId": "controlled-acceleration-10m",
+              "dose": { "repetitions": 3, "distanceMetres": 10, "restSeconds": 60 }
+            }
+          ]
+        },
+        {
+          "role": "cool_down",
+          "title": "Easy reset",
+          "items": [
+            {
+              "exerciseId": "easy-walk-cooldown",
+              "dose": { "rounds": 1, "workSeconds": 300, "restSeconds": 0 }
+            }
+          ]
+        }
+      ],
+      "progression": "Progress only one block after three successful sessions and keep the session within 40 minutes."
+    }
+  ]
+}

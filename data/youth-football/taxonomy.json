@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "1.0.0",
+  "sport": "football",
+  "supportedTeamAgeGroups": [
+    "U5", "U6", "U7", "U8", "U9", "U10", "U11",
+    "U12", "U13", "U14", "U15", "U16", "U17"
+  ],
+  "ageBands": [
+    {
+      "id": "u5-u8",
+      "label": "U5–U8 · Foundation through play",
+      "teamAgeGroups": ["U5", "U6", "U7", "U8"],
+      "approximateAges": [4, 8],
+      "sessionMinutes": [12, 22],
+      "maximumTargetRpe": 5,
+      "requiredSupervision": "responsible_adult_present",
+      "designModel": "play_practice_play",
+      "priorities": ["enjoyment", "ball familiarity", "coordination", "creativity"],
+      "avoid": ["formal fitness testing", "external loading", "long queues", "elimination games", "deliberate heading"],
+      "principleIds": ["play-led-foundation", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u9-u12",
+      "label": "U9–U12 · Skill and decisions",
+      "teamAgeGroups": ["U9", "U10", "U11", "U12"],
+      "approximateAges": [8, 12],
+      "sessionMinutes": [18, 30],
+      "maximumTargetRpe": 6,
+      "requiredSupervision": "responsible_adult_present",
+      "designModel": "global_analytical_global",
+      "priorities": ["ball mastery", "small-sided decisions", "teamwork", "movement literacy"],
+      "avoid": ["maximal loading", "training to failure", "long isolated running", "deliberate heading"],
+      "principleIds": ["small-sided-problem-solving", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u13-u15",
+      "label": "U13–U15 · Progressive game application",
+      "teamAgeGroups": ["U13", "U14", "U15"],
+      "approximateAges": [12, 15],
+      "sessionMinutes": [22, 36],
+      "maximumTargetRpe": 6,
+      "requiredSupervision": "qualified_coach_for_physical_sessions",
+      "designModel": "technical_tactical_game",
+      "priorities": ["technical quality", "game application", "movement control", "gradual athleticism"],
+      "avoid": ["adult programmes copied without adaptation", "maximal loading", "training to failure", "all-out conditioning tests"],
+      "principleIds": ["progressive-game-application", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u16-u17",
+      "label": "U16–U17 · Football performance foundations",
+      "teamAgeGroups": ["U16", "U17"],
+      "approximateAges": [15, 17],
+      "sessionMinutes": [25, 40],
+      "maximumTargetRpe": 7,
+      "requiredSupervision": "qualified_coach_for_physical_sessions",
+      "designModel": "football_integrated_performance",
+      "priorities": ["position-aware decisions", "strength foundations", "speed quality", "load management"],
+      "avoid": ["unsupervised external loading", "training to failure", "punishment exercise", "all-out conditioning tests"],
+      "principleIds": ["compact-athletic-development", "age-goal-level-filtering"]
+    }
+  ],
+  "experienceLevels": [
+    {
+      "id": "beginner",
+      "label": "Beginner",
+      "productStatus": "available",
+      "designRules": [
+        "one or two coaching cues at a time",
+        "stable setup and generous space",
+        "technique before speed or resistance",
+        "easy success before added decisions"
+      ]
+    },
+    {
+      "id": "intermediate",
+      "label": "Intermediate",
+      "productStatus": "available",
+      "designRules": [
+        "add one decision, direction, or passive opponent",
+        "use slightly tighter space only when control is consistent",
+        "progress one variable at a time",
+        "preserve recovery so quality remains high"
+      ]
+    },
+    {
+      "id": "advanced",
+      "label": "Advanced",
+      "productStatus": "research_only",
+      "userMessage": "Advanced recommendations are being developed and reviewed.",
+      "designRules": [
+        "increase perception and decision complexity before adding physical load",
+        "use position- and schedule-aware variations",
+        "retain the same safety and supervision limits",
+        "do not expose this level in the current product"
+      ]
+    }
+  ],
+  "goals": [
+    {
+      "id": "match_readiness",
+      "label": "Match readiness",
+      "description": "Arrive confident and fresh for the next fixture.",
+      "selectionPriority": ["next_match", "recent_load", "technical_confidence", "low_fatigue"]
+    },
+    {
+      "id": "strength",
+      "label": "Strength",
+      "description": "Build age-appropriate movement control and force foundations.",
+      "selectionPriority": ["age_band", "qualified_supervision", "movement_quality", "recovery_spacing"]
+    },
+    {
+      "id": "speed",
+      "label": "Speed",
+      "description": "Develop quick reactions, acceleration mechanics, and controlled stopping.",
+      "selectionPriority": ["freshness", "safe_space", "full_recovery", "movement_quality"]
+    },
+    {
+      "id": "endurance",
+      "label": "Endurance",
+      "description": "Improve repeatable football movement through play and ball-based intervals.",
+      "selectionPriority": ["age_band", "football_context", "work_recovery_balance", "weekly_load"]
+    },
+    {
+      "id": "general_fitness",
+      "label": "General fitness",
+      "description": "Build a balanced foundation of ball skill, movement, and recovery habits.",
+      "selectionPriority": ["balanced_content", "enjoyment", "consistency", "schedule_fit"]
+    }
+  ],
+  "goalInterpretationByAgeBand": {
+    "u5-u8": {
+      "match_readiness": "Familiar touches, simple movement, and confidence—not fitness loading.",
+      "strength": "Balance, crawling, landing, rising, and playful body control—not weight training.",
+      "speed": "Short reaction games with complete recovery—not repeated hard sprinting.",
+      "endurance": "Active play with natural pauses—not running laps.",
+      "general_fitness": "A varied play session involving the ball and whole-body movement."
+    },
+    "u9-u12": {
+      "match_readiness": "Ball confidence and simple decisions while preserving freshness.",
+      "strength": "Supervised bodyweight movement literacy and landing control.",
+      "speed": "Short acceleration, stopping, and reaction quality with generous rest.",
+      "endurance": "Small-sided or ball-based intervals rather than isolated long running.",
+      "general_fitness": "Technical, coordination, and game-based movement in balance."
+    },
+    "u13-u15": {
+      "match_readiness": "Dynamic activation, technical sharpness, and low-fatigue game cues.",
+      "strength": "Technique-first bodyweight and light-resistance foundations under qualified supervision.",
+      "speed": "Acceleration and deceleration mechanics while fresh, with full recovery.",
+      "endurance": "Football-specific tempo and small-sided repeated efforts with controlled load.",
+      "general_fitness": "Progressive technical, movement-control, and aerobic foundations."
+    },
+    "u16-u17": {
+      "match_readiness": "Schedule-aware primer that protects freshness and reinforces position-relevant actions.",
+      "strength": "Compact supervised unilateral and core strength that complements football.",
+      "speed": "High-quality acceleration, deceleration, and direction changes with full rest.",
+      "endurance": "Controlled football intervals selected around team and match load.",
+      "general_fitness": "Balanced football athleticism with explicit load and recovery management."
+    }
+  }
+}

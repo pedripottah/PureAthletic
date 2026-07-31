@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0.0",
+  "selectionKey": ["ageBandId", "experienceLevel", "goalId"],
+  "advancedProductStatus": "research_only_not_selectable",
+  "index": {
+    "u5-u8": {
+      "beginner": {
+        "match_readiness": "u5-u8-match-ready-play",
+        "strength": "u5-u8-strong-mover-play",
+        "speed": "u5-u8-quick-feet-play",
+        "endurance": "u5-u8-move-and-pause-play",
+        "general_fitness": "u5-u8-all-round-ball-play"
+      },
+      "intermediate": {
+        "match_readiness": "u5-u8-match-ready-play",
+        "strength": "u5-u8-strong-mover-play",
+        "speed": "u5-u8-quick-feet-play",
+        "endurance": "u5-u8-move-and-pause-play",
+        "general_fitness": "u5-u8-all-round-ball-play"
+      },
+      "advanced": {
+        "status": "research_only",
+        "match_readiness": "u5-u8-match-ready-play",
+        "strength": "u5-u8-strong-mover-play",
+        "speed": "u5-u8-quick-feet-play",
+        "endurance": "u5-u8-move-and-pause-play",
+        "general_fitness": "u5-u8-all-round-ball-play"
+      }
+    },
+    "u9-u12": {
+      "beginner": {
+        "match_readiness": "u9-u12-match-confidence",
+        "strength": "u9-u12-body-control",
+        "speed": "u9-u12-react-accelerate-stop",
+        "endurance": "u9-u12-ball-interval-games",
+        "general_fitness": "u9-u12-football-foundations"
+      },
+      "intermediate": {
+        "match_readiness": "u9-u12-match-confidence",
+        "strength": "u9-u12-body-control",
+        "speed": "u9-u12-react-accelerate-stop",
+        "endurance": "u9-u12-ball-interval-games",
+        "general_fitness": "u9-u12-football-foundations"
+      },
+      "advanced": {
+        "status": "research_only",
+        "match_readiness": "u9-u12-match-confidence",
+        "strength": "u9-u12-body-control",
+        "speed": "u9-u12-react-accelerate-stop",
+        "endurance": "u9-u12-ball-interval-games",
+        "general_fitness": "u9-u12-football-foundations"
+      }
+    },
+    "u13-u15": {
+      "beginner": {
+        "match_readiness": "u13-u15-match-primer",
+        "strength": "u13-u15-strength-foundations",
+        "speed": "u13-u15-acceleration-control",
+        "endurance": "u13-u15-football-tempo",
+        "general_fitness": "u13-u15-complete-foundations"
+      },
+      "intermediate": {
+        "match_readiness": "u13-u15-match-primer",
+        "strength": "u13-u15-strength-foundations",
+        "speed": "u13-u15-acceleration-control",
+        "endurance": "u13-u15-football-tempo",
+        "general_fitness": "u13-u15-complete-foundations"
+      },
+      "advanced": {
+        "status": "research_only",
+        "match_readiness": "u13-u15-match-primer",
+        "strength": "u13-u15-strength-foundations",
+        "speed": "u13-u15-acceleration-control",
+        "endurance": "u13-u15-football-tempo",
+        "general_fitness": "u13-u15-complete-foundations"
+      }
+    },
+    "u16-u17": {
+      "beginner": {
+        "match_readiness": "u16-u17-match-primer",
+        "strength": "u16-u17-football-strength",
+        "speed": "u16-u17-speed-quality",
+        "endurance": "u16-u17-repeat-effort",
+        "general_fitness": "u16-u17-balanced-athleticism"
+      },
+      "intermediate": {
+        "match_readiness": "u16-u17-match-primer",
+        "strength": "u16-u17-football-strength",
+        "speed": "u16-u17-speed-quality",
+        "endurance": "u16-u17-repeat-effort",
+        "general_fitness": "u16-u17-balanced-athleticism"
+      },
+      "advanced": {
+        "status": "research_only",
+        "match_readiness": "u16-u17-match-primer",
+        "strength": "u16-u17-football-strength",
+        "speed": "u16-u17-speed-quality",
+        "endurance": "u16-u17-repeat-effort",
+        "general_fitness": "u16-u17-balanced-athleticism"
+      }
+    }
+  }
+}

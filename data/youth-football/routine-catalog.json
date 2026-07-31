@@ -1,0 +1,509 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "draft_practitioner_safeguarding_and_legal_review_required",
+  "audience": "Healthy youth footballers in team age groups U5-U17",
+  "contentNote": "These are original PureAthletic routine outlines informed by the linked source principles. They are not copied sessions and are not medical, rehabilitation, or return-to-play advice.",
+  "advancedLevelStatus": "research_only_not_recommendable",
+  "routines": [
+    {
+      "id": "u5-u8-match-ready-play",
+      "ageBandId": "u5-u8",
+      "goalId": "match_readiness",
+      "title": "Match-day ball confidence",
+      "sessionType": "technical",
+      "requiredEquipment": ["football", "safe_open_space", "two_markers"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 0,
+      "durationMinutesByLevel": { "beginner": 14, "intermediate": 18, "advanced": 20 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "easy", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [2, 3], "intermediate": [2, 4], "advanced": [3, 5] },
+      "purpose": "Build familiar touches and confidence without creating fatigue before a game.",
+      "blocks": [
+        { "role": "play", "title": "Ball hello", "activities": ["Move freely with the ball and try inside, outside, and sole touches.", "When the adult calls stop, freeze with one foot gently on the ball."] },
+        { "role": "practice", "title": "Dribble through gates", "activities": ["Dribble through two-marker gates at a comfortable pace.", "Change direction after each gate and use both feet."] },
+        { "role": "play", "title": "Finish with a goal game", "activities": ["Score through a wide gate, collect the ball, and celebrate the attempt.", "Keep turns short and finish while the player still feels fresh."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use wide gates and allow pauses whenever needed.",
+        "intermediate": "Add a simple colour or direction call before the player chooses a gate.",
+        "advanced": "Research only: add a passive defender and scanning cue without raising physical intensity."
+      },
+      "sourcePrincipleIds": ["play-led-foundation", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u5-u8-strong-mover-play",
+      "ageBandId": "u5-u8",
+      "goalId": "strength",
+      "title": "Strong mover adventure",
+      "sessionType": "movement",
+      "requiredEquipment": ["soft_surface", "stable_support"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 12,
+      "durationMinutesByLevel": { "beginner": 12, "intermediate": 16, "advanced": 18 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "easy", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [2, 3], "intermediate": [2, 4], "advanced": [3, 5] },
+      "purpose": "Develop playful balance, crawling, rising, and landing control without external weights.",
+      "blocks": [
+        { "role": "play", "title": "Animal trail", "activities": ["Move like a bear, crab, or tall giraffe between two nearby markers.", "Let the player choose the next movement."] },
+        { "role": "practice", "title": "Balance and rise", "activities": ["Hold a stable support and balance briefly on each foot.", "Sit to a safe low target and stand tall with control."] },
+        { "role": "play", "title": "Soft landing statues", "activities": ["Make a tiny two-foot jump and land quietly.", "Freeze like a statue, then walk and repeat."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use hand support and very short movement distances.",
+        "intermediate": "Use less hand support and add one reach while balancing.",
+        "advanced": "Research only: combine two movement patterns while keeping landings quiet and controlled."
+      },
+      "sourcePrincipleIds": ["play-led-foundation"]
+    },
+    {
+      "id": "u5-u8-quick-feet-play",
+      "ageBandId": "u5-u8",
+      "goalId": "speed",
+      "title": "Quick feet, stop and smile",
+      "sessionType": "speed_play",
+      "requiredEquipment": ["safe_open_space", "two_markers"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 12,
+      "durationMinutesByLevel": { "beginner": 12, "intermediate": 16, "advanced": 18 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [2, 4], "intermediate": [3, 5], "advanced": [3, 5] },
+      "purpose": "Practise reacting, moving quickly for a few steps, and stopping under control.",
+      "blocks": [
+        { "role": "play", "title": "Copy the leader", "activities": ["Copy easy marching, side steps, and tiptoe movements.", "Change the leader often."] },
+        { "role": "practice", "title": "Colour call starts", "activities": ["The adult calls a marker colour and the player moves quickly toward it.", "Keep each effort to a few seconds and walk fully back."] },
+        { "role": "play", "title": "Run and freeze", "activities": ["Move toward a gate, slow down before it, and freeze in balance.", "Finish with an easy walk and breathing reset."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use one obvious direction and walking recovery.",
+        "intermediate": "Use two possible directions and occasional ball carries.",
+        "advanced": "Research only: add a visual cue and one controlled direction change."
+      },
+      "sourcePrincipleIds": ["play-led-foundation"]
+    },
+    {
+      "id": "u5-u8-move-and-pause-play",
+      "ageBandId": "u5-u8",
+      "goalId": "endurance",
+      "title": "Play, move and pause",
+      "sessionType": "active_play",
+      "requiredEquipment": ["football", "safe_open_space", "two_markers"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 12,
+      "durationMinutesByLevel": { "beginner": 14, "intermediate": 18, "advanced": 20 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [2, 4], "intermediate": [3, 5], "advanced": [3, 5] },
+      "purpose": "Build comfortable activity through short football play and natural recovery, never running laps.",
+      "blocks": [
+        { "role": "play", "title": "Treasure dribble", "activities": ["Dribble to collect or touch a marker and return.", "Walk whenever the player wants a break."] },
+        { "role": "practice", "title": "Short play rounds", "activities": ["Alternate 30 seconds of ball play with 30–45 seconds of easy walking.", "Complete four to six relaxed rounds."] },
+        { "role": "play", "title": "Favourite move finish", "activities": ["Let the player choose a favourite dribble, pass, or shot.", "Stop while movement still looks comfortable."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use four rounds and unlimited walking breaks.",
+        "intermediate": "Use up to six rounds while preserving the same relaxed pace.",
+        "advanced": "Research only: add a simple choice during each play interval, not extra work time."
+      },
+      "sourcePrincipleIds": ["play-led-foundation"]
+    },
+    {
+      "id": "u5-u8-all-round-ball-play",
+      "ageBandId": "u5-u8",
+      "goalId": "general_fitness",
+      "title": "All-round ball play",
+      "sessionType": "mixed_play",
+      "requiredEquipment": ["football", "safe_open_space", "two_markers", "stable_support"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 12,
+      "durationMinutesByLevel": { "beginner": 16, "intermediate": 20, "advanced": 22 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [2, 4], "intermediate": [3, 5], "advanced": [3, 5] },
+      "purpose": "Combine ball familiarity, balance, changing direction, and enjoyable movement.",
+      "blocks": [
+        { "role": "play", "title": "Free ball play", "activities": ["Explore different touches in a safe area.", "The adult joins in with simple encouragement."] },
+        { "role": "practice", "title": "Move, balance, aim", "activities": ["Dribble around a marker, balance briefly, then pass through a gate.", "Alternate feet and keep the goal wide."] },
+        { "role": "play", "title": "Player's choice", "activities": ["Repeat the activity the player enjoyed most.", "End with an easy walk and drink break."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use one activity at a time with plenty of space.",
+        "intermediate": "Link the dribble, balance, and pass into one simple journey.",
+        "advanced": "Research only: add a choice of two routes while keeping instructions brief."
+      },
+      "sourcePrincipleIds": ["play-led-foundation", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u9-u12-match-confidence",
+      "ageBandId": "u9-u12",
+      "goalId": "match_readiness",
+      "title": "Match confidence touches",
+      "sessionType": "technical",
+      "requiredEquipment": ["football", "markers", "safe_open_space", "wall_or_partner"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 0,
+      "durationMinutesByLevel": { "beginner": 18, "intermediate": 23, "advanced": 26 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "easy", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [2, 4], "intermediate": [3, 4], "advanced": [3, 5] },
+      "purpose": "Rehearse first touch, scanning, and passing confidence while staying fresh.",
+      "blocks": [
+        { "role": "warm_up", "title": "Dynamic ball movement", "activities": ["Move with the ball using both feet and gentle direction changes.", "Gradually raise movement speed without sprinting."] },
+        { "role": "main", "title": "Receive and choose", "activities": ["Pass to a safe wall or partner and take the first touch toward one of two gates.", "Look up before receiving and alternate feet."] },
+        { "role": "finish", "title": "Calm finishing", "activities": ["Take a controlled first touch and pass or shoot through a wide target.", "Finish with easy touches and breathing."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Stop the ball when needed and use a wide target.",
+        "intermediate": "Use two touches and let the partner call the target late.",
+        "advanced": "Research only: use a passive defender or tighter timing while preserving freshness."
+      },
+      "sourcePrincipleIds": ["small-sided-problem-solving", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u9-u12-body-control",
+      "ageBandId": "u9-u12",
+      "goalId": "strength",
+      "title": "Body-control foundations",
+      "sessionType": "strength",
+      "requiredEquipment": ["exercise_mat", "stable_target", "stable_support"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 24,
+      "durationMinutesByLevel": { "beginner": 20, "intermediate": 25, "advanced": 28 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 4], "intermediate": [3, 5], "advanced": [4, 6] },
+      "purpose": "Build supervised bodyweight squat, push, brace, balance, and landing technique.",
+      "blocks": [
+        { "role": "warm_up", "title": "Movement preparation", "activities": ["March, side step, reach, and perform gentle ankle and hip movements.", "Practise two quiet landings from a very small jump."] },
+        { "role": "main", "title": "Controlled circuit", "activities": ["Perform squat-to-target, incline push-up, dead bug, and supported balance.", "Use one or two sets of six to ten clean repetitions and stop before technique changes."] },
+        { "role": "cool_down", "title": "Easy reset", "activities": ["Walk easily and repeat comfortable mobility movements.", "Tell the supervising adult about any discomfort."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use one set, high supports, and six controlled repetitions.",
+        "intermediate": "Add a second set or two repetitions, but not both in one session.",
+        "advanced": "Research only: add coordination or range before any external resistance."
+      },
+      "sourcePrincipleIds": ["small-sided-problem-solving", "compact-athletic-development"]
+    },
+    {
+      "id": "u9-u12-react-accelerate-stop",
+      "ageBandId": "u9-u12",
+      "goalId": "speed",
+      "title": "React, accelerate and stop",
+      "sessionType": "speed",
+      "requiredEquipment": ["markers", "safe_open_space"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 24,
+      "durationMinutesByLevel": { "beginner": 18, "intermediate": 24, "advanced": 27 },
+      "intensityByLevel": { "beginner": "moderate", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 5], "intermediate": [4, 6], "advanced": [4, 6] },
+      "purpose": "Develop short acceleration and safe stopping mechanics with complete recovery.",
+      "blocks": [
+        { "role": "warm_up", "title": "Rhythm and direction", "activities": ["March, skip, and side step over short distances.", "Build speed gradually and keep posture tall."] },
+        { "role": "main", "title": "Quality efforts", "activities": ["React to a visual call and accelerate for five to ten metres.", "Slow down across several steps and walk back fully before repeating."] },
+        { "role": "cool_down", "title": "Walk and reset", "activities": ["Walk for two to three minutes.", "Finish when speed or stopping quality begins to drop."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use one direction and four total accelerations.",
+        "intermediate": "Use two directions and up to six total accelerations.",
+        "advanced": "Research only: add one decision or ball action before the acceleration."
+      },
+      "sourcePrincipleIds": ["small-sided-problem-solving"]
+    },
+    {
+      "id": "u9-u12-ball-interval-games",
+      "ageBandId": "u9-u12",
+      "goalId": "endurance",
+      "title": "Ball interval games",
+      "sessionType": "conditioning",
+      "requiredEquipment": ["football", "markers", "safe_open_space"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 24,
+      "durationMinutesByLevel": { "beginner": 20, "intermediate": 26, "advanced": 28 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 5], "intermediate": [4, 6], "advanced": [4, 6] },
+      "purpose": "Build repeatable football movement with short ball rounds and visible recovery.",
+      "blocks": [
+        { "role": "warm_up", "title": "Ball and movement", "activities": ["Use easy touches and turns between markers.", "Include a drink and instruction break before the main rounds."] },
+        { "role": "main", "title": "Work and recover", "activities": ["Dribble, pass, or play a simple one-versus-one round for 30–45 seconds.", "Walk and recover for at least the same amount of time; complete four to eight rounds."] },
+        { "role": "cool_down", "title": "Easy ball walk", "activities": ["Walk with the ball and use relaxed touches.", "Stop if technique or enjoyment drops."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use four rounds with 30 seconds work and 45 seconds recovery.",
+        "intermediate": "Use six rounds with equal work and recovery.",
+        "advanced": "Research only: increase decision complexity, not total work and pace together."
+      },
+      "sourcePrincipleIds": ["small-sided-problem-solving"]
+    },
+    {
+      "id": "u9-u12-football-foundations",
+      "ageBandId": "u9-u12",
+      "goalId": "general_fitness",
+      "title": "Football foundations",
+      "sessionType": "mixed",
+      "requiredEquipment": ["football", "markers", "safe_open_space", "stable_support"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 18,
+      "durationMinutesByLevel": { "beginner": 22, "intermediate": 28, "advanced": 30 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 5], "intermediate": [4, 6], "advanced": [4, 6] },
+      "purpose": "Combine ball work, movement coordination, simple decisions, and an easy finish.",
+      "blocks": [
+        { "role": "warm_up", "title": "Fun activation", "activities": ["Use a tag, mirror, or dribbling game with frequent role changes.", "Keep everybody moving and avoid elimination."] },
+        { "role": "main", "title": "Skill and movement mix", "activities": ["Alternate a first-touch task, balance reach, and short dribble challenge.", "Use short rounds and rotate the leading foot."] },
+        { "role": "finish", "title": "Game application", "activities": ["Play a small target or scoring game with an adult or teammate.", "Finish with an easy walk."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use predictable feeds and wide spaces.",
+        "intermediate": "Add a simple opponent or choice after control is consistent.",
+        "advanced": "Research only: combine scanning and a late decision in the game block."
+      },
+      "sourcePrincipleIds": ["small-sided-problem-solving", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u13-u15-match-primer",
+      "ageBandId": "u13-u15",
+      "goalId": "match_readiness",
+      "title": "Technical match primer",
+      "sessionType": "technical",
+      "requiredEquipment": ["football", "markers", "safe_open_space", "wall_or_partner"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 0,
+      "durationMinutesByLevel": { "beginner": 22, "intermediate": 27, "advanced": 30 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "easy", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [2, 4], "intermediate": [3, 5], "advanced": [3, 5] },
+      "purpose": "Prepare movement and sharpen familiar football actions without adding meaningful fatigue.",
+      "blocks": [
+        { "role": "warm_up", "title": "Dynamic technical activation", "activities": ["Gradually progress from mobility and easy movement into ball touches.", "Include passing, receiving, and changes of direction linked to the session theme."] },
+        { "role": "main", "title": "Sharp, familiar actions", "activities": ["Complete short passing-and-first-touch rounds with scanning.", "Add three or four controlled five-metre accelerations with full walk-back recovery."] },
+        { "role": "cool_down", "title": "Finish fresh", "activities": ["Use easy ball touches and walking.", "End before movement quality falls."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use predictable service and extra setup time.",
+        "intermediate": "Add a late gate call or passive pressure.",
+        "advanced": "Research only: add position-relevant scanning cues without extra volume."
+      },
+      "sourcePrincipleIds": ["progressive-game-application", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u13-u15-strength-foundations",
+      "ageBandId": "u13-u15",
+      "goalId": "strength",
+      "title": "Football strength foundations",
+      "sessionType": "strength",
+      "requiredEquipment": ["exercise_mat", "stable_target", "stable_support"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 36,
+      "durationMinutesByLevel": { "beginner": 25, "intermediate": 30, "advanced": 34 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 5], "intermediate": [4, 6], "advanced": [4, 6] },
+      "purpose": "Build controlled squat, lunge, push, pull-pattern, calf, and core foundations under qualified supervision.",
+      "blocks": [
+        { "role": "warm_up", "title": "Mobility and control", "activities": ["Use dynamic ankle, hip, and upper-body movements.", "Practise squat, hinge, and landing positions with no load."] },
+        { "role": "main", "title": "Technique-first circuit", "activities": ["Use squat-to-target, supported reverse lunge, incline push-up, calf raise, and dead bug.", "Complete one or two sets of six to twelve repetitions with clean technique and comfortable effort."] },
+        { "role": "cool_down", "title": "Easy movement", "activities": ["Walk and repeat comfortable mobility.", "Record any exercise that needed an easier option."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use one set and the easiest stable variation.",
+        "intermediate": "Use two sets; progress repetitions before resistance.",
+        "advanced": "Research only: add an appropriate light resistance only after qualified technique review."
+      },
+      "sourcePrincipleIds": ["progressive-game-application", "compact-athletic-development"]
+    },
+    {
+      "id": "u13-u15-acceleration-control",
+      "ageBandId": "u13-u15",
+      "goalId": "speed",
+      "title": "Acceleration and stopping quality",
+      "sessionType": "speed",
+      "requiredEquipment": ["markers", "safe_open_space"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 36,
+      "durationMinutesByLevel": { "beginner": 22, "intermediate": 28, "advanced": 32 },
+      "intensityByLevel": { "beginner": "moderate", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [4, 5], "intermediate": [4, 6], "advanced": [5, 6] },
+      "purpose": "Practise short acceleration and deceleration while fresh, using full recovery and coach feedback.",
+      "blocks": [
+        { "role": "warm_up", "title": "Dynamic acceleration preparation", "activities": ["Progress through mobility, marching, skipping, and two easy build-ups.", "Raise intensity gradually."] },
+        { "role": "main", "title": "Accelerate, then own the stop", "activities": ["Complete four to six accelerations over eight to twelve metres.", "Use full walk-back recovery, then practise lowering and stopping across several steps."] },
+        { "role": "cool_down", "title": "Walk down", "activities": ["Walk easily for three minutes.", "Stop the session if posture or braking quality declines."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use one start position and straight-line stopping.",
+        "intermediate": "Add one reaction cue or a gentle directional exit.",
+        "advanced": "Research only: add a football decision before acceleration, not extra fatigue."
+      },
+      "sourcePrincipleIds": ["progressive-game-application", "compact-athletic-development"]
+    },
+    {
+      "id": "u13-u15-football-tempo",
+      "ageBandId": "u13-u15",
+      "goalId": "endurance",
+      "title": "Controlled football tempo",
+      "sessionType": "conditioning",
+      "requiredEquipment": ["football", "markers", "safe_open_space"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 36,
+      "durationMinutesByLevel": { "beginner": 24, "intermediate": 30, "advanced": 34 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 5], "intermediate": [4, 6], "advanced": [5, 6] },
+      "purpose": "Develop repeatable football movement through controlled ball intervals rather than all-out running.",
+      "blocks": [
+        { "role": "warm_up", "title": "Ball activation", "activities": ["Use dynamic movement and progressive ball carries.", "Rehearse the turns used in the main block at easy speed."] },
+        { "role": "main", "title": "Tempo rounds", "activities": ["Alternate 40–60 seconds of passing, dribbling, and changing direction with equal easy recovery.", "Complete four to eight rounds at a sustainable pace."] },
+        { "role": "cool_down", "title": "Easy reset", "activities": ["Walk with relaxed touches for four minutes.", "Finish able to speak comfortably."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use four 40-second rounds with longer recovery.",
+        "intermediate": "Use six rounds with equal work and recovery.",
+        "advanced": "Research only: increase football decisions before changing volume or pace."
+      },
+      "sourcePrincipleIds": ["progressive-game-application"]
+    },
+    {
+      "id": "u13-u15-complete-foundations",
+      "ageBandId": "u13-u15",
+      "goalId": "general_fitness",
+      "title": "Complete football foundations",
+      "sessionType": "mixed",
+      "requiredEquipment": ["football", "markers", "safe_open_space", "exercise_mat", "stable_support"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 36,
+      "durationMinutesByLevel": { "beginner": 28, "intermediate": 34, "advanced": 36 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 5], "intermediate": [4, 6], "advanced": [4, 6] },
+      "purpose": "Combine technical confidence, movement control, core strength, and short football efforts.",
+      "blocks": [
+        { "role": "warm_up", "title": "Technical activation", "activities": ["Use dynamic mobility followed by ball touches and passing.", "Keep the setup connected to the main theme."] },
+        { "role": "main", "title": "Skill and athleticism", "activities": ["Alternate a first-touch task with squat-to-target, dead bug, balance reach, and three short accelerations.", "Keep rests generous enough for good technique."] },
+        { "role": "cool_down", "title": "Easy finish", "activities": ["Walk and use relaxed ball touches.", "Review one movement cue with the coach."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use fewer exercises and predictable technical feeds.",
+        "intermediate": "Add one tactical choice or second strength set.",
+        "advanced": "Research only: use position-aware choices while preserving the same workload ceiling."
+      },
+      "sourcePrincipleIds": ["progressive-game-application", "compact-athletic-development", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u16-u17-match-primer",
+      "ageBandId": "u16-u17",
+      "goalId": "match_readiness",
+      "title": "Freshness-first match primer",
+      "sessionType": "technical",
+      "requiredEquipment": ["football", "markers", "safe_open_space", "wall_or_partner"],
+      "supervision": "responsible_adult_present",
+      "matchBufferHours": 0,
+      "durationMinutesByLevel": { "beginner": 25, "intermediate": 30, "advanced": 32 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "easy", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [2, 4], "intermediate": [3, 5], "advanced": [3, 5] },
+      "purpose": "Reinforce technical sharpness and a few fast actions without compromising match freshness.",
+      "blocks": [
+        { "role": "warm_up", "title": "Progressive activation", "activities": ["Move from dynamic mobility into football-specific passing and receiving.", "Increase intensity gradually but remain well below fatigue."] },
+        { "role": "main", "title": "Position-relevant quality", "activities": ["Use short first-touch, passing, or finishing combinations linked to the player's position.", "Include three or four brief accelerations with full recovery."] },
+        { "role": "cool_down", "title": "Finish ready", "activities": ["Use easy touches and walking.", "End feeling sharper than at the start."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use familiar actions with predictable service.",
+        "intermediate": "Add a scanning call or passive pressure.",
+        "advanced": "Research only: increase perceptual demands without increasing volume."
+      },
+      "sourcePrincipleIds": ["progressive-game-application", "compact-athletic-development"]
+    },
+    {
+      "id": "u16-u17-football-strength",
+      "ageBandId": "u16-u17",
+      "goalId": "strength",
+      "title": "Compact football strength",
+      "sessionType": "strength",
+      "requiredEquipment": ["exercise_mat", "stable_target", "stable_support", "resistance_band_optional"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 48,
+      "durationMinutesByLevel": { "beginner": 28, "intermediate": 34, "advanced": 38 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 5], "intermediate": [4, 6], "advanced": [5, 7] },
+      "purpose": "Develop supervised unilateral lower-body, push, pull, calf, and core strength that complements football.",
+      "blocks": [
+        { "role": "warm_up", "title": "Dynamic mobility microdose", "activities": ["Prepare ankles, hips, trunk, and shoulders with controlled dynamic movement.", "Rehearse each main pattern without resistance."] },
+        { "role": "main", "title": "Football strength circuit", "activities": ["Use split squat or supported lunge, hip hinge pattern, incline push-up, band row, calf raise, and dead bug.", "Complete two sets of six to ten controlled repetitions with qualified feedback."] },
+        { "role": "cool_down", "title": "Reset and record", "activities": ["Walk and use comfortable mobility.", "Record technique notes before considering progression."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use bodyweight, stable supports, and one or two sets.",
+        "intermediate": "Progress range or repetitions before adding light resistance.",
+        "advanced": "Research only: add small resistance increments after repeated technical competence and coach approval."
+      },
+      "sourcePrincipleIds": ["compact-athletic-development", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u16-u17-speed-quality",
+      "ageBandId": "u16-u17",
+      "goalId": "speed",
+      "title": "Speed quality",
+      "sessionType": "speed",
+      "requiredEquipment": ["markers", "safe_open_space"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 48,
+      "durationMinutesByLevel": { "beginner": 25, "intermediate": 32, "advanced": 36 },
+      "intensityByLevel": { "beginner": "moderate", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [4, 5], "intermediate": [4, 6], "advanced": [5, 7] },
+      "purpose": "Train acceleration, braking, and a small number of direction changes while fully recovered.",
+      "blocks": [
+        { "role": "warm_up", "title": "Mobility and sprint preparation", "activities": ["Progress from dynamic mobility into marching, skipping, and two build-ups.", "Use coach feedback before faster work."] },
+        { "role": "main", "title": "High-quality repetitions", "activities": ["Complete four to eight accelerations over ten to fifteen metres with full recovery.", "Add controlled deceleration; add at most one planned direction change."] },
+        { "role": "cool_down", "title": "Walk and finish", "activities": ["Walk for three to five minutes.", "Stop immediately if speed mechanics or control deteriorate."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use straight-line starts and four repetitions.",
+        "intermediate": "Use varied starts and up to six quality repetitions.",
+        "advanced": "Research only: add a football perception cue before changing distance or volume."
+      },
+      "sourcePrincipleIds": ["compact-athletic-development"]
+    },
+    {
+      "id": "u16-u17-repeat-effort",
+      "ageBandId": "u16-u17",
+      "goalId": "endurance",
+      "title": "Repeat-effort football intervals",
+      "sessionType": "conditioning",
+      "requiredEquipment": ["football", "markers", "safe_open_space"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 48,
+      "durationMinutesByLevel": { "beginner": 28, "intermediate": 35, "advanced": 38 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 5], "intermediate": [4, 6], "advanced": [5, 7] },
+      "purpose": "Develop sustainable repeated football actions with controlled work-to-recovery ratios.",
+      "blocks": [
+        { "role": "warm_up", "title": "Progressive ball preparation", "activities": ["Use dynamic movement, ball carries, and easy passing.", "Build toward the main movement pattern over several minutes."] },
+        { "role": "main", "title": "Football interval block", "activities": ["Use passing, dribbling, or small-space football actions for 45–75 seconds.", "Recover easily for at least 45–75 seconds and complete four to eight rounds."] },
+        { "role": "cool_down", "title": "Return to easy", "activities": ["Walk with relaxed breathing and easy touches.", "Do not add extra rounds after the planned finish."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use four short rounds and longer recovery.",
+        "intermediate": "Use six rounds with equal work and recovery.",
+        "advanced": "Research only: change tactical complexity before increasing total load."
+      },
+      "sourcePrincipleIds": ["compact-athletic-development", "age-goal-level-filtering"]
+    },
+    {
+      "id": "u16-u17-balanced-athleticism",
+      "ageBandId": "u16-u17",
+      "goalId": "general_fitness",
+      "title": "Balanced football athleticism",
+      "sessionType": "mixed",
+      "requiredEquipment": ["football", "markers", "safe_open_space", "exercise_mat", "stable_support"],
+      "supervision": "qualified_coach",
+      "matchBufferHours": 48,
+      "durationMinutesByLevel": { "beginner": 30, "intermediate": 36, "advanced": 40 },
+      "intensityByLevel": { "beginner": "easy", "intermediate": "moderate", "advanced": "moderate" },
+      "targetRpeByLevel": { "beginner": [3, 5], "intermediate": [4, 6], "advanced": [5, 7] },
+      "purpose": "Combine football technique, mobility, unilateral control, core work, and short accelerations in a compact session.",
+      "blocks": [
+        { "role": "warm_up", "title": "Dynamic technical activation", "activities": ["Use dynamic mobility followed by passing, receiving, and ball carries.", "Keep the warm-up linked to the session."] },
+        { "role": "main", "title": "High-value mixed block", "activities": ["Alternate first-touch work with supported lunge, dead bug, balance reach, and four short accelerations.", "Use generous rests and qualified technique feedback."] },
+        { "role": "cool_down", "title": "Easy review", "activities": ["Walk and use easy mobility.", "Record the main coaching cue and keep the next progression small."] }
+      ],
+      "levelProgressions": {
+        "beginner": "Use fewer activities and one strength set.",
+        "intermediate": "Use two strength sets or add a football decision, but not both.",
+        "advanced": "Research only: use position-aware decisions and controlled progression within the same duration ceiling."
+      },
+      "sourcePrincipleIds": ["compact-athletic-development", "age-goal-level-filtering"]
+    }
+  ]
+}

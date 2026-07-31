@@ -32,7 +32,12 @@ An amateur football player who:
 
 ### Initial age policy
 
-The initial private beta should be restricted to users aged 18 or older. Supporting minors requires additional work involving consent, privacy, safeguarding, age-appropriate recommendations, and jurisdiction-specific requirements. Junior athletes remain part of the long-term vision, but are not included in the first release.
+The current research prototype covers team age groups U5–U17 and requires
+parent or guardian approval during onboarding. This does not make the product
+ready for public release to minors. A qualified youth-sport practitioner,
+child-safeguarding review, verifiable consent flow, jurisdiction-specific
+privacy and legal review, and appropriate minor account and communication
+controls remain mandatory release gates.
 
 ## 3. User problem
 
@@ -93,10 +98,14 @@ PureAthletic should answer one practical question every day:
 
 The athlete creates an account and supplies:
 
-- Date of birth or confirmation that they are at least 18.
+- Team age group from U5–U17; avoid collecting a precise date of birth in the
+  training-recommendation payload.
+- Parent or guardian approval record and applicable consent-policy version.
 - Preferred name.
 - Football position.
-- Training experience: beginner, intermediate, or advanced.
+- Training experience: Beginner or Intermediate in the current product.
+  Advanced remains organized as research-only content and cannot be selected or
+  recommended.
 - Primary goal: general fitness, strength, speed, endurance, or match readiness.
 - Typical team-practice and match schedule.
 - Available independent-training days and approximate time per day.
@@ -363,7 +372,8 @@ The primary product signal is not time spent in the app. It is whether athletes 
 
 ### Milestone 5: Private beta
 
-- Recruit 5–10 adult amateur football players.
+- After the release gates are approved, recruit 5–10 junior-player and
+  parent/guardian pairs across the supported age bands.
 - Run a four-week pilot.
 - Review usage, interviews, recommendation quality, and safety incidents.
 - Decide which assumptions to change before expanding the feature set.

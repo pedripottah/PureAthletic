@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PureAthletic browser smoke test</title>
+  </head>
+  <body>
+    <pre id="result">RUNNING</pre>
+    <iframe id="site" src="/" hidden></iframe>
+    <script>
+      const result = document.querySelector("#result");
+      const frame = document.querySelector("#site");
+
+      const wait = (milliseconds) =>
+        new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+      async function waitFor(predicate, message, attempts = 80) {
+        for (let index = 0; index < attempts; index += 1) {
+          const value = predicate();
+          if (value) return value;
+          await wait(50);
+        }
+        throw new Error(message);
+      }
+
+      frame.addEventListener("load", async () => {
+        try {
+          const page = frame.contentDocument;
+          frame.contentWindow.localStorage.clear();
+
+          const click = (selector) => {
+            const control = page.querySelector(selector);
+            if (!control) throw new Error(`Missing control: ${selector}`);
+            control.click();
+          };
+          const input = (selector, value) => {
+            const control = page.querySelector(selector);
+            if (!control) throw new Error(`Missing input: ${selector}`);
+            control.value = value;
+            control.dispatchEvent(new Event("input", { bubbles: true }));
+            control.dispatchEvent(new Event("change", { bubbles: true }));
+          };
+
+          click('[data-action="start-onboarding"]');
+          await waitFor(
+            () => page.querySelector('[data-field="guardianConfirmed"]'),
+            "Guardian approval step did not open"
+          );
+          click('[data-field="guardianConfirmed"]');
+          click('[data-field="disclaimerAccepted"]');
+          click('[data-action="onboarding-next"]');
+
+          await waitFor(
+            () => page.querySelector("#age-group"),
+            "Football profile step did not open"
+          );
+          input("#name", "Alex");
+          input("#age-group", "U9");
+
+          const advanced = page.querySelector(".choice-unavailable");
+          if (!advanced?.disabled || advanced.dataset.action) {
+            throw new Error("Advanced must be disabled and have no action");
+          }
+
+          click('[data-action="set-experience"][data-value="Intermediate"]');
+          click('[data-action="onboarding-next"]');
+          await waitFor(
+            () => page.querySelector('[data-action="set-goal"][data-value="Speed"]'),
+            "Goal step did not open"
+          );
+          click('[data-action="set-goal"][data-value="Speed"]');
+          click('[data-action="onboarding-next"]');
+
+          await waitFor(
+            () => page.querySelector('[data-action="remove-commitment"]'),
+            "Commitment step did not open"
+          );
+          click('[data-action="remove-commitment"][data-prefix="practice"]');
+          click('[data-action="remove-commitment"][data-prefix="match"]');
+
+          if (page.querySelectorAll('[data-action="add-commitment"]').length !== 2) {
+            throw new Error("Both removed commitments should be addable");
+          }
+
+          click('[data-action="add-commitment"][data-prefix="practice"]');
+          if (!page.querySelector('[data-action="remove-commitment"][data-prefix="practice"]')) {
+            throw new Error("Adding a practice did not restore its editable card");
+          }
+          click('[data-action="remove-commitment"][data-prefix="practice"]');
+
+          click('[data-action="onboarding-next"]');
+          await waitFor(
+            () => page.body.textContent.includes("No fixed commitments"),
+            "Review did not show an empty commitment state"
+          );
+          click('[data-action="onboarding-next"]');
+
+          await waitFor(
+            () => page.body.textContent.includes("React, accelerate and stop"),
+            "U9 Intermediate Speed recommendation was not selected"
+          );
+
+          if (!page.body.textContent.includes("Nothing added")) {
+            throw new Error("Today did not preserve the empty commitment state");
+          }
+
+          result.textContent =
+            "PASS: onboarding, Advanced lock, goal routing, and empty commitments";
+        } catch (error) {
+          result.textContent = `FAIL: ${error.message}`;
+        }
+      }, { once: true });
+    </script>
+  </body>
+</html>

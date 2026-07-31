@@ -646,6 +646,12 @@ p {
   resize: vertical;
 }
 
+.field-note {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
 .choice-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -653,7 +659,10 @@ p {
 }
 
 .choice {
+  display: grid;
   min-height: 3.1rem;
+  gap: 0.18rem;
+  place-content: center;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 0.75rem;
@@ -669,6 +678,22 @@ p {
 .choice:not(.selected):hover {
   background: var(--lime-soft);
   border-color: #b8d770;
+}
+
+.choice small {
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 650;
+}
+
+.choice-unavailable,
+.choice-unavailable:hover {
+  color: #7e8983;
+  background: #f1f3ef;
+  border-color: #cfd5d0;
+  border-style: dashed;
+  cursor: not-allowed;
+  opacity: 0.78;
 }
 
 .stacked-choices {
@@ -732,6 +757,44 @@ p {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 1rem;
+}
+
+.schedule-card-heading {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.schedule-card-empty {
+  background: #f7f8f4;
+  border-style: dashed;
+}
+
+.schedule-card-empty > p {
+  margin: 0.85rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.commitment-action {
+  display: inline-flex;
+  min-height: 2.25rem;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0 0.7rem;
+  color: var(--ink);
+  background: var(--lime-soft);
+  border: 1px solid #c7dc91;
+  border-radius: 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.commitment-action.remove {
+  color: #7d3f35;
+  background: #fff7f4;
+  border-color: #e7c9c2;
 }
 
 .two-fields {
