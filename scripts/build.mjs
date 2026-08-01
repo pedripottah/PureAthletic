@@ -52,6 +52,13 @@ await copyFile(
   new URL(".openai/hosting.json", outputDirectory)
 );
 
+// These files support the OpenAI hosting adapter but should not be published
+// as browser-accessible assets by Cloudflare Workers.
+await writeFile(
+  new URL(".assetsignore", outputDirectory),
+  ".openai/\nserver/\n"
+);
+
 const workerSource = `const files = ${JSON.stringify(files)};
 
 export default {

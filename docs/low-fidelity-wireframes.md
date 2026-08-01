@@ -184,8 +184,8 @@ legal, and account-control reviews are complete.
 │  Preferred name                     │
 │  [_______________________________]  │
 │                                     │
-│  Team age group                     │
-│  [ U13                         ▾ ]  │
+│  Team age-group range               │
+│  [ U13–U15                     ▾ ]  │
 │                                     │
 │  Position                           │
 │  [ Goalkeeper                  ▾ ]  │

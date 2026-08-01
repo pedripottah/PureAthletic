@@ -58,7 +58,7 @@ const demoState = {
   onboarded: true, // The example user has completed onboarding.
   user: {
     name: "Sam",
-    ageGroup: "U14",
+    ageBandId: "u13-u15",
     guardianConfirmed: true,
     disclaimerAccepted: true,
     position: "Midfielder",
@@ -78,7 +78,7 @@ const demoState = {
     goalId: "strength",
     ageBandId: "u13-u15",
     purpose: "Build controlled football-strength foundations with enough recovery before Saturday’s match.",
-    explanation: "Selected for U14, Intermediate, and Strength, then placed away from the fixed Saturday match.",
+    explanation: "Selected for U13–U15, Intermediate, and Strength, then placed away from the fixed Saturday match.",
     activities: [
       { name: "Mobility and control", detail: "Dynamic ankle, hip, and upper-body movement followed by unloaded squat, hinge, and landing positions." },
       { name: "Technique-first circuit", detail: "Squat-to-target, supported reverse lunge, incline push-up, calf raise, and dead bug with clean technique." },
@@ -109,7 +109,7 @@ const onboardingSeed = {
   onboarded: false,
   user: {
     name: "",
-    ageGroup: "U13",
+    ageBandId: "",
     guardianConfirmed: false,
     disclaimerAccepted: false,
     position: "Midfielder",
@@ -138,7 +138,12 @@ const exercises = [
 
 // These values are reused to build choices instead of repeating the HTML by hand.
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const teamAgeGroups = Array.from({ length: 13 }, (_, index) => `U${index + 5}`);
+const teamAgeBands = [
+  { value: "u5-u8", label: "U5–U8", teamAgeGroups: ["U5", "U6", "U7", "U8"] },
+  { value: "u9-u12", label: "U9–U12", teamAgeGroups: ["U9", "U10", "U11", "U12"] },
+  { value: "u13-u15", label: "U13–U15", teamAgeGroups: ["U13", "U14", "U15"] },
+  { value: "u16-u17", label: "U16–U17", teamAgeGroups: ["U16", "U17"] }
+];
 const goalIdsByLabel = {
   "Match readiness": "match_readiness",
   Strength: "strength",
@@ -231,9 +236,28 @@ function loadData() {
     if (!saved) return clone(onboardingSeed);
 
     const restored = JSON.parse(saved);
-    if (restored.user?.experience === "Advanced") {
+    const previousAgeGroup = restored.user?.ageGroup;
+    const selectedAgeBand = teamAgeBands.find(
+      (option) => option.value === restored.user?.ageBandId
+    ) || teamAgeBands.find((option) =>
+      option.teamAgeGroups.includes(String(previousAgeGroup || "").toUpperCase())
+    );
+
+    if (restored.user?.experience === "Advanced" || !selectedAgeBand) {
       localStorage.removeItem(STORAGE_KEY);
       return clone(onboardingSeed);
+    }
+
+    // Version-two profiles stored an exact team group. Keep those profiles,
+    // but minimise the saved value to the broader band now used by the UI.
+    restored.user.ageBandId = selectedAgeBand.value;
+    delete restored.user.ageGroup;
+    if (previousAgeGroup) {
+      if (restored.recommendation?.explanation) {
+        restored.recommendation.explanation = restored.recommendation.explanation
+          .replace(previousAgeGroup, selectedAgeBand.label);
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(restored));
     }
 
     return restored;
@@ -588,7 +612,16 @@ function button(text, action, options = {}) {
  * of HTML strings into one string. The matching option receives "selected".
  */
 function selectedOptions(options, selected) {
-  return options.map((option) => `<option${option === selected ? " selected" : ""}>${escapeHtml(option)}</option>`).join("");
+  return options.map((option) => {
+    const value = typeof option === "string" ? option : option.value;
+    const label = typeof option === "string" ? option : option.label;
+    return `<option value="${escapeHtml(value)}"${value === selected ? " selected" : ""}>${escapeHtml(label)}</option>`;
+  }).join("");
+}
+
+function ageBandLabel(ageBandId) {
+  return teamAgeBands.find((option) => option.value === ageBandId)?.label
+    || "Age group not set";
 }
 
 function sessionTypeLabel(sessionType) {
@@ -609,7 +642,7 @@ function recommendationFromCatalog(user, catalog) {
   const experience = user.experience.toLowerCase();
   const goalId = goalIdsByLabel[user.goal] || "general_fitness";
   const ageBand = catalog.taxonomy.ageBands.find((candidate) =>
-    candidate.teamAgeGroups.includes(user.ageGroup)
+    candidate.id === user.ageBandId
   );
 
   if (!ageBand || !["beginner", "intermediate"].includes(experience)) {
@@ -638,7 +671,7 @@ function recommendationFromCatalog(user, catalog) {
     goalId,
     ageBandId: ageBand.id,
     purpose: routine.purpose,
-    explanation: `Selected from the U5–U17 catalog for ${user.ageGroup}, ${user.experience}, and ${user.goal}. Fixed commitments are then used to place and protect the session.`,
+    explanation: `Selected from the U5–U17 catalog for ${ageBandLabel(user.ageBandId)}, ${user.experience}, and ${user.goal}. Fixed commitments are then used to place and protect the session.`,
     progression: routine.levelProgressions[experience],
     supervision: routine.supervision,
     activities: routine.blocks.map((block) => ({
@@ -681,12 +714,13 @@ function fallbackRecommendation(user) {
   return {
     id: `fallback-${goalIdsByLabel[user.goal] || "general_fitness"}`,
     ...selected,
-    duration: user.ageGroup === "U5" || user.ageGroup === "U6" ? 15 : 20,
+    duration: user.ageBandId === "u5-u8" ? 15 : 20,
     intensity: "Easy",
     status: "Planned",
     goalId: goalIdsByLabel[user.goal] || "general_fitness",
+    ageBandId: user.ageBandId,
     purpose: selected.purpose,
-    explanation: `A conservative offline fallback selected for ${user.ageGroup} and ${user.goal}.`,
+    explanation: `A conservative offline fallback selected for ${ageBandLabel(user.ageBandId)} and ${user.goal}.`,
     activities: [
       { name: "Easy preparation", detail: "Start with comfortable movement and familiar ball touches." },
       { name: selected.title, detail: selected.purpose },
@@ -859,9 +893,12 @@ function renderOnboarding() {
           <input id="name" data-scope="onboarding" data-field="name" value="${escapeHtml(form.name)}" placeholder="Sam">
         </div>
         <div class="field">
-          <label for="age-group">Team age group</label>
-          <select id="age-group" data-scope="onboarding" data-field="ageGroup">${selectedOptions(teamAgeGroups, form.ageGroup)}</select>
-          <small class="field-note">Choose the registered team group. A date of birth is not needed for this prototype.</small>
+          <label for="age-band">Team age-group range</label>
+          <select id="age-band" data-scope="onboarding" data-field="ageBandId" required>
+            <option value="" disabled${form.ageBandId ? "" : " selected"}>Select a range</option>
+            ${selectedOptions(teamAgeBands, form.ageBandId)}
+          </select>
+          <small class="field-note">Choose the range containing the player’s registered team group. These bands match how the training guidance changes; a date of birth is not needed.</small>
         </div>
         <div class="field">
           <label for="position">Position</label>
@@ -920,20 +957,21 @@ function renderOnboarding() {
         <span class="section-kicker">REVIEW</span>
         <h1>Your first week is ready to build.</h1>
         <div class="review-list">
-          <div><span>Athlete</span><strong>${escapeHtml(form.name.trim() || "Sam")} · ${escapeHtml(form.ageGroup)} · ${escapeHtml(form.position)}</strong></div>
+          <div><span>Athlete</span><strong>${escapeHtml(form.name.trim() || "Sam")} · ${escapeHtml(ageBandLabel(form.ageBandId))} · ${escapeHtml(form.position)}</strong></div>
           <div><span>Experience</span><strong>${escapeHtml(form.experience)}</strong></div>
           <div><span>Primary goal</span><strong>${escapeHtml(form.goal)}</strong></div>
           <div><span>Fixed commitments</span><strong>${escapeHtml(commitmentSummary(schedule))}</strong></div>
-          <div><span>Plan logic</span><strong>Age group + experience + primary goal + schedule</strong></div>
+          <div><span>Plan logic</span><strong>Age band + experience + primary goal + schedule</strong></div>
         </div>
-        <div class="info-card">${icon("shield")}<div><strong>Junior safeguards applied</strong><p>Age-group limits, supervision, readiness, recovery, and any fixed match or practice take priority over the selected goal.</p></div></div>
+        <div class="info-card">${icon("shield")}<div><strong>Junior safeguards applied</strong><p>Age-band limits, supervision, readiness, recovery, and any fixed match or practice take priority over the selected goal.</p></div></div>
       </div>`;
   }
 
-  // Step 1 stays disabled until both required checkboxes are selected.
-  const canContinue =
-    !ui.generatingPlan
-    && (step !== 1 || (form.guardianConfirmed && form.disclaimerAccepted));
+  // Safety consent and the recommendation-driving age band are both required.
+  const stepIsValid =
+    (step !== 1 || (form.guardianConfirmed && form.disclaimerAccepted))
+    && (step !== 2 || Boolean(form.ageBandId));
+  const canContinue = !ui.generatingPlan && stepIsValid;
   return `
     <main class="focused-page">
       <header class="focused-header">
@@ -1033,7 +1071,7 @@ function renderToday() {
     ? "Safety rules take priority over the weekly goal and cannot be bypassed."
     : data.checkInDone
       ? rec.explanation || "Your check-in supports this age- and goal-matched routine."
-      : `${rec.explanation || `Selected for ${data.user.ageGroup}, ${data.user.experience}, and ${data.user.goal}.`} Check in first so it can respond to today’s readiness.`;
+      : `${rec.explanation || `Selected for ${ageBandLabel(data.user.ageBandId)}, ${data.user.experience}, and ${data.user.goal}.`} Check in first so it can respond to today’s readiness.`;
 
   return `
     <main class="screen">
@@ -1316,7 +1354,7 @@ function renderProfile() {
       ${screenHeader("ATHLETE PROFILE", "Your setup")}
       <div class="profile-grid">
         <section class="profile-card">
-          <div class="profile-identity"><span class="large-avatar">${escapeHtml(userName.slice(0, 1).toUpperCase())}</span><div><h2>${escapeHtml(userName)}</h2><p>${escapeHtml(data.user.ageGroup)} · ${escapeHtml(data.user.position)} · ${escapeHtml(data.user.experience)}</p>${pill(data.user.goal.toUpperCase(), "lime")}</div></div>
+          <div class="profile-identity"><span class="large-avatar">${escapeHtml(userName.slice(0, 1).toUpperCase())}</span><div><h2>${escapeHtml(userName)}</h2><p>${escapeHtml(ageBandLabel(data.user.ageBandId))} · ${escapeHtml(data.user.position)} · ${escapeHtml(data.user.experience)}</p>${pill(data.user.goal.toUpperCase(), "lime")}</div></div>
           <div class="profile-facts"><div><span>Availability</span><strong>${data.user.availability.length} days / week</strong></div><div><span>Equipment</span><strong>${data.user.equipment.length} options</strong></div></div>
         </section>
         <section class="settings-card">
@@ -1708,7 +1746,9 @@ app.addEventListener("input", (event) => {
 // `change` handles completed changes; checkboxes also need a visual rerender.
 app.addEventListener("change", (event) => {
   updateBoundField(event.target);
-  if (event.target.type === "checkbox") render();
+  if (event.target.type === "checkbox" || event.target.dataset.field === "ageBandId") {
+    render();
+  }
 });
 
 /*

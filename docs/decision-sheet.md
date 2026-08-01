@@ -31,7 +31,8 @@
 Onboarding will be a short, resumable sequence:
 
 1. Confirm parent or guardian approval and accept the training-guidance disclaimer.
-2. Enter preferred name, football position, and training experience.
+2. Choose a team age-group band and enter preferred name, football position,
+   and training experience.
 3. Choose one primary goal.
 4. Add recurring team practices and upcoming matches.
 5. Add independent-training availability and time per day.
@@ -41,7 +42,7 @@ Onboarding will be a short, resumable sequence:
 
 | Decision | V1 choice | Status | Reason |
 | --- | --- | --- | --- |
-| Eligibility | Select a U5–U17 team age group and confirm parent or guardian approval | Revised | Public release remains blocked by practitioner, safeguarding, consent, privacy, legal, and minor-account reviews. |
+| Eligibility | Select U5–U8, U9–U12, U13–U15, or U16–U17 and confirm parent or guardian approval | Revised | The four choices match the catalog’s developmental bands. Public release remains blocked by practitioner, safeguarding, consent, privacy, legal, and minor-account reviews. |
 | Required fields | Require only information needed to generate a safe and useful plan | Locked | This supports the principle of minimizing data entry. |
 | Free text | Optional only; structured choices must be enough to generate a plan | Locked | Free text is harder to validate and may contain unnecessary sensitive information. |
 | Completion target | A typical athlete should finish onboarding in five minutes or less | Proposed; validate in usability tests | A short setup reduces abandonment while still gathering necessary planning inputs. |

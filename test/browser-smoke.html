@@ -51,11 +51,27 @@
           click('[data-action="onboarding-next"]');
 
           await waitFor(
-            () => page.querySelector("#age-group"),
+            () => page.querySelector("#age-band"),
             "Football profile step did not open"
           );
           input("#name", "Alex");
-          input("#age-group", "U9");
+          const ageBand = page.querySelector("#age-band");
+          if (ageBand.options[0].textContent !== "Select a range" || !ageBand.options[0].disabled) {
+            throw new Error("Age-band prompt is missing");
+          }
+          if (!page.querySelector('[data-action="onboarding-next"]').disabled) {
+            throw new Error("Age-band selection must be required");
+          }
+          const ageBandLabels = [...ageBand.options]
+            .filter((option) => !option.disabled)
+            .map((option) => option.textContent);
+          if (ageBandLabels.join("|") !== "U5–U8|U9–U12|U13–U15|U16–U17") {
+            throw new Error("Developmental age-band choices are incorrect");
+          }
+          input("#age-band", "u9-u12");
+          if (page.querySelector('[data-action="onboarding-next"]').disabled) {
+            throw new Error("Valid age-band selection did not enable Continue");
+          }
 
           const advanced = page.querySelector(".choice-unavailable");
           if (!advanced?.disabled || advanced.dataset.action) {
@@ -97,15 +113,22 @@
 
           await waitFor(
             () => page.body.textContent.includes("React, accelerate and stop"),
-            "U9 Intermediate Speed recommendation was not selected"
+            "U9–U12 Intermediate Speed recommendation was not selected"
           );
+
+          const savedProfile = JSON.parse(
+            frame.contentWindow.localStorage.getItem("pureathletic-prototype-v2")
+          );
+          if (savedProfile.user.ageBandId !== "u9-u12" || "ageGroup" in savedProfile.user) {
+            throw new Error("Profile did not save the selected age band cleanly");
+          }
 
           if (!page.body.textContent.includes("Nothing added")) {
             throw new Error("Today did not preserve the empty commitment state");
           }
 
           result.textContent =
-            "PASS: onboarding, Advanced lock, goal routing, and empty commitments";
+            "PASS: onboarding, age bands, Advanced lock, goal routing, and empty commitments";
         } catch (error) {
           result.textContent = `FAIL: ${error.message}`;
         }

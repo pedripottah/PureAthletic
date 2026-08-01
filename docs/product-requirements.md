@@ -98,8 +98,9 @@ PureAthletic should answer one practical question every day:
 
 The athlete creates an account and supplies:
 
-- Team age group from U5–U17; avoid collecting a precise date of birth in the
-  training-recommendation payload.
+- Team age-group band: U5–U8, U9–U12, U13–U15, or U16–U17. The athlete chooses
+  the band containing their registered team group; avoid collecting an exact
+  team group or date of birth in the training-recommendation payload.
 - Parent or guardian approval record and applicable consent-policy version.
 - Preferred name.
 - Football position.
