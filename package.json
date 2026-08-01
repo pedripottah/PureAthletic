@@ -5,7 +5,9 @@
   "type": "module",
   "description": "PureAthletic prototype built with traditional HTML, CSS, and JavaScript.",
   "scripts": {
+    "dev": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
+    "start": "node scripts/serve.mjs",
     "test": "node --test",
     "validate:training": "node scripts/validate-training-library.mjs && node scripts/validate-youth-football-data.mjs",
     "validate:youth": "node scripts/validate-youth-football-data.mjs"

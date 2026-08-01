@@ -127,8 +127,73 @@
             throw new Error("Today did not preserve the empty commitment state");
           }
 
+          if (frame.contentWindow.location.pathname !== "/today") {
+            throw new Error("Today does not have its own URL");
+          }
+
+          const routeLinks = [...page.querySelectorAll('.side-nav [data-action="navigate"]')]
+            .map((link) => link.getAttribute("href"));
+          if (routeLinks.join("|") !== "/today|/training|/progress|/profile") {
+            throw new Error("Primary navigation routes are incorrect");
+          }
+
+          click('.side-nav [data-action="navigate"][data-screen="week"]');
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/training",
+            "Training route did not open"
+          );
+          if (page.querySelectorAll('a.plan-row[data-action="open-training-detail"]').length !== 7) {
+            throw new Error("Not every training row has a detail page");
+          }
+          click('[data-action="open-training-detail"][data-id="fri"]');
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/training/session/fri"
+              && page.querySelector("main h1")?.textContent === "Mobility reset",
+            "Mobility reset detail did not open"
+          );
+          click('[data-action="back-training"]');
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/training",
+            "Mobility reset Back did not restore Training"
+          );
+          click('[data-action="open-training-detail"][data-id="mon"]');
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/training/session/mon"
+              && page.querySelector("main h1")?.textContent === "Acceleration quality",
+            "Acceleration quality detail did not open"
+          );
+          click('[data-action="back-training"]');
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/training",
+            "Acceleration quality Back did not restore Training"
+          );
+          if (page.querySelector(".plan-row:not([href])")) {
+            throw new Error("A training row is missing its URL");
+          }
+          frame.contentWindow.history.back();
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/today",
+            "Browser Back did not restore Today"
+          );
+
+          click('[data-action="open-unplanned-log"]');
+          await waitFor(
+            () => page.querySelector('[data-form="activity-log"]'),
+            "Activity log did not open"
+          );
+          input("#log-duration", "0");
+          page.querySelector('[data-form="activity-log"]').requestSubmit();
+          if (frame.contentWindow.location.pathname !== "/activity/log" || page.querySelector("#log-duration").checkValidity()) {
+            throw new Error("Invalid activity duration was accepted");
+          }
+          click('[data-action="back-today"]');
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/today",
+            "Activity log Back did not restore Today"
+          );
+
           result.textContent =
-            "PASS: onboarding, age bands, Advanced lock, goal routing, and empty commitments";
+            "PASS: onboarding, routes, history, week actions, validation, and responsive state";
         } catch (error) {
           result.textContent = `FAIL: ${error.message}`;
         }

@@ -357,8 +357,7 @@ function CheckIn({ onBack, onSubmit }) {
                 <div className="scale-label"><label htmlFor={`checkin-${key}`}>{label}</label><output htmlFor={`checkin-${key}`}>{displayValue} / 5</output></div>
                 <div className="scale-control" style={{ "--readiness-position": `${(displayValue - 1) * 25}%` }}>
                   <div className="scale-track" aria-hidden="true">
-                    <div className="scale-track-shine" />
-                    <div className="scale-ticks">{[1, 2, 3, 4, 5].map((value) => <i key={value} />)}</div>
+                    <span className="scale-rail" />
                     <span className="scale-handle" />
                   </div>
                   <input

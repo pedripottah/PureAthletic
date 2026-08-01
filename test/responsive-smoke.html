@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PureAthletic responsive smoke test</title>
+    <style>
+      body { margin: 0; font: 14px system-ui, sans-serif; }
+      #result { position: fixed; inset: 0 0 auto; z-index: 2; margin: 0; padding: 8px; background: white; }
+      iframe { display: block; width: 320px; height: 900px; margin-top: 38px; border: 0; }
+    </style>
+  </head>
+  <body>
+    <pre id="result">RUNNING</pre>
+    <iframe id="site" src="/"></iframe>
+    <script>
+      const result = document.querySelector("#result");
+      const frame = document.querySelector("#site");
+      const wait = (milliseconds) =>
+        new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+      async function waitFor(predicate, message, attempts = 100) {
+        for (let index = 0; index < attempts; index += 1) {
+          const value = predicate();
+          if (value) return value;
+          await wait(50);
+        }
+        throw new Error(message);
+      }
+
+      function assertNoHorizontalOverflow(label) {
+        const page = frame.contentDocument;
+        const root = page.documentElement;
+        if (root.scrollWidth > root.clientWidth + 1) {
+          throw new Error(`${label} overflows: ${root.scrollWidth}px in ${root.clientWidth}px`);
+        }
+      }
+
+      frame.addEventListener("load", async () => {
+        try {
+          const page = frame.contentDocument;
+          frame.contentWindow.localStorage.clear();
+          page.querySelector('[data-action="enter-demo"]').click();
+          await waitFor(
+            () => page.querySelector('[data-action="open-checkin"]'),
+            "Today did not load"
+          );
+          assertNoHorizontalOverflow("320px Today");
+
+          const recommendationTitle = page.querySelector(".recommendation-card h2");
+          const titleStyle = frame.contentWindow.getComputedStyle(recommendationTitle);
+          if (parseFloat(titleStyle.lineHeight) / parseFloat(titleStyle.fontSize) < 0.95) {
+            throw new Error("Recommendation title line-height is too tight");
+          }
+
+          page.querySelector('[data-action="open-checkin"]').click();
+          await waitFor(() => page.querySelector(".scale-slider"), "Check-in did not load");
+          assertNoHorizontalOverflow("320px check-in");
+          if (page.querySelector(".scale-ticks") || !page.querySelector(".scale-rail")) {
+            throw new Error("Slider rail artifacts remain");
+          }
+          if (frame.contentWindow.getComputedStyle(page.querySelector(".scale-handle"), "::after").content !== "none") {
+            throw new Error("Slider handle dot remains");
+          }
+
+          frame.style.width = "1024px";
+          page.querySelector('[data-action="back-today"]').click();
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/today",
+            "Today did not return"
+          );
+          await wait(100);
+          assertNoHorizontalOverflow("1024px Today");
+
+          result.textContent = "PASS: 320px and 1024px layouts, title metrics, and clean sliders";
+        } catch (error) {
+          result.textContent = `FAIL: ${error.message}`;
+        }
+      }, { once: true });
+    </script>
+  </body>
+</html>

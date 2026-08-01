@@ -24,7 +24,7 @@
 
 // This is the name used to save and retrieve the app's data in localStorage.
 const STORAGE_KEY = "pureathletic-prototype-v2";
-const YOUTH_DATA_BASE = "data/youth-football";
+const YOUTH_DATA_BASE = "/data/youth-football";
 
 // querySelector() connects JavaScript to elements that already exist in index.html.
 const app = document.querySelector("#app"); // The <div id="app"> where screens appear.
@@ -180,6 +180,44 @@ const navItems = [
   ["profile", "profile", "Profile"]
 ];
 
+// Each rendered screen has a stable, shareable browser URL.
+const screenRoutes = {
+  landing: "/",
+  onboarding: "/onboarding",
+  today: "/today",
+  week: "/training",
+  progress: "/progress",
+  profile: "/profile",
+  checkin: "/check-in",
+  outcome: "/check-in/result",
+  safety: "/safety",
+  workout: "/training/workout",
+  "short-workout": "/training/workout/short",
+  log: "/activity/log",
+  adjustment: "/training/review",
+  schedule: "/profile/schedule"
+};
+const routeScreens = Object.fromEntries(
+  Object.entries(screenRoutes).map(([screen, route]) => [route, screen])
+);
+const screenTitles = {
+  landing: "PureAthletic · Age-aware football training",
+  onboarding: "Create your plan · PureAthletic",
+  today: "Today · PureAthletic",
+  week: "Training plan · PureAthletic",
+  progress: "Progress · PureAthletic",
+  profile: "Profile · PureAthletic",
+  checkin: "Daily check-in · PureAthletic",
+  outcome: "Check-in result · PureAthletic",
+  safety: "Safety guidance · PureAthletic",
+  workout: "Training session · PureAthletic",
+  "short-workout": "Short training session · PureAthletic",
+  "training-detail": "Session details · PureAthletic",
+  log: "Log activity · PureAthletic",
+  adjustment: "Review plan changes · PureAthletic",
+  schedule: "Team schedule · PureAthletic"
+};
+
 // =============================================================================
 // LIVE APPLICATION STATE
 // =============================================================================
@@ -204,8 +242,9 @@ let ui = {
   onboardingSchedule: clone(demoState.schedule),
   checkinForm: { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" },
   workoutDone: [],
+  selectedPlanItemId: "tue",
   outcome: "good",
-  logConfig: { unplanned: false, status: "Completed" },
+  logConfig: { unplanned: false, status: "Completed", planItemId: "tue" },
   logForm: null,
   pending: null,
   notifications: true,
@@ -890,7 +929,7 @@ function renderOnboarding() {
         <h1>Tell us about your game.</h1>
         <div class="field">
           <label for="name">Preferred name</label>
-          <input id="name" data-scope="onboarding" data-field="name" value="${escapeHtml(form.name)}" placeholder="Sam">
+          <input id="name" maxlength="40" autocomplete="given-name" data-scope="onboarding" data-field="name" value="${escapeHtml(form.name)}" placeholder="Sam">
         </div>
         <div class="field">
           <label for="age-band">Team age-group range</label>
@@ -906,8 +945,8 @@ function renderOnboarding() {
         </div>
         <div class="field">
           <label>Training experience</label>
-          <div class="choice-grid">
-            ${["Beginner", "Intermediate"].map((item) => `<button type="button" class="choice ${form.experience === item ? "selected" : ""}" data-action="set-experience" data-value="${item}"><span>${item}</span></button>`).join("")}
+          <div class="choice-grid" role="group" aria-label="Training experience">
+            ${["Beginner", "Intermediate"].map((item) => `<button type="button" class="choice ${form.experience === item ? "selected" : ""}" data-action="set-experience" data-value="${item}" aria-pressed="${form.experience === item}"><span>${item}</span></button>`).join("")}
             <button type="button" class="choice choice-unavailable" disabled aria-disabled="true" aria-label="Advanced recommendations are in development">
               <span>Advanced</span><small>In development</small>
             </button>
@@ -929,10 +968,10 @@ function renderOnboarding() {
       <div class="step-panel">
         <span class="section-kicker">PRIMARY GOAL</span>
         <h1>What matters most right now?</h1>
-        <div class="stacked-choices">
+        <div class="stacked-choices" role="group" aria-label="Primary goal">
           <!-- [title, detail] destructures each pair into two named variables. -->
           ${goals.map(([title, detail]) => `
-            <button type="button" class="radio-card ${form.goal === title ? "selected" : ""}" data-action="set-goal" data-value="${title}">
+            <button type="button" class="radio-card ${form.goal === title ? "selected" : ""}" data-action="set-goal" data-value="${title}" aria-pressed="${form.goal === title}">
               <span class="radio-dot"></span><span class="radio-copy"><strong>${title}</strong><small>${detail}</small></span>
             </button>`).join("")}
         </div>
@@ -1020,8 +1059,8 @@ function scheduleCard(label, prefix, schedule, scope) {
         <button type="button" class="commitment-action remove" data-action="remove-commitment" data-prefix="${prefix}" data-scope="${scope}">Remove</button>
       </div>
       <div class="two-fields">
-        <div class="field"><label>Day</label><select data-scope="${scope}" data-field="${dayField}">${selectedOptions(weekdays, schedule[dayField])}</select></div>
-        <div class="field"><label>Time</label><input type="time" data-scope="${scope}" data-field="${timeField}" value="${escapeHtml(schedule[timeField])}"></div>
+        <div class="field"><label for="${scope}-${dayField}">Day</label><select id="${scope}-${dayField}" data-scope="${scope}" data-field="${dayField}">${selectedOptions(weekdays, schedule[dayField])}</select></div>
+        <div class="field"><label for="${scope}-${timeField}">Time</label><input id="${scope}-${timeField}" type="time" data-scope="${scope}" data-field="${timeField}" value="${escapeHtml(schedule[timeField])}"></div>
       </div>
     </div>`;
 }
@@ -1033,16 +1072,16 @@ function scheduleCard(label, prefix, schedule, scope) {
 function renderAppShell(content) {
   // Destructuring names the three values inside each navItems entry.
   const navigation = navItems.map(([id, iconName, label]) => `
-    <button type="button" class="${ui.screen === id ? "active" : ""}" data-action="navigate" data-screen="${id}">
+    <a class="${ui.screen === id ? "active" : ""}" href="${routeForScreen(id)}" data-action="navigate" data-screen="${id}"${ui.screen === id ? ' aria-current="page"' : ""}>
       ${icon(iconName)}<span>${label}</span>
-    </button>`).join("");
+    </a>`).join("");
   const userName = data.user.name || "Athlete";
 
   return `
     <div class="app-shell">
       <aside class="side-nav">
         ${brand()}
-        <nav>${navigation}</nav>
+        <nav aria-label="Primary navigation">${navigation}</nav>
         <div class="side-user">
           <span class="avatar">${escapeHtml(userName.slice(0, 1).toUpperCase())}</span>
           <div><strong>${escapeHtml(userName)}</strong><small>${escapeHtml(data.user.position)}</small></div>
@@ -1050,7 +1089,7 @@ function renderAppShell(content) {
         </div>
       </aside>
       <div class="app-content">${content}${renderHistory()}</div>
-      <nav class="bottom-nav">${navigation}</nav>
+      <nav class="bottom-nav" aria-label="Primary navigation">${navigation}</nav>
     </div>`;
 }
 
@@ -1123,8 +1162,7 @@ function renderCheckIn() {
       <div class="scale-label"><label for="checkin-${key}">${label}</label><output for="checkin-${key}">${displayValue} / 5</output></div>
       <div class="scale-control" style="--readiness-position: ${(displayValue - 1) * 25}%">
         <div class="scale-track" aria-hidden="true">
-          <div class="scale-track-shine"></div>
-          <div class="scale-ticks">${[1, 2, 3, 4, 5].map(() => "<i></i>").join("")}</div>
+          <span class="scale-rail"></span>
           <span class="scale-handle"></span>
         </div>
         <input
@@ -1145,7 +1183,7 @@ function renderCheckIn() {
     </div>`;
   }).join("");
   const painWarning = form.pain !== "None"
-    ? `<p class="inline-warning">${icon("alert", 17)} Any reported pain pauses automated junior training and asks for responsible-adult review.</p>`
+    ? `<p class="inline-warning" role="alert">${icon("alert", 17)} Any reported pain pauses automated junior training and asks for responsible-adult review.</p>`
     : "";
 
   return `
@@ -1156,8 +1194,8 @@ function renderCheckIn() {
         <div class="checkin-card">
           ${scaleMarkup}
           <div class="pain-field">
-            <div class="scale-label"><label>Pain today</label>${icon("shield", 18)}</div>
-            <div class="pain-options">${["None", "Mild", "Moderate", "Severe"].map((pain) => `<button type="button" class="${form.pain === pain ? "selected" : ""} ${pain !== "None" ? "caution" : ""}" data-action="set-checkin-pain" data-value="${pain}">${pain}</button>`).join("")}</div>
+            <div class="scale-label"><span class="field-group-label" id="checkin-pain-label">Pain today</span>${icon("shield", 18)}</div>
+            <div class="pain-options" role="group" aria-labelledby="checkin-pain-label">${["None", "Mild", "Moderate", "Severe"].map((pain) => `<button type="button" class="${form.pain === pain ? "selected" : ""} ${pain !== "None" ? "caution" : ""}" data-action="set-checkin-pain" data-value="${pain}" aria-pressed="${form.pain === pain}">${pain}</button>`).join("")}</div>
             ${painWarning}
           </div>
           ${button('Save check-in <span aria-hidden="true">→</span>', "submit-checkin", { className: "full" })}
@@ -1222,7 +1260,7 @@ function renderWorkout(short = false) {
         <div class="exercise-list">
           <!-- map() turns every exercise object into one clickable HTML row. -->
           ${shown.map((exercise, index) => `
-            <button type="button" class="exercise-row ${ui.workoutDone.includes(index) ? "done" : ""}" data-action="toggle-exercise" data-index="${index}">
+            <button type="button" class="exercise-row ${ui.workoutDone.includes(index) ? "done" : ""}" data-action="toggle-exercise" data-index="${index}" aria-pressed="${ui.workoutDone.includes(index)}">
               <span class="exercise-number">${ui.workoutDone.includes(index) ? icon("check", 17) : String(index + 1).padStart(2, "0")}</span>
               <span><strong>${exercise.name}</strong><small>${exercise.detail}</small></span>${icon("arrow")}
             </button>`).join("")}
@@ -1237,6 +1275,122 @@ function renderWorkout(short = false) {
     </main>`;
 }
 
+function planItemGuidance(item) {
+  if (item.id === "tue") {
+    return {
+      purpose: data.recommendation.purpose,
+      activities: data.recommendation.activities?.length
+        ? data.recommendation.activities
+        : exercises
+    };
+  }
+
+  const guidance = {
+    Recovery: {
+      purpose: "Use easy movement to reduce stiffness and arrive fresher for the next football commitment.",
+      activities: [
+        { name: "Easy mobility flow", detail: "Move gently through comfortable ankle, hip, and upper-body ranges." },
+        { name: "Low-intensity movement", detail: "Walk or move easily enough to keep the session restorative." },
+        { name: "Recovery check", detail: "Finish feeling better than you started and tell an adult about any pain or concern." }
+      ]
+    },
+    Speed: {
+      purpose: "Practise short, high-quality acceleration efforts with full recovery between repetitions.",
+      activities: [
+        { name: "Movement preparation", detail: "Build from easy movement into controlled running mechanics." },
+        { name: "Acceleration quality", detail: "Use short efforts with a stable start, strong posture, and a safe stopping area." },
+        { name: "Full recovery", detail: "Walk back and wait until ready before the next quality effort." }
+      ]
+    },
+    Strength: {
+      purpose: "Build controlled football-strength foundations with technique taking priority over load.",
+      activities: [
+        { name: "Mobility and control", detail: "Prepare the joints and rehearse each movement without load." },
+        { name: "Technique-first circuit", detail: "Use controlled squat, lunge, push, calf, and core patterns." },
+        { name: "Easy finish", detail: "Stop before technique drops and record any movement that needed an easier option." }
+      ]
+    },
+    Conditioning: {
+      purpose: "Build repeatable football movement through short work periods and visible recovery.",
+      activities: [
+        { name: "Progressive warm-up", detail: "Increase movement gradually while keeping control and awareness." },
+        { name: "Football intervals", detail: "Alternate short movement rounds with enough recovery to preserve quality." },
+        { name: "Easy reset", detail: "Walk, breathe normally, and finish without an all-out effort." }
+      ]
+    },
+    "Team practice": {
+      purpose: "This is a fixed, team-led commitment. Follow the coach’s session rather than an additional PureAthletic workout.",
+      activities: [
+        { name: "Follow the team plan", detail: "Use the instructions, space, and equipment provided by the responsible coach." },
+        { name: "Keep adults informed", detail: "Tell the coach and a parent or guardian about pain, illness, or feeling unwell." },
+        { name: "No extra loading", detail: "Do not add optional hard training around this fixed commitment." }
+      ]
+    },
+    Match: {
+      purpose: "This match is a fixed commitment and takes priority over optional training in the plan.",
+      activities: [
+        { name: "Use the team preparation", detail: "Follow the coach’s warm-up, role, and match-day instructions." },
+        { name: "Play within the rules", detail: "Use appropriate equipment and communicate any pain or concern immediately." },
+        { name: "Recover afterwards", detail: "Use easy movement, normal food and fluids, and responsible-adult support." }
+      ]
+    },
+    Rest: {
+      purpose: "No structured training is planned. This open day gives the week room to recover.",
+      activities: [
+        { name: "No workout required", detail: "Rest is part of the plan and does not need to be replaced." },
+        { name: "Normal easy activity", detail: "Everyday walking and comfortable movement are enough if you feel well." },
+        { name: "Prepare for what is next", detail: "Check the next commitment and keep a parent or guardian informed." }
+      ]
+    }
+  };
+
+  return guidance[item.type] || {
+    purpose: "Review this planned session before deciding how it fits the day.",
+    activities: exercises
+  };
+}
+
+function renderTrainingDetail() {
+  const item = data.plan.find((candidate) => candidate.id === ui.selectedPlanItemId);
+  if (!item) return renderWeek();
+
+  const guidance = planItemGuidance(item);
+  const canLog = item.type !== "Rest";
+  const canCompleteSteps = canLog && !item.fixed;
+  const durationLabel = item.duration ? `${item.duration} MIN` : item.type.toUpperCase();
+  const rows = guidance.activities.map((activity, index) => {
+    const completed = ui.workoutDone.includes(index);
+    const content = `
+      <span class="exercise-number">${completed ? icon("check", 17) : String(index + 1).padStart(2, "0")}</span>
+      <span><strong>${escapeHtml(activity.name)}</strong><small>${escapeHtml(activity.detail)}</small></span>
+      ${canCompleteSteps ? icon("arrow") : ""}`;
+    return canCompleteSteps
+      ? `<button type="button" class="exercise-row ${completed ? "done" : ""}" data-action="toggle-exercise" data-index="${index}" aria-pressed="${completed}">${content}</button>`
+      : `<div class="exercise-row static-row">${content}</div>`;
+  }).join("");
+
+  const actions = canLog
+    ? `<div class="sticky-actions">
+        ${button("Finish and log", "open-plan-item-log", { attributes: `data-id="${escapeHtml(item.id)}" data-status="Completed"` })}
+        ${button("Log modifications", "open-plan-item-log", { variant: "secondary", attributes: `data-id="${escapeHtml(item.id)}" data-status="Modified"` })}
+      </div>`
+    : `<div class="sticky-actions">${button("Back to training", "back-training", { variant: "secondary" })}</div>`;
+
+  return `
+    <main class="focused-page workout-page">
+      <header class="focused-header"><button type="button" class="icon-button" data-action="back-training" aria-label="Back to Training">${icon("back")}</button><span class="focused-title">Session detail</span>${pill(durationLabel)}</header>
+      <section class="workout-shell">
+        <div class="workout-hero">
+          <div>${pill(item.type.toUpperCase(), item.fixed ? "dark" : "lime")}<h1>${escapeHtml(item.title)}</h1><p>${escapeHtml(guidance.purpose)}</p></div>
+          <div class="difficulty"><span>${item.fixed ? "OWNER" : "INTENSITY"}</span><strong>${escapeHtml(item.fixed ? "Team-led" : item.intensity)}</strong><div><i></i><i class="${["Easy", "Rest"].includes(item.intensity) ? "muted" : ""}"></i><i class="muted"></i><i class="muted"></i></div></div>
+        </div>
+        <div class="exercise-list">${rows}</div>
+        <div class="workout-note">${icon("shield")}<p>${item.fixed ? "This page explains how the fixed commitment fits the week; the coach remains responsible for the session itself." : "A responsible adult must know about the session. Stop for pain, dizziness, unusual breathing difficulty, or feeling unwell."}</p></div>
+        ${actions}
+      </section>
+    </main>`;
+}
+
 /*
  * Builds the activity form for both planned and unplanned training.
  * Conditional template sections show different fields for the two situations.
@@ -1244,24 +1398,26 @@ function renderWorkout(short = false) {
 function renderActivityLog() {
   const form = ui.logForm;
   const unplanned = ui.logConfig.unplanned;
+  const planItem = data.plan.find((item) => item.id === ui.logConfig.planItemId);
+  const backAction = !unplanned && ui.logConfig.planItemId !== "tue" ? "back-training" : "back-today";
   return `
     <main class="focused-page log-page">
-      <header class="focused-header"><button type="button" class="icon-button" data-action="back-today" aria-label="Back">${icon("back")}</button><span class="focused-title">${unplanned ? "Log another activity" : "Log your session"}</span><span></span></header>
+      <header class="focused-header"><button type="button" class="icon-button" data-action="${backAction}" aria-label="Back">${icon("back")}</button><span class="focused-title">${unplanned ? "Log another activity" : "Log your session"}</span><span></span></header>
       <section class="log-shell">
-        <div class="log-heading"><span class="section-kicker">${unplanned ? "UNPLANNED ACTIVITY" : "TODAY’S SESSION"}</span><h1>${unplanned ? "What did you do?" : escapeHtml(data.recommendation.title)}</h1></div>
-        <div class="form-card">
-          ${unplanned ? `<div class="field"><label>Activity type</label><select data-scope="log" data-field="type">${selectedOptions(["Team practice", "Match", "Strength", "Speed", "Conditioning", "Recovery"], form.type)}</select></div>` : ""}
-          ${unplanned ? "" : `<div class="field"><label>Outcome</label><div class="segmented">${["Completed", "Modified", "Skipped"].map((status) => `<button type="button" class="${form.status === status ? "selected" : ""}" data-action="set-log-status" data-value="${status}">${status}</button>`).join("")}</div></div>`}
+        <div class="log-heading"><span class="section-kicker">${unplanned ? "UNPLANNED ACTIVITY" : "PLANNED SESSION"}</span><h1>${unplanned ? "What did you do?" : escapeHtml(planItem?.title || data.recommendation.title)}</h1></div>
+        <form class="form-card" data-form="activity-log">
+          ${unplanned ? `<div class="field"><label for="log-type">Activity type</label><select id="log-type" data-scope="log" data-field="type">${selectedOptions(["Team practice", "Match", "Strength", "Speed", "Conditioning", "Recovery"], form.type)}</select></div>` : ""}
+          ${unplanned ? "" : `<div class="field"><span class="field-group-label" id="log-outcome-label">Outcome</span><div class="segmented" role="group" aria-labelledby="log-outcome-label">${["Completed", "Modified", "Skipped"].map((status) => `<button type="button" class="${form.status === status ? "selected" : ""}" data-action="set-log-status" data-value="${status}" aria-pressed="${form.status === status}">${status}</button>`).join("")}</div></div>`}
           ${form.status === "Skipped" ? "" : `
             <div class="two-fields">
-              <div class="field"><label>Duration</label><div class="input-suffix"><input type="number" min="1" data-scope="log" data-field="duration" value="${form.duration}"><span>min</span></div></div>
-              <div class="field"><label>Effort</label><div class="input-suffix"><input type="number" min="1" max="10" data-scope="log" data-field="effort" value="${form.effort}"><span>/ 10</span></div></div>
+              <div class="field"><label for="log-duration">Duration</label><div class="input-suffix"><input id="log-duration" type="number" min="1" max="300" required data-scope="log" data-field="duration" value="${form.duration}"><span>min</span></div></div>
+              <div class="field"><label for="log-effort">Effort</label><div class="input-suffix"><input id="log-effort" type="number" min="1" max="10" required data-scope="log" data-field="effort" value="${form.effort}"><span>/ 10</span></div></div>
             </div>`}
-          <div class="field"><label>Pain during or after</label><div class="pain-options compact">${["None", "Mild", "Moderate", "Severe"].map((pain) => `<button type="button" class="${form.pain === pain ? "selected" : ""}" data-action="set-log-pain" data-value="${pain}">${pain}</button>`).join("")}</div></div>
+          <div class="field"><span class="field-group-label" id="log-pain-label">Pain during or after</span><div class="pain-options compact" role="group" aria-labelledby="log-pain-label">${["None", "Mild", "Moderate", "Severe"].map((pain) => `<button type="button" class="${form.pain === pain ? "selected" : ""}" data-action="set-log-pain" data-value="${pain}" aria-pressed="${form.pain === pain}">${pain}</button>`).join("")}</div></div>
           <div class="field"><label for="notes">Notes <small>Optional</small></label><textarea id="notes" rows="3" data-scope="log" data-field="notes" placeholder="${form.status === "Modified" ? "What did you change?" : "Anything useful to remember?"}">${escapeHtml(form.notes)}</textarea></div>
           ${unplanned ? `<p class="hint">${icon("refresh", 17)} A high-load activity may change the next 24–48 hours.</p>` : ""}
-          ${button('Save activity <span aria-hidden="true">→</span>', "save-activity", { className: "full" })}
-        </div>
+          <button type="submit" class="button button-primary full"><span>Save activity <span aria-hidden="true">→</span></span></button>
+        </form>
       </section>
     </main>`;
 }
@@ -1306,22 +1462,21 @@ function renderWeek() {
   ).length;
   const hasMatch = commitmentEnabled(data.schedule, "match");
   const rows = data.plan.map((item) => {
-    const interactive = !item.fixed && item.type !== "Rest";
     // Nested template strings add time and duration only when those values exist.
     const meta = `${item.time ? `${item.time} · ` : ""}${item.duration ? `${item.duration} min · ` : ""}${item.intensity}`;
     return `
-      <button type="button" class="plan-row" ${interactive ? 'data-action="open-workout"' : ""}>
+      <a href="/training/session/${encodeURIComponent(item.id)}" class="plan-row interactive" data-action="open-training-detail" data-id="${escapeHtml(item.id)}">
         <span class="day-dot ${item.fixed ? "fixed" : item.type.toLowerCase()}"></span>
         <span class="plan-day">${escapeHtml(item.day)}</span>
         <span class="plan-main"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(meta)}</small></span>
         ${pill(item.fixed ? item.type.toUpperCase() : item.status.toUpperCase(), item.fixed ? "dark" : item.type === "Recovery" ? "lime" : "neutral")}
-        ${interactive ? icon("arrow", 18) : ""}
-      </button>`;
+        ${icon("arrow", 18)}
+      </a>`;
   }).join("");
 
   return `
     <main class="screen">
-      ${screenHeader("ROLLING PLAN", "Your next 7 days", '<button type="button" class="date-control">28 Jul — 3 Aug</button>')}
+      ${screenHeader("ROLLING PLAN", "Your next 7 days", '<span class="date-control">28 Jul — 3 Aug</span>')}
       <section class="week-card">
         <div class="week-summary">
           <div><span class="eyebrow">WEEK SHAPE</span><strong>${focusedSessions} focused session${focusedSessions === 1 ? "" : "s"}</strong><p>${hasMatch ? "with recovery protected around your match" : "balanced around the commitments you added"}</p></div>
@@ -1346,7 +1501,7 @@ function renderProgress() {
   if (!data.activities.length) {
     return `
       <main class="screen">
-        ${screenHeader("21 — 27 JULY", "Your week, in context.", '<button type="button" class="date-control">Previous week</button>')}
+        ${screenHeader("21 — 27 JULY", "Your week, in context.", '<span class="date-control">Previous week</span>')}
         <section class="empty-state"><span class="empty-icon">${icon("progress", 32)}</span><h2>Your first review is taking shape.</h2><p>Log a few sessions and check-ins. After seven days, useful patterns will appear here.</p></section>
       </main>`;
   }
@@ -1356,7 +1511,7 @@ function renderProgress() {
   const completePercent = Math.max(15, (completed / data.activities.length) * 100);
   return `
     <main class="screen">
-      ${screenHeader("21 — 27 JULY", "Your week, in context.", '<button type="button" class="date-control">Previous week</button>')}
+      ${screenHeader("21 — 27 JULY", "Your week, in context.", '<span class="date-control">Previous week</span>')}
       <div class="progress-layout">
         <section class="stat-card accent-stat"><span class="eyebrow">APPROPRIATE CONSISTENCY</span><div class="stat-main"><strong>${completed + modified}</strong><span>sessions completed<br>or modified</span></div><p>Rest and recovery count when they are the appropriate recommendation.</p></section>
         <section class="stat-card"><span class="eyebrow">TRAINING TIME</span><div class="stat-main"><strong>${minutes}</strong><span>minutes<br>logged</span></div><div class="trend-bars">${bars}</div></section>
@@ -1383,7 +1538,7 @@ function renderProfile() {
           ${settingsRow("week", "Team schedule", commitmentSummary(data.schedule), "edit-schedule")}
           ${settingsRow("bolt", "Equipment & availability", "What you can use and when")}
           <span class="settings-label">PREFERENCES & DATA</span>
-          <button type="button" data-action="toggle-notifications"><span class="settings-icon">${icon("today")}</span><span><strong>Check-in reminders</strong><small>${ui.notifications ? "On · before optional training" : "Off"}</small></span><span class="toggle ${ui.notifications ? "on" : ""}"><i></i></span></button>
+          <button type="button" role="switch" aria-checked="${ui.notifications}" data-action="toggle-notifications"><span class="settings-icon">${icon("today")}</span><span><strong>Check-in reminders</strong><small>${ui.notifications ? "On · before optional training" : "Off"}</small></span><span class="toggle ${ui.notifications ? "on" : ""}" aria-hidden="true"><i></i></span></button>
           ${settingsRow("download", "Export my data", "Download this prototype’s local data", "export-data")}
           ${settingsRow("refresh", "Restart demo", "Restore the seeded prototype", "reset-demo")}
           ${settingsRow("trash", "Delete local account", "Clears all prototype data", "delete-data", "danger-row")}
@@ -1397,7 +1552,10 @@ function renderProfile() {
  * Empty default arguments make the action and extra CSS class optional.
  */
 function settingsRow(iconName, title, detail, action = "", className = "") {
-  return `<button type="button" class="${className}" ${action ? `data-action="${action}"` : ""}><span class="settings-icon">${icon(iconName)}</span><span><strong>${title}</strong><small>${detail}</small></span>${icon("arrow")}</button>`;
+  if (!action) {
+    return `<div class="settings-static ${className}"><span class="settings-icon">${icon(iconName)}</span><span><strong>${title}</strong><small>${detail}</small></span></div>`;
+  }
+  return `<button type="button" class="${className}" data-action="${action}"><span class="settings-icon">${icon(iconName)}</span><span><strong>${title}</strong><small>${detail}</small></span>${icon("arrow")}</button>`;
 }
 
 // Builds the form used to edit fixed practice and match commitments.
@@ -1434,6 +1592,138 @@ function renderHistory() {
 // SCREEN ROUTER
 // =============================================================================
 
+function normalizedPathname(pathname = window.location.pathname) {
+  const withoutIndex = pathname === "/index.html" ? "/" : pathname;
+  const normalized = `/${withoutIndex.split("/").filter(Boolean).join("/")}`;
+  return normalized === "/" ? normalized : normalized.replace(/\/$/, "");
+}
+
+function routeForScreen(screen) {
+  if (screen === "training-detail") {
+    return `/training/session/${encodeURIComponent(ui.selectedPlanItemId || "tue")}`;
+  }
+  return screenRoutes[screen] || screenRoutes.today;
+}
+
+function screenForRoute(pathname = window.location.pathname) {
+  const normalized = normalizedPathname(pathname);
+  const trainingMatch = normalized.match(/^\/training\/session\/([^/]+)$/);
+  if (trainingMatch) {
+    ui.selectedPlanItemId = decodeURIComponent(trainingMatch[1]);
+    return "training-detail";
+  }
+  return routeScreens[normalized] || null;
+}
+
+function resolveRouteScreen(requestedScreen) {
+  let screen = requestedScreen || (data.onboarded ? "today" : "landing");
+
+  if (!data.onboarded && !["landing", "onboarding"].includes(screen)) {
+    return "onboarding";
+  }
+  if (screen === "adjustment" && !ui.pending) return "week";
+  if (screen === "training-detail" && !data.plan.some((item) => item.id === ui.selectedPlanItemId)) {
+    return "week";
+  }
+  if (screen === "outcome" && !data.checkInDone) return "today";
+  if (screen === "safety" && data.recommendation.status !== "Safety") return "today";
+  return screen;
+}
+
+function defaultLogForm(unplanned = true, status = "Completed", planItemId = "tue") {
+  const planItem = data.plan.find((item) => item.id === planItemId);
+  return {
+    type: unplanned ? "Team practice" : planItem?.type || data.recommendation.type,
+    status: unplanned ? "Completed" : status,
+    duration: unplanned ? 75 : planItem?.duration || data.recommendation.duration,
+    effort: unplanned ? 8 : 6,
+    pain: "None",
+    notes: ""
+  };
+}
+
+function prepareScreenState(screen) {
+  if (screen === "schedule" && !ui.scheduleForm) {
+    ui.scheduleForm = clone(data.schedule);
+  }
+  if (screen === "log" && !ui.logForm) {
+    ui.logConfig = { unplanned: true, status: "Completed", planItemId: null };
+    ui.logForm = defaultLogForm(true);
+  }
+  if (["outcome", "safety"].includes(screen) && data.checkIn) {
+    ui.outcome = data.checkIn.pain === "Severe"
+      ? "severe"
+      : data.checkIn.pain !== "None"
+        ? "pain"
+        : data.checkIn.sleep <= 2 && data.checkIn.energy <= 2
+          ? "poor"
+          : "good";
+  }
+}
+
+function updatePageMetadata(screen) {
+  if (screen === "training-detail") {
+    const item = data.plan.find((candidate) => candidate.id === ui.selectedPlanItemId);
+    document.title = `${item?.title || "Session details"} · PureAthletic`;
+    return;
+  }
+  document.title = screenTitles[screen] || "PureAthletic";
+}
+
+function routeHistoryState(screen, depth) {
+  return { pureAthletic: true, screen, depth };
+}
+
+function replaceCurrentRoute(screen, depth = 0) {
+  window.history.replaceState(
+    routeHistoryState(screen, depth),
+    "",
+    `${routeForScreen(screen)}${window.location.search}`
+  );
+}
+
+function initializeRoute() {
+  const requestedScreen = screenForRoute();
+  const screen = resolveRouteScreen(requestedScreen);
+  prepareScreenState(screen);
+  ui.screen = screen;
+
+  const currentDepth = window.history.state?.pureAthletic
+    ? Number(window.history.state.depth || 0)
+    : 0;
+  replaceCurrentRoute(screen, currentDepth);
+}
+
+function focusScreenHeading() {
+  requestAnimationFrame(() => {
+    const heading = app.querySelector("main h1");
+    if (!heading) return;
+    heading.setAttribute("tabindex", "-1");
+    heading.focus({ preventScroll: true });
+  });
+}
+
+function focusAfterRender(selector) {
+  requestAnimationFrame(() => {
+    app.querySelector(selector)?.focus({ preventScroll: true });
+  });
+}
+
+function selectorForBoundControl(target) {
+  if (target.id) return `#${CSS.escape(target.id)}`;
+  if (!target.dataset.scope || !target.dataset.field) return "";
+  return `[data-scope="${target.dataset.scope}"][data-field="${target.dataset.field}"]`;
+}
+
+function navigateBack(fallbackScreen) {
+  const depth = Number(window.history.state?.depth || 0);
+  if (window.history.state?.pureAthletic && depth > 0) {
+    window.history.back();
+    return;
+  }
+  setScreen(fallbackScreen, { replace: true });
+}
+
 /*
  * The central renderer decides which screen function to run.
  *
@@ -1442,6 +1732,8 @@ function renderHistory() {
  * Today if ui.screen contains an unknown value.
  */
 function render() {
+  updatePageMetadata(ui.screen);
+
   if (ui.screen === "landing") {
     renderLanding();
     initializeMotion();
@@ -1455,6 +1747,7 @@ function render() {
     safety: renderOutcome,
     workout: () => renderWorkout(false),
     "short-workout": () => renderWorkout(true),
+    "training-detail": renderTrainingDetail,
     log: renderActivityLog,
     adjustment: renderAdjustment,
     schedule: renderScheduleEditor
@@ -1481,11 +1774,41 @@ function render() {
  * Navigation always follows the same three steps:
  * update the screen name, move to the top, and render the new screen.
  */
-function setScreen(screen) {
-  ui.screen = screen;
+function setScreen(screen, options = {}) {
+  const resolvedScreen = resolveRouteScreen(screen);
+  prepareScreenState(resolvedScreen);
+  ui.screen = resolvedScreen;
+
+  const route = routeForScreen(resolvedScreen);
+  const currentDepth = Number(window.history.state?.depth || 0);
+  if (normalizedPathname() !== route) {
+    if (options.replace) {
+      replaceCurrentRoute(resolvedScreen, currentDepth);
+    } else {
+      window.history.pushState(
+        routeHistoryState(resolvedScreen, currentDepth + 1),
+        "",
+        route
+      );
+    }
+  }
   window.scrollTo({ top: 0, behavior: "instant" });
   render();
+  focusScreenHeading();
 }
+
+window.addEventListener("popstate", (event) => {
+  const resolvedScreen = resolveRouteScreen(screenForRoute());
+  prepareScreenState(resolvedScreen);
+  ui.screen = resolvedScreen;
+
+  if (normalizedPathname() !== routeForScreen(resolvedScreen)) {
+    replaceCurrentRoute(resolvedScreen, Number(event.state?.depth || 0));
+  }
+  window.scrollTo({ top: 0, behavior: "instant" });
+  render();
+  focusScreenHeading();
+});
 
 // =============================================================================
 // ACTIONS THAT CHANGE APPLICATION STATE
@@ -1579,16 +1902,9 @@ function submitCheckIn() {
 }
 
 // Creates the temporary form values for a planned or unplanned activity.
-function openLog(unplanned, status = "Completed") {
-  ui.logConfig = { unplanned, status };
-  ui.logForm = {
-    type: unplanned ? "Team practice" : data.recommendation.type,
-    status: unplanned ? "Completed" : status,
-    duration: unplanned ? 75 : data.recommendation.duration,
-    effort: unplanned ? 8 : 6,
-    pain: "None",
-    notes: ""
-  };
+function openLog(unplanned, status = "Completed", planItemId = "tue") {
+  ui.logConfig = { unplanned, status, planItemId: unplanned ? null : planItemId };
+  ui.logForm = defaultLogForm(unplanned, status, planItemId);
   setScreen("log");
 }
 
@@ -1599,14 +1915,27 @@ function openLog(unplanned, status = "Completed") {
  */
 function saveActivity() {
   const form = clone(ui.logForm);
+  const planItem = data.plan.find((item) => item.id === ui.logConfig.planItemId);
+  const hasValidLoad = form.status === "Skipped" || (
+    Number.isFinite(Number(form.duration))
+    && Number(form.duration) >= 1
+    && Number(form.duration) <= 300
+    && Number.isFinite(Number(form.effort))
+    && Number(form.effort) >= 1
+    && Number(form.effort) <= 10
+  );
+  if (!hasValidLoad) return;
+
+  form.duration = Number(form.duration);
+  form.effort = Number(form.effort);
   const activity = {
     ...form,
     id: Date.now(),
-    title: ui.logConfig.unplanned ? form.type : data.recommendation.title,
-    date: "Tue 28"
+    title: ui.logConfig.unplanned ? form.type : planItem?.title || data.recommendation.title,
+    date: planItem?.day.replace("TODAY · ", "").replace(" · FIXED", "") || "Tue 28"
   };
   const activities = [activity, ...data.activities];
-  const plan = data.plan.map((item) => item.id === "tue" && !ui.logConfig.unplanned ? { ...item, status: form.status } : item);
+  const plan = data.plan.map((item) => item.id === ui.logConfig.planItemId && !ui.logConfig.unplanned ? { ...item, status: form.status } : item);
   const nextData = { ...data, activities, plan };
 
   // Any reported pain takes the junior safety route and ends this function early.
@@ -1636,7 +1965,7 @@ function saveActivity() {
     ui.pending = { kind: "activity", originalPlan: clone(data.plan) };
     setScreen("adjustment");
   } else {
-    setScreen("today");
+    setScreen(ui.logConfig.planItemId && ui.logConfig.planItemId !== "tue" ? "week" : "today");
   }
 }
 
@@ -1747,7 +2076,11 @@ function updateBoundField(target) {
 function syncSelectedButtons(action, selectedValue, field = "") {
   app.querySelectorAll(`[data-action="${action}"]`).forEach((choice) => {
     if (field && choice.dataset.field !== field) return;
-    choice.classList.toggle("selected", choice.dataset.value === selectedValue);
+    const selected = choice.dataset.value === selectedValue;
+    choice.classList.toggle("selected", selected);
+    if (choice.hasAttribute("aria-pressed")) {
+      choice.setAttribute("aria-pressed", String(selected));
+    }
   });
 }
 
@@ -1778,8 +2111,17 @@ app.addEventListener("input", (event) => {
 app.addEventListener("change", (event) => {
   updateBoundField(event.target);
   if (event.target.type === "checkbox" || event.target.dataset.field === "ageBandId") {
+    const selector = selectorForBoundControl(event.target);
     render();
+    if (selector) focusAfterRender(selector);
   }
+});
+
+app.addEventListener("submit", (event) => {
+  if (!event.target.matches('[data-form="activity-log"]')) return;
+  event.preventDefault();
+  if (!event.target.reportValidity()) return;
+  saveActivity();
 });
 
 /*
@@ -1792,6 +2134,10 @@ app.addEventListener("click", (event) => {
 
   // Ignore clicks that did not happen inside an element with data-action.
   if (!target) return;
+  if (target.matches("a[href]")) {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+  }
   const action = target.dataset.action;
 
   if (action === "start-onboarding") {
@@ -1803,17 +2149,21 @@ app.addEventListener("click", (event) => {
   } else if (action === "enter-demo") {
     enterDemo();
   } else if (action === "exit-onboarding") {
-    setScreen("landing");
+    navigateBack("landing");
   } else if (action === "onboarding-back") {
-    if (ui.onboardingStep === 1) setScreen("landing");
+    if (ui.onboardingStep === 1) navigateBack("landing");
     else {
       ui.onboardingStep -= 1;
+      window.scrollTo({ top: 0, behavior: "instant" });
       render();
+      focusScreenHeading();
     }
   } else if (action === "onboarding-next") {
     if (ui.onboardingStep < 5) {
       ui.onboardingStep += 1;
+      window.scrollTo({ top: 0, behavior: "instant" });
       render();
+      focusScreenHeading();
     } else {
       void finishOnboarding();
     }
@@ -1835,9 +2185,15 @@ app.addEventListener("click", (event) => {
     if (schedule && ["practice", "match"].includes(prefix)) {
       schedule[`${prefix}Enabled`] = action === "add-commitment";
       render();
+      const nextAction = action === "add-commitment" ? "remove-commitment" : "add-commitment";
+      focusAfterRender(`[data-action="${nextAction}"][data-prefix="${prefix}"]`);
     }
   } else if (action === "navigate") {
     setScreen(target.dataset.screen);
+  } else if (action === "open-training-detail") {
+    ui.selectedPlanItemId = target.dataset.id;
+    ui.workoutDone = [];
+    setScreen("training-detail");
   } else if (action === "open-checkin") {
     ui.checkinForm = { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" };
     setScreen("checkin");
@@ -1850,7 +2206,7 @@ app.addEventListener("click", (event) => {
     if (needsWarning && !existingWarning) {
       painField.insertAdjacentHTML(
         "beforeend",
-        `<p class="inline-warning">${icon("alert", 17)} Any reported pain pauses automated junior training and asks for responsible-adult review.</p>`
+        `<p class="inline-warning" role="alert">${icon("alert", 17)} Any reported pain pauses automated junior training and asks for responsible-adult review.</p>`
       );
     } else if (!needsWarning && existingWarning) {
       existingWarning.remove();
@@ -1878,21 +2234,23 @@ app.addEventListener("click", (event) => {
       : [...ui.workoutDone, index];
     const completed = ui.workoutDone.includes(index);
     target.classList.toggle("done", completed);
+    target.setAttribute("aria-pressed", String(completed));
     target.querySelector(".exercise-number").innerHTML = completed
       ? icon("check", 17)
       : String(index + 1).padStart(2, "0");
   } else if (action === "open-planned-log") {
     openLog(false, target.dataset.status);
+  } else if (action === "open-plan-item-log") {
+    openLog(false, target.dataset.status, target.dataset.id);
   } else if (action === "open-unplanned-log") {
     openLog(true);
   } else if (action === "set-log-status") {
     ui.logForm.status = target.dataset.value;
     render();
+    focusAfterRender(`[data-action="set-log-status"][data-value="${target.dataset.value}"]`);
   } else if (action === "set-log-pain") {
     ui.logForm.pain = target.dataset.value;
     syncSelectedButtons("set-log-pain", target.dataset.value);
-  } else if (action === "save-activity") {
-    saveActivity();
   } else if (action === "apply-adjustment") {
     applyAdjustment();
   } else if (action === "dismiss-adjustment") {
@@ -1906,6 +2264,7 @@ app.addEventListener("click", (event) => {
     setScreen("adjustment");
   } else if (action === "toggle-notifications") {
     ui.notifications = !ui.notifications;
+    target.setAttribute("aria-checked", String(ui.notifications));
     target.querySelector("small").textContent = ui.notifications
       ? "On · before optional training"
       : "Off";
@@ -1923,11 +2282,14 @@ app.addEventListener("click", (event) => {
   } else if (action === "undo-adjustment") {
     undoAdjustment(Number(target.dataset.id));
   } else if (action === "back-profile") {
-    setScreen("profile");
+    navigateBack("profile");
+  } else if (action === "back-training") {
+    navigateBack("week");
   } else if (action === "back-today") {
-    setScreen("today");
+    navigateBack("today");
   }
 });
 
 // First render: this starts the application after the file has loaded.
+initializeRoute();
 render();
