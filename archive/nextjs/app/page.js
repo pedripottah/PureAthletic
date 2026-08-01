@@ -338,20 +338,48 @@ function Today({ data, setScreen, onOpenLog }) {
 
 function CheckIn({ onBack, onSubmit }) {
   const [form, setForm] = useState({ sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" });
-  const scales = [["sleep", "Sleep quality", "Poor", "Great"], ["energy", "Energy", "Low", "High"], ["soreness", "Muscle soreness", "None", "Severe"], ["stress", "Stress", "Low", "High"]];
+  const scales = [
+    { key: "sleep", label: "Sleep quality", low: "Poor", high: "Great" },
+    { key: "energy", label: "Energy", low: "Low", high: "High" },
+    { key: "soreness", label: "Muscle soreness", low: "Severe", high: "None", inverted: true },
+    { key: "stress", label: "Stress", low: "High", high: "Low", inverted: true },
+  ];
   return (
     <main className="focused-page checkin-page">
       <header className="focused-header"><button className="icon-button" onClick={onBack} aria-label="Back to Today"><Icon name="back" /></button><span className="focused-title">Daily check-in</span><span className="time-hint">~30 sec</span></header>
       <section className="checkin-shell">
         <div className="checkin-intro"><Pill tone="lime">TODAY</Pill><h1>How ready do you feel?</h1><p>There are no good or bad answers. This helps shape the most appropriate next step.</p></div>
         <div className="checkin-card">
-          {scales.map(([key, label, low, high]) => (
-            <div className="scale-field" key={key}>
-              <div className="scale-label"><label>{label}</label><strong>{form[key]} / 5</strong></div>
-              <div className="scale-buttons">{[1, 2, 3, 4, 5].map((value) => <button key={value} className={form[key] === value ? "selected" : ""} onClick={() => setForm({ ...form, [key]: value })}>{value}</button>)}</div>
-              <div className="scale-ends"><span>{low}</span><span>{high}</span></div>
-            </div>
-          ))}
+          {scales.map(({ key, label, low, high, inverted = false }) => {
+            const displayValue = inverted ? 6 - form[key] : form[key];
+            return (
+              <div className="scale-field" key={key}>
+                <div className="scale-label"><label htmlFor={`checkin-${key}`}>{label}</label><output htmlFor={`checkin-${key}`}>{displayValue} / 5</output></div>
+                <div className="scale-control" style={{ "--readiness-position": `${(displayValue - 1) * 25}%` }}>
+                  <div className="scale-track" aria-hidden="true">
+                    <div className="scale-track-shine" />
+                    <div className="scale-ticks">{[1, 2, 3, 4, 5].map((value) => <i key={value} />)}</div>
+                    <span className="scale-handle" />
+                  </div>
+                  <input
+                    className="scale-slider"
+                    id={`checkin-${key}`}
+                    type="range"
+                    min="1"
+                    max="5"
+                    step="1"
+                    value={displayValue}
+                    aria-label={`${label}: ${displayValue} out of 5`}
+                    onChange={(event) => {
+                      const value = Number(event.target.value);
+                      setForm({ ...form, [key]: inverted ? 6 - value : value });
+                    }}
+                  />
+                </div>
+                <div className="scale-ends"><span>{low}</span><span>{high}</span></div>
+              </div>
+            );
+          })}
           <div className="pain-field">
             <div className="scale-label"><label>Pain today</label><Icon name="shield" size={18} /></div>
             <div className="pain-options">{["None", "Mild", "Moderate", "Severe"].map((pain) => <button key={pain} className={`${form.pain === pain ? "selected" : ""} ${pain === "Moderate" || pain === "Severe" ? "caution" : ""}`} onClick={() => setForm({ ...form, pain })}>{pain}</button>)}</div>

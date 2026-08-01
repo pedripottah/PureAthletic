@@ -1105,25 +1105,45 @@ function renderToday() {
 
 /*
  * Builds the readiness form.
- * Each item in `scales` holds [state key, label, low label, high label].
- * One map() creates all four scales and another creates buttons 1 through 5.
+ * Each item in `scales` holds [state key, label, low label, high label, inverted].
+ * Native range inputs keep the five-step scales draggable and keyboard friendly.
  */
 function renderCheckIn() {
   const scales = [
-    ["sleep", "Sleep quality", "Poor", "Great"],
-    ["energy", "Energy", "Low", "High"],
-    ["soreness", "Muscle soreness", "None", "Severe"],
-    ["stress", "Stress", "Low", "High"]
+    ["sleep", "Sleep quality", "Poor", "Great", false],
+    ["energy", "Energy", "Low", "High", false],
+    ["soreness", "Muscle soreness", "Severe", "None", true],
+    ["stress", "Stress", "High", "Low", true]
   ];
   const form = ui.checkinForm;
-  const scaleMarkup = scales.map(([key, label, low, high]) => `
+  const scaleMarkup = scales.map(([key, label, low, high, inverted]) => {
+    const displayValue = inverted ? 6 - form[key] : form[key];
+    return `
     <div class="scale-field">
-      <div class="scale-label"><label>${label}</label><strong>${form[key]} / 5</strong></div>
-      <div class="scale-buttons">
-        ${[1, 2, 3, 4, 5].map((value) => `<button type="button" class="${form[key] === value ? "selected" : ""}" data-action="set-checkin-scale" data-field="${key}" data-value="${value}">${value}</button>`).join("")}
+      <div class="scale-label"><label for="checkin-${key}">${label}</label><output for="checkin-${key}">${displayValue} / 5</output></div>
+      <div class="scale-control" style="--readiness-position: ${(displayValue - 1) * 25}%">
+        <div class="scale-track" aria-hidden="true">
+          <div class="scale-track-shine"></div>
+          <div class="scale-ticks">${[1, 2, 3, 4, 5].map(() => "<i></i>").join("")}</div>
+          <span class="scale-handle"></span>
+        </div>
+        <input
+          class="scale-slider"
+          id="checkin-${key}"
+          type="range"
+          min="1"
+          max="5"
+          step="1"
+          value="${displayValue}"
+          data-scope="checkin"
+          data-field="${key}"
+          data-inverted="${inverted}"
+          aria-label="${label}: ${displayValue} out of 5"
+        >
       </div>
       <div class="scale-ends"><span>${low}</span><span>${high}</span></div>
-    </div>`).join("");
+    </div>`;
+  }).join("");
   const painWarning = form.pain !== "None"
     ? `<p class="inline-warning">${icon("alert", 17)} Any reported pain pauses automated junior training and asks for responsible-adult review.</p>`
     : "";
@@ -1696,7 +1716,7 @@ function exportData() {
 // Browser inputs normally return strings; checkboxes and numbers need conversion.
 function valueForInput(target) {
   if (target.type === "checkbox") return target.checked;
-  if (target.type === "number") return Number(target.value);
+  if (target.type === "number" || target.type === "range") return Number(target.value);
   return target.value;
 }
 
@@ -1715,10 +1735,13 @@ function updateBoundField(target) {
   const scopes = {
     onboarding: ui.onboardingForm,
     onboardingSchedule: ui.onboardingSchedule,
+    checkin: ui.checkinForm,
     log: ui.logForm,
     schedule: ui.scheduleForm
   };
-  if (scopes[scope]) scopes[scope][field] = valueForInput(target);
+  if (!scopes[scope]) return;
+  const value = valueForInput(target);
+  scopes[scope][field] = target.dataset.inverted === "true" ? 6 - Number(value) : value;
 }
 
 function syncSelectedButtons(action, selectedValue, field = "") {
@@ -1741,6 +1764,14 @@ function syncSelectedButtons(action, selectedValue, field = "") {
 // `input` fires immediately while a user types or changes a number.
 app.addEventListener("input", (event) => {
   updateBoundField(event.target);
+
+  if (event.target.matches(".scale-slider")) {
+    const slider = event.target;
+    const value = Number(slider.value);
+    slider.closest(".scale-control").style.setProperty("--readiness-position", `${(value - 1) * 25}%`);
+    slider.setAttribute("aria-label", `${slider.closest(".scale-field").querySelector("label").textContent}: ${value} out of 5`);
+    slider.closest(".scale-field").querySelector("output").textContent = `${value} / 5`;
+  }
 });
 
 // `change` handles completed changes; checkboxes also need a visual rerender.
@@ -1810,10 +1841,6 @@ app.addEventListener("click", (event) => {
   } else if (action === "open-checkin") {
     ui.checkinForm = { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" };
     setScreen("checkin");
-  } else if (action === "set-checkin-scale") {
-    ui.checkinForm[target.dataset.field] = Number(target.dataset.value);
-    syncSelectedButtons("set-checkin-scale", target.dataset.value, target.dataset.field);
-    target.closest(".scale-field").querySelector(".scale-label strong").textContent = `${target.dataset.value} / 5`;
   } else if (action === "set-checkin-pain") {
     ui.checkinForm.pain = target.dataset.value;
     syncSelectedButtons("set-checkin-pain", target.dataset.value);
