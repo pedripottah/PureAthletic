@@ -101,7 +101,10 @@ export default {
       ? "/"
       : url.pathname.replace(/\\/+$/, "");
     const file = files[url.pathname]
-      || (pageRoutes.has(normalizedPath) ? files["/index.html"] : null);
+      || (pageRoutes.has(normalizedPath)
+        || /^\\/training\\/session\\/[^/]+$/.test(normalizedPath)
+        ? files["/index.html"]
+        : null);
 
     if (!file) {
       return new Response("Not found", {

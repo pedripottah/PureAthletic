@@ -632,6 +632,12 @@ p {
   font-weight: 700;
 }
 
+.required-marker {
+  color: #b42318;
+  font-size: 0.95em;
+  font-weight: 900;
+}
+
 .field label small {
   color: var(--muted);
   font-weight: 500;
@@ -801,6 +807,18 @@ p {
   color: #7d3f35;
   background: #fff7f4;
   border-color: #e7c9c2;
+}
+
+.commitment-add-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.85rem;
+}
+
+.commitment-add-actions .commitment-action {
+  min-height: 3rem;
+  padding-inline: 0.9rem;
 }
 
 .two-fields {
@@ -2754,6 +2772,15 @@ p {
 
   .two-fields {
     grid-template-columns: 1fr;
+  }
+
+  .commitment-add-actions {
+    display: grid;
+  }
+
+  .commitment-add-actions .commitment-action {
+    justify-content: center;
+    width: 100%;
   }
 
   .review-list > div {

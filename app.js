@@ -41,13 +41,13 @@ const landingTemplate = document.querySelector("#landing-view"); // Reusable lan
  * Example: initialPlan[0].title gives "Football strength foundations".
  */
 const initialPlan = [
-  { id: "tue", day: "TODAY · TUE 28", type: "Strength", title: "Football strength foundations", duration: 30, intensity: "Moderate", status: "Planned", fixed: false },
-  { id: "wed", day: "WED 29", type: "Rest", title: "Full rest", duration: 0, intensity: "Easy", status: "Rest", fixed: false },
-  { id: "practice", day: "THU 30", type: "Team practice", title: "Team training", duration: 90, intensity: "Team-led", status: "Fixed", fixed: true, time: "19:00" },
-  { id: "fri", day: "FRI 31", type: "Recovery", title: "Mobility reset", duration: 20, intensity: "Easy", status: "Recovery", fixed: false },
-  { id: "match", day: "SAT 1", type: "Match", title: "League match", duration: 90, intensity: "Match", status: "Fixed", fixed: true, time: "15:00" },
-  { id: "sun", day: "SUN 2", type: "Recovery", title: "Post-match recovery", duration: 25, intensity: "Easy", status: "Recovery", fixed: false },
-  { id: "mon", day: "MON 3", type: "Speed", title: "Acceleration quality", duration: 35, intensity: "Moderate", status: "Planned", fixed: false }
+  { id: "tue", weekday: "Tuesday", day: "TODAY · TUE 28", type: "Strength", title: "Football strength foundations", duration: 30, intensity: "Moderate", status: "Planned", fixed: false },
+  { id: "wed", weekday: "Wednesday", day: "WED 29", type: "Rest", title: "Full rest", duration: 0, intensity: "Easy", status: "Rest", fixed: false },
+  { id: "practice", weekday: "Thursday", day: "THU 30", type: "Team practice", title: "Team training", duration: 90, intensity: "Team-led", status: "Fixed", fixed: true, time: "19:00" },
+  { id: "fri", weekday: "Friday", day: "FRI 31", type: "Recovery", title: "Mobility reset", duration: 20, intensity: "Easy", status: "Recovery", fixed: false },
+  { id: "match", weekday: "Saturday", day: "SAT 1", type: "Match", title: "League match", duration: 90, intensity: "Match", status: "Fixed", fixed: true, time: "15:00" },
+  { id: "sun", weekday: "Sunday", day: "SUN 2", type: "Recovery", title: "Post-match recovery", duration: 25, intensity: "Easy", status: "Recovery", fixed: false },
+  { id: "mon", weekday: "Monday", day: "MON 3", type: "Speed", title: "Acceleration quality", duration: 35, intensity: "Moderate", status: "Planned", fixed: false }
 ];
 
 /*
@@ -92,12 +92,10 @@ const demoState = {
   ],
   adjustments: [],
   schedule: {
-    practiceEnabled: true,
-    practiceDay: "Thursday",
-    practiceTime: "19:00",
-    matchEnabled: true,
-    matchDay: "Saturday",
-    matchTime: "15:00"
+    commitments: [
+      { id: "practice-1", type: "practice", day: "Thursday", time: "19:00" },
+      { id: "match-1", type: "match", day: "Saturday", time: "15:00" }
+    ]
   }
 };
 
@@ -138,6 +136,15 @@ const exercises = [
 
 // These values are reused to build choices instead of repeating the HTML by hand.
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const planDays = [
+  { id: "tue", weekday: "Tuesday", label: "TODAY · TUE 28" },
+  { id: "wed", weekday: "Wednesday", label: "WED 29" },
+  { id: "thu", weekday: "Thursday", label: "THU 30" },
+  { id: "fri", weekday: "Friday", label: "FRI 31" },
+  { id: "sat", weekday: "Saturday", label: "SAT 1" },
+  { id: "sun", weekday: "Sunday", label: "SUN 2" },
+  { id: "mon", weekday: "Monday", label: "MON 3" }
+];
 const teamAgeBands = [
   { value: "u5-u8", label: "U5–U8", teamAgeGroups: ["U5", "U6", "U7", "U8"] },
   { value: "u9-u12", label: "U9–U12", teamAgeGroups: ["U9", "U10", "U11", "U12"] },
@@ -276,6 +283,7 @@ function loadData() {
 
     const restored = JSON.parse(saved);
     const previousAgeGroup = restored.user?.ageGroup;
+    const usedLegacySchedule = !Array.isArray(restored.schedule?.commitments);
     const selectedAgeBand = teamAgeBands.find(
       (option) => option.value === restored.user?.ageBandId
     ) || teamAgeBands.find((option) =>
@@ -291,8 +299,15 @@ function loadData() {
     // but minimise the saved value to the broader band now used by the UI.
     restored.user.ageBandId = selectedAgeBand.value;
     delete restored.user.ageGroup;
-    if (previousAgeGroup) {
-      if (restored.recommendation?.explanation) {
+    restored.schedule = normalizeSchedule(restored.schedule);
+    restored.plan = planWithRecommendationAndSchedule(
+      restored.recommendation || demoState.recommendation,
+      restored.schedule,
+      Array.isArray(restored.plan) ? restored.plan : clone(initialPlan)
+    );
+
+    if (previousAgeGroup || usedLegacySchedule) {
+      if (previousAgeGroup && restored.recommendation?.explanation) {
         restored.recommendation.explanation = restored.recommendation.explanation
           .replace(previousAgeGroup, selectedAgeBand.label);
       }
@@ -768,29 +783,101 @@ function fallbackRecommendation(user) {
   };
 }
 
-function commitmentEnabled(schedule, prefix) {
-  return schedule?.[`${prefix}Enabled`] !== false;
+let commitmentIdSequence = 0;
+
+function commitmentDefaults(type) {
+  return type === "match"
+    ? { day: "Saturday", time: "15:00" }
+    : { day: "Thursday", time: "19:00" };
+}
+
+function normalizeSchedule(schedule) {
+  let source = schedule?.commitments;
+
+  // Older saved profiles used one enabled flag and one day/time pair per type.
+  // Convert that shape once so existing users keep the schedule they entered.
+  if (!Array.isArray(source)) {
+    const legacy = schedule || {};
+    source = [];
+    if (legacy.practiceEnabled !== false) {
+      source.push({
+        id: "practice-1",
+        type: "practice",
+        day: legacy.practiceDay,
+        time: legacy.practiceTime
+      });
+    }
+    if (legacy.matchEnabled !== false) {
+      source.push({
+        id: "match-1",
+        type: "match",
+        day: legacy.matchDay,
+        time: legacy.matchTime
+      });
+    }
+  }
+
+  const usedIds = new Set();
+  const commitments = source.flatMap((entry, index) => {
+    const type = String(entry?.type || "").toLowerCase() === "match"
+      ? "match"
+      : String(entry?.type || "").toLowerCase().includes("practice")
+        ? "practice"
+        : "";
+    if (!type) return [];
+
+    const defaults = commitmentDefaults(type);
+    const baseId = String(entry.id || `${type}-${index + 1}`).trim()
+      || `${type}-${index + 1}`;
+    let id = baseId;
+    let suffix = 2;
+    while (usedIds.has(id)) {
+      id = `${baseId}-${suffix}`;
+      suffix += 1;
+    }
+    usedIds.add(id);
+
+    return [{
+      id,
+      type,
+      day: weekdays.includes(entry.day) ? entry.day : defaults.day,
+      time: /^([01]\d|2[0-3]):[0-5]\d$/.test(String(entry.time || ""))
+        ? entry.time
+        : defaults.time
+    }];
+  });
+
+  return { commitments };
+}
+
+function createCommitment(type) {
+  const normalizedType = type === "match" ? "match" : "practice";
+  commitmentIdSequence += 1;
+  return {
+    id: `${normalizedType}-${Date.now()}-${commitmentIdSequence}`,
+    type: normalizedType,
+    ...commitmentDefaults(normalizedType)
+  };
+}
+
+function commitmentTypeLabel(type) {
+  return type === "match" ? "Match" : "Team practice";
 }
 
 function activeCommitments(schedule) {
-  const commitments = [];
-
-  if (commitmentEnabled(schedule, "practice")) {
-    commitments.push({
-      type: "Team practice",
-      day: schedule.practiceDay,
-      time: schedule.practiceTime
-    });
-  }
-  if (commitmentEnabled(schedule, "match")) {
-    commitments.push({
-      type: "Match",
-      day: schedule.matchDay,
-      time: schedule.matchTime
-    });
-  }
-
-  return commitments;
+  const dayOrder = new Map(planDays.map((day, index) => [day.weekday, index]));
+  return normalizeSchedule(schedule).commitments
+    .map((commitment, index) => ({
+      ...commitment,
+      kind: commitment.type,
+      type: commitmentTypeLabel(commitment.type),
+      originalIndex: index
+    }))
+    .sort((left, right) =>
+      dayOrder.get(left.day) - dayOrder.get(right.day)
+      || left.time.localeCompare(right.time)
+      || left.originalIndex - right.originalIndex
+    );
 }
 
 function commitmentSummary(schedule) {
@@ -806,71 +893,99 @@ function nextFixedCommitment(schedule) {
   return activeCommitments(schedule)[0] || null;
 }
 
+function planItemWeekday(item) {
+  if (weekdays.includes(item?.weekday)) return item.weekday;
+  const idDays = {
+    tue: "Tuesday",
+    wed: "Wednesday",
+    practice: "Thursday",
+    thu: "Thursday",
+    fri: "Friday",
+    match: "Saturday",
+    sat: "Saturday",
+    sun: "Sunday",
+    mon: "Monday"
+  };
+  if (idDays[item?.id]) return idDays[item.id];
+
+  const upperDay = String(item?.day || "").toUpperCase();
+  return weekdays.find((weekday) =>
+    upperDay.includes(weekday.slice(0, 3).toUpperCase())
+  ) || "";
+}
+
+function isScheduleCommitmentPlanItem(item) {
+  return Boolean(item?.scheduleCommitmentId)
+    || (item?.fixed && ["Team practice", "Match"].includes(item.type));
+}
+
+function optionalPlanItemForDay(day, sourcePlan) {
+  const current = sourcePlan.find((item) =>
+    planItemWeekday(item) === day.weekday && !isScheduleCommitmentPlanItem(item)
+  );
+  const fallback = initialPlan.find((item) => planItemWeekday(item) === day.weekday);
+  const selected = current || fallback;
+
+  if (!selected || isScheduleCommitmentPlanItem(selected)) {
+    return {
+      id: day.id,
+      weekday: day.weekday,
+      day: day.label,
+      type: "Rest",
+      title: "Open day",
+      duration: 0,
+      intensity: "Easy",
+      status: "Rest",
+      fixed: false,
+      time: ""
+    };
+  }
+
+  return {
+    ...selected,
+    id: day.id,
+    weekday: day.weekday,
+    day: day.label,
+    fixed: false
+  };
+}
+
 function planWithRecommendationAndSchedule(recommendation, schedule, sourcePlan = initialPlan) {
-  return sourcePlan.map((item) => {
-    if (item.id === "tue") {
-      return {
-        ...item,
-        type: recommendation.type,
-        title: recommendation.title,
-        duration: recommendation.duration,
-        intensity: recommendation.intensity,
-        status: "Planned",
-        fixed: false
-      };
+  const commitments = normalizeSchedule(schedule).commitments;
+
+  return planDays.flatMap((day) => {
+    const dayCommitments = commitments.filter(
+      (commitment) => commitment.day === day.weekday
+    );
+
+    if (dayCommitments.length) {
+      return dayCommitments.map((commitment) => ({
+        id: `commitment-${commitment.id}`,
+        scheduleCommitmentId: commitment.id,
+        weekday: day.weekday,
+        day: `${day.label.replace("TODAY · ", "")} · FIXED`,
+        type: commitmentTypeLabel(commitment.type),
+        title: commitment.type === "match" ? "Match" : "Team training",
+        duration: 90,
+        intensity: commitment.type === "match" ? "Match" : "Team-led",
+        status: "Fixed",
+        fixed: true,
+        time: commitment.time
+      }));
     }
 
-    if (item.id === "practice") {
-      return commitmentEnabled(schedule, "practice")
-        ? {
-          ...item,
-          day: `${schedule.practiceDay.slice(0, 3).toUpperCase()} · FIXED`,
-          time: schedule.practiceTime,
-          type: "Team practice",
-          title: "Team training",
-          duration: 90,
-          intensity: "Team-led",
-          status: "Fixed",
-          fixed: true
-        }
-        : {
-          ...item,
-          type: "Rest",
-          title: "Open day",
-          duration: 0,
-          intensity: "Easy",
-          status: "Rest",
-          fixed: false,
-          time: ""
-        };
-    }
+    const optionalItem = optionalPlanItemForDay(day, sourcePlan);
+    if (day.weekday !== "Tuesday") return [optionalItem];
 
-    if (item.id === "match") {
-      return commitmentEnabled(schedule, "match")
-        ? {
-          ...item,
-          day: `${schedule.matchDay.slice(0, 3).toUpperCase()} · FIXED`,
-          time: schedule.matchTime,
-          type: "Match",
-          title: "Match",
-          duration: 90,
-          intensity: "Match",
-          status: "Fixed",
-          fixed: true
-        }
-        : {
-          ...item,
-          type: "Rest",
-          title: "Open day",
-          duration: 0,
-          intensity: "Easy",
-          status: "Rest",
-          fixed: false,
-          time: ""
-        };
-    }
-
-    return item;
+    return [{
+      ...optionalItem,
+      type: recommendation.type,
+      title: recommendation.title,
+      duration: recommendation.duration,
+      intensity: recommendation.intensity,
+      status: "Planned",
+      fixed: false
+    }];
   });
 }
 
@@ -892,6 +1007,16 @@ function screenHeader(eyebrow, title, action = "") {
 function renderLanding() {
   app.innerHTML = landingTemplate.innerHTML;
   hydrateTemplateIcons();
+}
+
+function onboardingStepIsValid(step, form = ui.onboardingForm) {
+  if (step === 1) {
+    return Boolean(form.guardianConfirmed && form.disclaimerAccepted);
+  }
+  if (step === 2) {
+    return Boolean(form.name.trim() && form.ageBandId);
+  }
+  return true;
 }
 
 /*
@@ -928,8 +1053,8 @@ function renderOnboarding() {
         <span class="section-kicker">YOUR FOOTBALL</span>
         <h1>Tell us about your game.</h1>
         <div class="field">
-          <label for="name">Preferred name</label>
-          <input id="name" maxlength="40" autocomplete="given-name" data-scope="onboarding" data-field="name" value="${escapeHtml(form.name)}" placeholder="Sam">
+          <label for="name">Preferred name <span class="required-marker" aria-hidden="true">*</span></label>
+          <input id="name" maxlength="40" autocomplete="given-name" required aria-required="true" data-scope="onboarding" data-field="name" value="${escapeHtml(form.name)}" placeholder="Sam">
         </div>
         <div class="field">
           <label for="age-band">Team age-group range</label>
@@ -983,10 +1108,9 @@ function renderOnboarding() {
       <div class="step-panel">
         <span class="section-kicker">YOUR WEEK</span>
         <h1>Add the commitments that stay fixed.</h1>
-        <p class="lead">Add a team practice, a match, both, or neither. You can change these later.</p>
-        ${scheduleCard("TEAM PRACTICE", "practice", schedule, "onboardingSchedule")}
-        ${scheduleCard("MATCH", "match", schedule, "onboardingSchedule")}
-        <p class="hint">${icon("shield", 17)} Added commitments will never be moved automatically. Leaving both empty is okay.</p>
+        <p class="lead">Add as many team practices and matches as you need, or remove them all. You can change these later.</p>
+        ${scheduleCommitmentEditor(schedule, "onboardingSchedule")}
+        <p class="hint">${icon("shield", 17)} Added commitments will never be moved automatically. Leaving the list empty is okay.</p>
       </div>`;
   }
 
@@ -996,7 +1120,7 @@ function renderOnboarding() {
         <span class="section-kicker">REVIEW</span>
         <h1>Your first week is ready to build.</h1>
         <div class="review-list">
-          <div><span>Athlete</span><strong>${escapeHtml(form.name.trim() || "Sam")} · ${escapeHtml(ageBandLabel(form.ageBandId))} · ${escapeHtml(form.position)}</strong></div>
+          <div><span>Athlete</span><strong>${escapeHtml(form.name.trim())} · ${escapeHtml(ageBandLabel(form.ageBandId))} · ${escapeHtml(form.position)}</strong></div>
           <div><span>Experience</span><strong>${escapeHtml(form.experience)}</strong></div>
           <div><span>Primary goal</span><strong>${escapeHtml(form.goal)}</strong></div>
           <div><span>Fixed commitments</span><strong>${escapeHtml(commitmentSummary(schedule))}</strong></div>
@@ -1006,10 +1130,9 @@ function renderOnboarding() {
       </div>`;
   }
 
-  // Safety consent and the recommendation-driving age band are both required.
-  const stepIsValid =
-    (step !== 1 || (form.guardianConfirmed && form.disclaimerAccepted))
-    && (step !== 2 || Boolean(form.ageBandId));
+  // Safety consent, preferred name, and the recommendation-driving age band
+  // must be complete before their respective steps can advance.
+  const stepIsValid = onboardingStepIsValid(step, form);
   const canContinue = !ui.generatingPlan && stepIsValid;
   return `
     <main class="focused-page">
@@ -1032,36 +1155,39 @@ function renderOnboarding() {
 }
 
 /*
- * Builds a reusable practice or match card.
- * A prefix such as "practice" becomes the property names "practiceDay" and
- * "practiceTime". Bracket notation reads a property using a variable name.
+ * Builds all fixed-commitment cards plus the two always-available add actions.
+ * Each commitment has its own stable id, so any number of either type can be
+ * edited or removed independently.
  */
-function scheduleCard(label, prefix, schedule, scope) {
-  const dayField = `${prefix}Day`;
-  const timeField = `${prefix}Time`;
-  const enabled = commitmentEnabled(schedule, prefix);
-
-  if (!enabled) {
-    return `
-      <div class="schedule-card schedule-card-empty">
-        <div class="schedule-card-heading">
-          ${pill(label, "neutral")}
-          <button type="button" class="commitment-action" data-action="add-commitment" data-prefix="${prefix}" data-scope="${scope}">${icon("plus", 16)} Add</button>
-        </div>
-        <p>No ${label.toLowerCase()} added.</p>
-      </div>`;
-  }
-
+function scheduleCard(commitment, scope, index) {
+  const label = commitment.type === "match" ? "MATCH" : "TEAM PRACTICE";
+  const fieldId = `${scope}-commitment-${index}`;
   return `
     <div class="schedule-card">
       <div class="schedule-card-heading">
         ${pill(label, "dark")}
-        <button type="button" class="commitment-action remove" data-action="remove-commitment" data-prefix="${prefix}" data-scope="${scope}">Remove</button>
+        <button type="button" class="commitment-action remove" data-action="remove-commitment" data-commitment-id="${escapeHtml(commitment.id)}" data-commitment-type="${commitment.type}" data-scope="${scope}" aria-label="Remove ${label.toLowerCase()}">Remove</button>
       </div>
       <div class="two-fields">
-        <div class="field"><label for="${scope}-${dayField}">Day</label><select id="${scope}-${dayField}" data-scope="${scope}" data-field="${dayField}">${selectedOptions(weekdays, schedule[dayField])}</select></div>
-        <div class="field"><label for="${scope}-${timeField}">Time</label><input id="${scope}-${timeField}" type="time" data-scope="${scope}" data-field="${timeField}" value="${escapeHtml(schedule[timeField])}"></div>
+        <div class="field"><label for="${fieldId}-day">Day</label><select id="${fieldId}-day" data-scope="${scope}" data-commitment-id="${escapeHtml(commitment.id)}" data-field="day">${selectedOptions(weekdays, commitment.day)}</select></div>
+        <div class="field"><label for="${fieldId}-time">Time</label><input id="${fieldId}-time" type="time" data-scope="${scope}" data-commitment-id="${escapeHtml(commitment.id)}" data-field="time" value="${escapeHtml(commitment.time)}"></div>
       </div>
+    </div>`;
+}
+
+function scheduleCommitmentEditor(schedule, scope) {
+  const commitments = normalizeSchedule(schedule).commitments;
+  const cards = commitments.length
+    ? commitments.map((commitment, index) =>
+      scheduleCard(commitment, scope, index)
+    ).join("")
+    : `<div class="schedule-card schedule-card-empty"><p>No team practices or matches added. You can continue with an open schedule.</p></div>`;
+
+  return `
+    <div class="commitment-list">${cards}</div>
+    <div class="commitment-add-actions" role="group" aria-label="Add a fixed commitment">
+      <button type="button" class="commitment-action" data-action="add-commitment" data-commitment-type="practice" data-scope="${scope}">${icon("plus", 16)} Add team practice</button>
+      <button type="button" class="commitment-action" data-action="add-commitment" data-commitment-type="match" data-scope="${scope}">${icon("plus", 16)} Add match</button>
     </div>`;
 }
 
@@ -1460,7 +1586,18 @@ function renderWeek() {
   const focusedSessions = data.plan.filter(
     (item) => !item.fixed && !["Rest", "Recovery"].includes(item.type)
   ).length;
-  const hasMatch = commitmentEnabled(data.schedule, "match");
+  const matchCount = activeCommitments(data.schedule).filter(
+    (commitment) => commitment.kind === "match"
+  ).length;
+  const hasMatch = matchCount > 0;
+  const loadBars = planDays.map((day) => {
+    const items = data.plan.filter((item) => planItemWeekday(item) === day.weekday);
+    const matchDay = items.some((item) => item.type === "Match");
+    const practiceDay = items.some((item) => item.type === "Team practice");
+    const recoveryDay = items.every((item) => ["Rest", "Recovery"].includes(item.type));
+    const height = matchDay ? 5 : practiceDay ? 4 : recoveryDay ? 1 : 3;
+    return `<span style="height:${height * 11}px" class="${matchDay ? "match" : ""}"></span>`;
+  }).join("");
   const rows = data.plan.map((item) => {
     // Nested template strings add time and duration only when those values exist.
     const meta = `${item.time ? `${item.time} · ` : ""}${item.duration ? `${item.duration} min · ` : ""}${item.intensity}`;
@@ -1479,8 +1616,8 @@ function renderWeek() {
       ${screenHeader("ROLLING PLAN", "Your next 7 days", '<span class="date-control">28 Jul — 3 Aug</span>')}
       <section class="week-card">
         <div class="week-summary">
-          <div><span class="eyebrow">WEEK SHAPE</span><strong>${focusedSessions} focused session${focusedSessions === 1 ? "" : "s"}</strong><p>${hasMatch ? "with recovery protected around your match" : "balanced around the commitments you added"}</p></div>
-          <div class="load-bars" aria-label="Training load preview">${[2, 1, 4, 1, hasMatch ? 5 : 1, 1, 3].map((height, index) => `<span style="height:${height * 11}px" class="${hasMatch && index === 4 ? "match" : ""}"></span>`).join("")}</div>
+          <div><span class="eyebrow">WEEK SHAPE</span><strong>${focusedSessions} focused session${focusedSessions === 1 ? "" : "s"}</strong><p>${hasMatch ? `with recovery protected around your match${matchCount === 1 ? "" : "es"}` : "balanced around the commitments you added"}</p></div>
+          <div class="load-bars" aria-label="Training load preview">${loadBars}</div>
         </div>
         <div class="plan-list">${rows}</div>
         <div class="week-legend"><span><i class="legend-fixed"></i> Fixed team commitment</span><span><i class="legend-plan"></i> PureAthletic recommendation</span></div>
@@ -1565,9 +1702,8 @@ function renderScheduleEditor() {
     <main class="focused-page">
       <header class="focused-header"><button type="button" class="icon-button" data-action="back-profile" aria-label="Back">${icon("back")}</button><span class="focused-title">Team schedule</span><span></span></header>
       <section class="form-shell schedule-editor">
-        <span class="section-kicker">FIXED COMMITMENTS</span><h1>Keep the week accurate.</h1><p class="lead">Add, remove, or leave both commitment types empty. Changes may reshape optional routines, and you will review them first.</p>
-        ${scheduleCard("TEAM PRACTICE", "practice", schedule, "schedule")}
-        ${scheduleCard("MATCH", "match", schedule, "schedule")}
+        <span class="section-kicker">FIXED COMMITMENTS</span><h1>Keep the week accurate.</h1><p class="lead">Add or remove as many team practices and matches as needed, or leave the list empty. Changes may reshape optional routines, and you will review them first.</p>
+        ${scheduleCommitmentEditor(schedule, "schedule")}
         <div class="info-card">${icon("shield")}<div><strong>Fixed means fixed</strong><p>PureAthletic can move optional sessions around entries you add, but never moves those commitments automatically.</p></div></div>
         ${button("Review schedule changes", "preview-schedule")}
       </section>
@@ -1644,7 +1780,7 @@ function defaultLogForm(unplanned = true, status = "Completed", planItemId = "tu
 
 function prepareScreenState(screen) {
   if (screen === "schedule" && !ui.scheduleForm) {
-    ui.scheduleForm = clone(data.schedule);
+    ui.scheduleForm = normalizeSchedule(data.schedule);
   }
   if (screen === "log" && !ui.logForm) {
     ui.logConfig = { unplanned: true, status: "Completed", planItemId: null };
@@ -1817,6 +1953,12 @@ window.addEventListener("popstate", (event) => {
 // Replaces the current saved account with a fresh, independent demo copy.
 function enterDemo() {
   data = clone(demoState);
+  data.schedule = normalizeSchedule(data.schedule);
+  data.plan = planWithRecommendationAndSchedule(
+    data.recommendation,
+    data.schedule,
+    data.plan
+  );
   saveData();
   setScreen("today");
 }
@@ -1828,19 +1970,25 @@ function enterDemo() {
  */
 async function finishOnboarding() {
   if (ui.generatingPlan) return;
+  if (!ui.onboardingForm.name.trim() || !ui.onboardingForm.ageBandId) {
+    ui.onboardingStep = 2;
+    render();
+    focusAfterRender(ui.onboardingForm.name.trim() ? "#age-band" : "#name");
+    return;
+  }
 
   ui.generatingPlan = true;
   render();
 
   const user = clone(ui.onboardingForm);
-  user.name = user.name.trim() || "Sam";
+  user.name = user.name.trim();
   if (user.experience === "Advanced") user.experience = "Beginner";
 
   const catalog = await youthRecommendationDataPromise;
   const recommendation = catalog
     ? recommendationFromCatalog(user, catalog)
     : fallbackRecommendation(user);
-  const schedule = clone(ui.onboardingSchedule);
+  const schedule = normalizeSchedule(ui.onboardingSchedule);
 
   data = {
     ...clone(demoState),
@@ -1977,20 +2125,21 @@ function saveActivity() {
 function applyAdjustment() {
   const pending = ui.pending;
   if (pending.kind === "schedule") {
+    const schedule = normalizeSchedule(pending.schedule);
     const updatedPlan = planWithRecommendationAndSchedule(
       data.recommendation,
-      pending.schedule,
+      schedule,
       data.plan
     );
     const adjustment = {
       id: Date.now(),
       title: "Fixed commitments updated",
-      reason: commitmentSummary(pending.schedule),
+      reason: commitmentSummary(schedule),
       undoable: true,
       beforePlan: data.plan,
       beforeSchedule: data.schedule
     };
-    data = { ...data, schedule: pending.schedule, plan: updatedPlan, adjustments: [adjustment, ...data.adjustments] };
+    data = { ...data, schedule, plan: updatedPlan, adjustments: [adjustment, ...data.adjustments] };
   } else {
     const updatedPlan = data.plan.map((item) => item.id === "wed"
       ? { ...item, type: "Recovery", title: "Mobility reset", duration: 20, intensity: "Easy", status: "Recovery" }
@@ -2070,6 +2219,17 @@ function updateBoundField(target) {
   };
   if (!scopes[scope]) return;
   const value = valueForInput(target);
+
+  if (target.dataset.commitmentId) {
+    const commitment = scopes[scope].commitments?.find(
+      (item) => item.id === target.dataset.commitmentId
+    );
+    if (commitment && ["day", "time"].includes(field)) {
+      commitment[field] = value;
+    }
+    return;
+  }
+
   scopes[scope][field] = target.dataset.inverted === "true" ? 6 - Number(value) : value;
 }
 
@@ -2097,6 +2257,14 @@ function syncSelectedButtons(action, selectedValue, field = "") {
 // `input` fires immediately while a user types or changes a number.
 app.addEventListener("input", (event) => {
   updateBoundField(event.target);
+
+  if (event.target.dataset.scope === "onboarding" && event.target.dataset.field === "name") {
+    const continueButton = app.querySelector('[data-action="onboarding-next"]');
+    if (continueButton) {
+      continueButton.disabled = ui.generatingPlan
+        || !onboardingStepIsValid(ui.onboardingStep);
+    }
+  }
 
   if (event.target.matches(".scale-slider")) {
     const slider = event.target;
@@ -2143,7 +2311,7 @@ app.addEventListener("click", (event) => {
   if (action === "start-onboarding") {
     ui.onboardingStep = 1;
     ui.onboardingForm = clone(onboardingSeed.user);
-    ui.onboardingSchedule = clone(demoState.schedule);
+    ui.onboardingSchedule = normalizeSchedule(demoState.schedule);
     ui.generatingPlan = false;
     setScreen("onboarding");
   } else if (action === "enter-demo") {
@@ -2159,6 +2327,12 @@ app.addEventListener("click", (event) => {
       focusScreenHeading();
     }
   } else if (action === "onboarding-next") {
+    if (!onboardingStepIsValid(ui.onboardingStep)) {
+      focusAfterRender(ui.onboardingStep === 2 && !ui.onboardingForm.name.trim()
+        ? "#name"
+        : "#age-band");
+      return;
+    }
     if (ui.onboardingStep < 5) {
       ui.onboardingStep += 1;
       window.scrollTo({ top: 0, behavior: "instant" });
@@ -2180,13 +2354,29 @@ app.addEventListener("click", (event) => {
       schedule: ui.scheduleForm
     };
     const schedule = scheduleScopes[target.dataset.scope];
-    const prefix = target.dataset.prefix;
+    const type = target.dataset.commitmentType;
 
-    if (schedule && ["practice", "match"].includes(prefix)) {
-      schedule[`${prefix}Enabled`] = action === "add-commitment";
-      render();
-      const nextAction = action === "add-commitment" ? "remove-commitment" : "add-commitment";
-      focusAfterRender(`[data-action="${nextAction}"][data-prefix="${prefix}"]`);
+    if (schedule && ["practice", "match"].includes(type)) {
+      if (!Array.isArray(schedule.commitments)) {
+        schedule.commitments = normalizeSchedule(schedule).commitments;
+      }
+
+      if (action === "add-commitment") {
+        const commitment = createCommitment(type);
+        schedule.commitments.push(commitment);
+        render();
+        focusAfterRender(
+          `[data-action="remove-commitment"][data-commitment-id="${CSS.escape(commitment.id)}"]`
+        );
+      } else {
+        schedule.commitments = schedule.commitments.filter(
+          (commitment) => commitment.id !== target.dataset.commitmentId
+        );
+        render();
+        focusAfterRender(
+          `[data-action="add-commitment"][data-commitment-type="${type}"]`
+        );
+      }
     }
   } else if (action === "navigate") {
     setScreen(target.dataset.screen);
@@ -2257,10 +2447,10 @@ app.addEventListener("click", (event) => {
     ui.pending = null;
     setScreen("today");
   } else if (action === "edit-schedule") {
-    ui.scheduleForm = clone(data.schedule);
+    ui.scheduleForm = normalizeSchedule(data.schedule);
     setScreen("schedule");
   } else if (action === "preview-schedule") {
-    ui.pending = { kind: "schedule", schedule: clone(ui.scheduleForm) };
+    ui.pending = { kind: "schedule", schedule: normalizeSchedule(ui.scheduleForm) };
     setScreen("adjustment");
   } else if (action === "toggle-notifications") {
     ui.notifications = !ui.notifications;

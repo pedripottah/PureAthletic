@@ -33,12 +33,16 @@
             if (!control) throw new Error(`Missing control: ${selector}`);
             control.click();
           };
-          const input = (selector, value) => {
-            const control = page.querySelector(selector);
-            if (!control) throw new Error(`Missing input: ${selector}`);
+          const setValue = (control, value) => {
+            if (!control) throw new Error("Missing input control");
             control.value = value;
             control.dispatchEvent(new Event("input", { bubbles: true }));
             control.dispatchEvent(new Event("change", { bubbles: true }));
+          };
+          const input = (selector, value) => {
+            const control = page.querySelector(selector);
+            if (!control) throw new Error(`Missing input: ${selector}`);
+            setValue(control, value);
           };
 
           click('[data-action="start-onboarding"]');
@@ -54,7 +58,10 @@
             () => page.querySelector("#age-band"),
             "Football profile step did not open"
           );
-          input("#name", "Alex");
+          const preferredName = page.querySelector("#name");
+          if (!preferredName.required || !page.querySelector('label[for="name"] .required-marker')) {
+            throw new Error("Preferred name is missing required-field treatment");
+          }
           const ageBand = page.querySelector("#age-band");
           if (ageBand.options[0].textContent !== "Select a range" || !ageBand.options[0].disabled) {
             throw new Error("Age-band prompt is missing");
@@ -69,8 +76,16 @@
             throw new Error("Developmental age-band choices are incorrect");
           }
           input("#age-band", "u9-u12");
+          if (!page.querySelector('[data-action="onboarding-next"]').disabled) {
+            throw new Error("Preferred name must be required before continuing");
+          }
+          input("#name", "   ");
+          if (!page.querySelector('[data-action="onboarding-next"]').disabled) {
+            throw new Error("Whitespace-only preferred name was accepted");
+          }
+          input("#name", "Alex");
           if (page.querySelector('[data-action="onboarding-next"]').disabled) {
-            throw new Error("Valid age-band selection did not enable Continue");
+            throw new Error("Valid name and age-band selection did not enable Continue");
           }
 
           const advanced = page.querySelector(".choice-unavailable");
@@ -91,24 +106,46 @@
             () => page.querySelector('[data-action="remove-commitment"]'),
             "Commitment step did not open"
           );
-          click('[data-action="remove-commitment"][data-prefix="practice"]');
-          click('[data-action="remove-commitment"][data-prefix="match"]');
+          if (page.querySelectorAll('[data-action="remove-commitment"]').length !== 2) {
+            throw new Error("The default practice and match are missing");
+          }
 
+          click('[data-action="add-commitment"][data-commitment-type="practice"]');
+          click('[data-action="add-commitment"][data-commitment-type="match"]');
+          if (page.querySelectorAll('[data-action="remove-commitment"]').length !== 4) {
+            throw new Error("Multiple practices and matches were not added");
+          }
+
+          while (page.querySelector('[data-action="remove-commitment"]')) {
+            page.querySelector('[data-action="remove-commitment"]').click();
+          }
           if (page.querySelectorAll('[data-action="add-commitment"]').length !== 2) {
-            throw new Error("Both removed commitments should be addable");
+            throw new Error("An empty schedule should keep both add actions available");
           }
-
-          click('[data-action="add-commitment"][data-prefix="practice"]');
-          if (!page.querySelector('[data-action="remove-commitment"][data-prefix="practice"]')) {
-            throw new Error("Adding a practice did not restore its editable card");
+          if (page.querySelector('[data-action="onboarding-next"]').disabled) {
+            throw new Error("An empty commitment list should be optional");
           }
-          click('[data-action="remove-commitment"][data-prefix="practice"]');
 
           click('[data-action="onboarding-next"]');
           await waitFor(
             () => page.body.textContent.includes("No fixed commitments"),
             "Review did not show an empty commitment state"
           );
+          click('[data-action="onboarding-back"]');
+          await waitFor(
+            () => page.querySelector('[data-action="add-commitment"]'),
+            "Commitment step did not reopen"
+          );
+          click('[data-action="add-commitment"][data-commitment-type="practice"]');
+          click('[data-action="add-commitment"][data-commitment-type="practice"]');
+          click('[data-action="add-commitment"][data-commitment-type="match"]');
+          if (page.querySelectorAll('[data-action="remove-commitment"]').length !== 3) {
+            throw new Error("Unlimited commitment list did not preserve three entries");
+          }
+          const matchCard = page.querySelector('[data-action="remove-commitment"][data-commitment-type="match"]')?.closest(".schedule-card");
+          setValue(matchCard?.querySelector('[data-field="day"]'), "Sunday");
+          setValue(matchCard?.querySelector('[data-field="time"]'), "17:30");
+          click('[data-action="onboarding-next"]');
           click('[data-action="onboarding-next"]');
 
           await waitFor(
@@ -122,9 +159,12 @@
           if (savedProfile.user.ageBandId !== "u9-u12" || "ageGroup" in savedProfile.user) {
             throw new Error("Profile did not save the selected age band cleanly");
           }
-
-          if (!page.body.textContent.includes("Nothing added")) {
-            throw new Error("Today did not preserve the empty commitment state");
+          if (savedProfile.user.name !== "Alex" || savedProfile.schedule.commitments.length !== 3) {
+            throw new Error("Name or unlimited commitments were not saved cleanly");
+          }
+          const savedMatch = savedProfile.schedule.commitments.find((commitment) => commitment.type === "match");
+          if (savedMatch?.day !== "Sunday" || savedMatch.time !== "17:30") {
+            throw new Error("A commitment's own day and time were not saved");
           }
 
           if (frame.contentWindow.location.pathname !== "/today") {
@@ -142,9 +182,30 @@
             () => frame.contentWindow.location.pathname === "/training",
             "Training route did not open"
           );
-          if (page.querySelectorAll('a.plan-row[data-action="open-training-detail"]').length !== 7) {
-            throw new Error("Not every training row has a detail page");
+          if (page.querySelectorAll('a.plan-row[data-action="open-training-detail"]').length !== 8) {
+            throw new Error("The plan did not include both same-day practices");
           }
+          if (page.querySelectorAll('a.plan-row[data-action="open-training-detail"] .pill-dark').length !== 3) {
+            throw new Error("The plan did not preserve all three fixed commitments");
+          }
+          const plannedMatch = [...page.querySelectorAll('a.plan-row[data-action="open-training-detail"]')]
+            .find((row) => row.querySelector(".pill-dark")?.textContent === "MATCH");
+          if (!plannedMatch?.textContent.includes("SUN 2") || !plannedMatch.textContent.includes("17:30")) {
+            throw new Error("The plan did not use the edited match day and time");
+          }
+          const fixedCommitmentRow = page.querySelector('a.plan-row[data-action="open-training-detail"] .pill-dark')?.closest("a");
+          const fixedCommitmentId = fixedCommitmentRow?.dataset.id;
+          fixedCommitmentRow?.click();
+          await waitFor(
+            () => frame.contentWindow.location.pathname === `/training/session/${fixedCommitmentId}`
+              && page.querySelector("main h1")?.textContent === "Team training",
+            "A generated commitment detail did not open"
+          );
+          click('[data-action="back-training"]');
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/training",
+            "Generated commitment Back did not restore Training"
+          );
           click('[data-action="open-training-detail"][data-id="fri"]');
           await waitFor(
             () => frame.contentWindow.location.pathname === "/training/session/fri"

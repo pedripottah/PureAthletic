@@ -59,7 +59,9 @@ const server = createServer(async (request, response) => {
     const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
     const route = normalizedRoute(url.pathname);
     const assetFile = assetPaths.get(url.pathname);
-    const fileName = assetFile || (pageRoutes.has(route) ? "index.html" : null);
+    const isPageRoute = pageRoutes.has(route)
+      || /^\/training\/session\/[^/]+$/.test(route);
+    const fileName = assetFile || (isPageRoute ? "index.html" : null);
 
     if (!fileName) {
       response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
