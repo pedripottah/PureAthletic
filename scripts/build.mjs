@@ -14,19 +14,20 @@ const pageRoutes = [
   "/safety",
   "/training/workout",
   "/training/workout/short",
+  "/training/session/mon",
   "/training/session/tue",
   "/training/session/wed",
-  "/training/session/practice",
+  "/training/session/thu",
   "/training/session/fri",
-  "/training/session/match",
+  "/training/session/sat",
   "/training/session/sun",
-  "/training/session/mon",
   "/activity/log",
   "/training/review",
   "/profile/schedule"
 ];
 const staticFiles = [
   "index.html",
+  "favicon.svg",
   "styles.css",
   "app.js",
   "data/youth-football/sources.json",
@@ -36,6 +37,7 @@ const staticFiles = [
 ];
 const contentTypes = {
   "index.html": "text/html; charset=utf-8",
+  "favicon.svg": "image/svg+xml",
   "styles.css": "text/css; charset=utf-8",
   "app.js": "text/javascript; charset=utf-8",
   "sources.json": "application/json; charset=utf-8",

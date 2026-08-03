@@ -28,6 +28,11 @@
           const page = frame.contentDocument;
           frame.contentWindow.localStorage.clear();
 
+          const favicon = page.querySelector('link[rel="icon"]');
+          if (favicon?.getAttribute("href") !== "/favicon.svg") {
+            throw new Error("The PureAthletic favicon is missing");
+          }
+
           const click = (selector) => {
             const control = page.querySelector(selector);
             if (!control) throw new Error(`Missing control: ${selector}`);
@@ -170,6 +175,15 @@
           if (frame.contentWindow.location.pathname !== "/today") {
             throw new Error("Today does not have its own URL");
           }
+          const expectedTodayHeading = new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Asia/Bangkok",
+            weekday: "long",
+            day: "numeric",
+            month: "long"
+          }).format(new Date()).toUpperCase();
+          if (page.querySelector(".screen-eyebrow")?.textContent !== expectedTodayHeading) {
+            throw new Error("Today does not use the live GMT+7 calendar date");
+          }
 
           const routeLinks = [...page.querySelectorAll('.side-nav [data-action="navigate"]')]
             .map((link) => link.getAttribute("href"));
@@ -190,10 +204,12 @@
           }
           const plannedMatch = [...page.querySelectorAll('a.plan-row[data-action="open-training-detail"]')]
             .find((row) => row.querySelector(".pill-dark")?.textContent === "MATCH");
-          if (!plannedMatch?.textContent.includes("SUN 2") || !plannedMatch.textContent.includes("17:30")) {
+          if (!/^SUN \d{1,2} · FIXED$/.test(plannedMatch?.querySelector(".plan-day")?.textContent || "")
+              || !plannedMatch.textContent.includes("17:30")) {
             throw new Error("The plan did not use the edited match day and time");
           }
-          const fixedCommitmentRow = page.querySelector('a.plan-row[data-action="open-training-detail"] .pill-dark')?.closest("a");
+          const fixedCommitmentRow = [...page.querySelectorAll('a.plan-row[data-action="open-training-detail"]')]
+            .find((row) => row.querySelector(".pill-dark")?.textContent === "TEAM PRACTICE");
           const fixedCommitmentId = fixedCommitmentRow?.dataset.id;
           fixedCommitmentRow?.click();
           await waitFor(
@@ -206,27 +222,35 @@
             () => frame.contentWindow.location.pathname === "/training",
             "Generated commitment Back did not restore Training"
           );
-          click('[data-action="open-training-detail"][data-id="fri"]');
+          const recoveryRow = [...page.querySelectorAll('[data-action="open-training-detail"]')]
+            .find((row) => row.querySelector(".day-dot.recovery"));
+          const recoveryId = recoveryRow?.dataset.id;
+          const recoveryTitle = recoveryRow?.querySelector(".plan-main strong")?.textContent;
+          recoveryRow?.click();
           await waitFor(
-            () => frame.contentWindow.location.pathname === "/training/session/fri"
-              && page.querySelector("main h1")?.textContent === "Mobility reset",
-            "Mobility reset detail did not open"
+            () => frame.contentWindow.location.pathname === `/training/session/${recoveryId}`
+              && page.querySelector("main h1")?.textContent === recoveryTitle,
+            "Recovery detail did not open"
           );
           click('[data-action="back-training"]');
           await waitFor(
             () => frame.contentWindow.location.pathname === "/training",
-            "Mobility reset Back did not restore Training"
+            "Recovery Back did not restore Training"
           );
-          click('[data-action="open-training-detail"][data-id="mon"]');
+          const plannedRow = [...page.querySelectorAll('[data-action="open-training-detail"]')]
+            .find((row) => row.querySelector(".pill-neutral")?.textContent === "PLANNED");
+          const plannedId = plannedRow?.dataset.id;
+          const plannedTitle = plannedRow?.querySelector(".plan-main strong")?.textContent;
+          plannedRow?.click();
           await waitFor(
-            () => frame.contentWindow.location.pathname === "/training/session/mon"
-              && page.querySelector("main h1")?.textContent === "Acceleration quality",
-            "Acceleration quality detail did not open"
+            () => frame.contentWindow.location.pathname === `/training/session/${plannedId}`
+              && page.querySelector("main h1")?.textContent === plannedTitle,
+            "Planned-session detail did not open"
           );
           click('[data-action="back-training"]');
           await waitFor(
             () => frame.contentWindow.location.pathname === "/training",
-            "Acceleration quality Back did not restore Training"
+            "Planned-session Back did not restore Training"
           );
           if (page.querySelector(".plan-row:not([href])")) {
             throw new Error("A training row is missing its URL");

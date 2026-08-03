@@ -30,6 +30,93 @@ const YOUTH_DATA_BASE = "/data/youth-football";
 const app = document.querySelector("#app"); // The <div id="app"> where screens appear.
 const landingTemplate = document.querySelector("#landing-view"); // Reusable landing-page HTML.
 
+// All calendar labels follow the athlete-facing product timezone. Bangkok does
+// not observe daylight saving time, so Asia/Bangkok is always GMT+7.
+const APP_TIME_ZONE = "Asia/Bangkok";
+
+function bangkokDateParts(now = new Date()) {
+  return Object.fromEntries(
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: APP_TIME_ZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(now)
+      .filter((part) => part.type !== "literal")
+      .map((part) => [part.type, part.value])
+  );
+}
+
+// A UTC-noon Date is used as a safe, timezone-neutral calendar value. It is
+// never displayed as a timestamp; Intl only reads its year, month, and day.
+function bangkokCalendarDate(now = new Date()) {
+  const parts = bangkokDateParts(now);
+  return new Date(Date.UTC(
+    Number(parts.year),
+    Number(parts.month) - 1,
+    Number(parts.day),
+    12
+  ));
+}
+
+function addCalendarDays(date, amount) {
+  const result = new Date(date);
+  result.setUTCDate(result.getUTCDate() + amount);
+  return result;
+}
+
+function formatCalendarDate(date, options) {
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "UTC",
+    ...options
+  }).format(date);
+}
+
+function calendarDateKey(date = bangkokCalendarDate()) {
+  return formatCalendarDate(date, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).split("/").reverse().join("-");
+}
+
+function shortDateLabel(date) {
+  return formatCalendarDate(date, {
+    weekday: "short",
+    day: "numeric"
+  });
+}
+
+function dateRangeLabel(start, end) {
+  const startLabel = formatCalendarDate(start, { day: "numeric", month: "short" });
+  const endLabel = formatCalendarDate(end, { day: "numeric", month: "short" });
+  return `${startLabel} — ${endLabel}`;
+}
+
+function todayHeadingLabel() {
+  return formatCalendarDate(todayCalendarDate, {
+    weekday: "long",
+    day: "numeric",
+    month: "long"
+  }).toUpperCase();
+}
+
+function greetingForBangkok(now = new Date()) {
+  const hour = Number(bangkokDateParts(now).hour);
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
+const todayCalendarDate = bangkokCalendarDate();
+const rollingCalendarDays = Array.from(
+  { length: 7 },
+  (_, index) => addCalendarDays(todayCalendarDate, index)
+);
+
 // =============================================================================
 // STARTING AND DEMO DATA
 // =============================================================================
@@ -40,14 +127,22 @@ const landingTemplate = document.querySelector("#landing-view"); // Reusable lan
  * Each item is an object: a group of related properties surrounded by {}.
  * Example: initialPlan[0].title gives "Football strength foundations".
  */
+const planDays = rollingCalendarDays.map((date, index) => ({
+  id: formatCalendarDate(date, { weekday: "short" }).toLowerCase(),
+  weekday: formatCalendarDate(date, { weekday: "long" }),
+  label: `${index === 0 ? "TODAY · " : ""}${shortDateLabel(date).toUpperCase()}`,
+  date
+}));
+const TODAY_PLAN_ITEM_ID = planDays[0].id;
+
 const initialPlan = [
-  { id: "tue", weekday: "Tuesday", day: "TODAY · TUE 28", type: "Strength", title: "Football strength foundations", duration: 30, intensity: "Moderate", status: "Planned", fixed: false },
-  { id: "wed", weekday: "Wednesday", day: "WED 29", type: "Rest", title: "Full rest", duration: 0, intensity: "Easy", status: "Rest", fixed: false },
-  { id: "practice", weekday: "Thursday", day: "THU 30", type: "Team practice", title: "Team training", duration: 90, intensity: "Team-led", status: "Fixed", fixed: true, time: "19:00" },
-  { id: "fri", weekday: "Friday", day: "FRI 31", type: "Recovery", title: "Mobility reset", duration: 20, intensity: "Easy", status: "Recovery", fixed: false },
-  { id: "match", weekday: "Saturday", day: "SAT 1", type: "Match", title: "League match", duration: 90, intensity: "Match", status: "Fixed", fixed: true, time: "15:00" },
-  { id: "sun", weekday: "Sunday", day: "SUN 2", type: "Recovery", title: "Post-match recovery", duration: 25, intensity: "Easy", status: "Recovery", fixed: false },
-  { id: "mon", weekday: "Monday", day: "MON 3", type: "Speed", title: "Acceleration quality", duration: 35, intensity: "Moderate", status: "Planned", fixed: false }
+  { id: planDays[0].id, weekday: planDays[0].weekday, day: planDays[0].label, type: "Strength", title: "Football strength foundations", duration: 30, intensity: "Moderate", status: "Planned", fixed: false },
+  { id: planDays[1].id, weekday: planDays[1].weekday, day: planDays[1].label, type: "Rest", title: "Full rest", duration: 0, intensity: "Easy", status: "Rest", fixed: false },
+  { id: planDays[2].id, weekday: planDays[2].weekday, day: planDays[2].label, type: "Rest", title: "Open day", duration: 0, intensity: "Easy", status: "Rest", fixed: false },
+  { id: planDays[3].id, weekday: planDays[3].weekday, day: planDays[3].label, type: "Recovery", title: "Mobility reset", duration: 20, intensity: "Easy", status: "Recovery", fixed: false },
+  { id: planDays[4].id, weekday: planDays[4].weekday, day: planDays[4].label, type: "Rest", title: "Open day", duration: 0, intensity: "Easy", status: "Rest", fixed: false },
+  { id: planDays[5].id, weekday: planDays[5].weekday, day: planDays[5].label, type: "Recovery", title: "Recovery movement", duration: 25, intensity: "Easy", status: "Recovery", fixed: false },
+  { id: planDays[6].id, weekday: planDays[6].weekday, day: planDays[6].label, type: "Speed", title: "Acceleration quality", duration: 35, intensity: "Moderate", status: "Planned", fixed: false }
 ];
 
 /*
@@ -68,8 +163,9 @@ const demoState = {
     equipment: ["Bodyweight", "Resistance bands", "Field or open space"]
   },
   checkInDone: false,
+  planDate: calendarDateKey(todayCalendarDate),
   recommendation: {
-    id: "tue",
+    id: TODAY_PLAN_ITEM_ID,
     type: "Strength",
     title: "Football strength foundations",
     duration: 30,
@@ -87,8 +183,8 @@ const demoState = {
   },
   plan: initialPlan,
   activities: [
-    { id: 1, title: "Speed mechanics", status: "Completed", duration: 35, effort: 6, date: "Mon 27" },
-    { id: 2, title: "Mobility reset", status: "Modified", duration: 18, effort: 3, date: "Sun 26" }
+    { id: 1, title: "Speed mechanics", status: "Completed", duration: 35, effort: 6, date: shortDateLabel(addCalendarDays(todayCalendarDate, -1)) },
+    { id: 2, title: "Mobility reset", status: "Modified", duration: 18, effort: 3, date: shortDateLabel(addCalendarDays(todayCalendarDate, -2)) }
   ],
   adjustments: [],
   schedule: {
@@ -105,6 +201,7 @@ const demoState = {
  */
 const onboardingSeed = {
   onboarded: false,
+  planDate: calendarDateKey(todayCalendarDate),
   user: {
     name: "",
     ageBandId: "",
@@ -136,15 +233,6 @@ const exercises = [
 
 // These values are reused to build choices instead of repeating the HTML by hand.
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const planDays = [
-  { id: "tue", weekday: "Tuesday", label: "TODAY · TUE 28" },
-  { id: "wed", weekday: "Wednesday", label: "WED 29" },
-  { id: "thu", weekday: "Thursday", label: "THU 30" },
-  { id: "fri", weekday: "Friday", label: "FRI 31" },
-  { id: "sat", weekday: "Saturday", label: "SAT 1" },
-  { id: "sun", weekday: "Sunday", label: "SUN 2" },
-  { id: "mon", weekday: "Monday", label: "MON 3" }
-];
 const teamAgeBands = [
   { value: "u5-u8", label: "U5–U8", teamAgeGroups: ["U5", "U6", "U7", "U8"] },
   { value: "u9-u12", label: "U9–U12", teamAgeGroups: ["U9", "U10", "U11", "U12"] },
@@ -249,9 +337,9 @@ let ui = {
   onboardingSchedule: clone(demoState.schedule),
   checkinForm: { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" },
   workoutDone: [],
-  selectedPlanItemId: "tue",
+  selectedPlanItemId: TODAY_PLAN_ITEM_ID,
   outcome: "good",
-  logConfig: { unplanned: false, status: "Completed", planItemId: "tue" },
+  logConfig: { unplanned: false, status: "Completed", planItemId: TODAY_PLAN_ITEM_ID },
   logForm: null,
   pending: null,
   notifications: true,
@@ -300,13 +388,35 @@ function loadData() {
     restored.user.ageBandId = selectedAgeBand.value;
     delete restored.user.ageGroup;
     restored.schedule = normalizeSchedule(restored.schedule);
+    const currentPlanDate = calendarDateKey(todayCalendarDate);
+    const planDateChanged = restored.planDate !== currentPlanDate;
+
+    // Readiness belongs to one Bangkok calendar day. Legacy saved check-ins did
+    // not have a date, so they become due again instead of lingering forever.
+    // Safety guidance remains active until it is deliberately resolved.
+    const checkInExpired = restored.checkInDone
+      && restored.checkInDate !== calendarDateKey()
+      && restored.recommendation?.status !== "Safety";
+    if (checkInExpired) {
+      const priorRecommendation = restored.adjustments?.find(
+        (adjustment) => adjustment.beforeRecommendation
+      )?.beforeRecommendation;
+      if (priorRecommendation) restored.recommendation = priorRecommendation;
+      restored.checkInDone = false;
+      delete restored.checkIn;
+      delete restored.checkInDate;
+    }
+
     restored.plan = planWithRecommendationAndSchedule(
       restored.recommendation || demoState.recommendation,
       restored.schedule,
-      Array.isArray(restored.plan) ? restored.plan : clone(initialPlan)
+      !planDateChanged && Array.isArray(restored.plan)
+        ? restored.plan
+        : clone(initialPlan)
     );
+    restored.planDate = currentPlanDate;
 
-    if (previousAgeGroup || usedLegacySchedule) {
+    if (previousAgeGroup || usedLegacySchedule || checkInExpired || planDateChanged) {
       if (previousAgeGroup && restored.recommendation?.explanation) {
         restored.recommendation.explanation = restored.recommendation.explanation
           .replace(previousAgeGroup, selectedAgeBand.label);
@@ -890,7 +1000,18 @@ function commitmentSummary(schedule) {
 }
 
 function nextFixedCommitment(schedule) {
-  return activeCommitments(schedule)[0] || null;
+  const parts = bangkokDateParts();
+  const currentMinutes = Number(parts.hour) * 60 + Number(parts.minute);
+  return activeCommitments(schedule)
+    .map((commitment) => {
+      let daysAway = planDays.findIndex((day) => day.weekday === commitment.day);
+      const [hour, minute] = commitment.time.split(":").map(Number);
+      if (daysAway === 0 && hour * 60 + minute < currentMinutes) daysAway = 7;
+      return { ...commitment, daysAway };
+    })
+    .sort((left, right) =>
+      left.daysAway - right.daysAway || left.time.localeCompare(right.time)
+    )[0] || null;
 }
 
 function planItemWeekday(item) {
@@ -975,7 +1096,7 @@ function planWithRecommendationAndSchedule(recommendation, schedule, sourcePlan 
     }
 
     const optionalItem = optionalPlanItemForDay(day, sourcePlan);
-    if (day.weekday !== "Tuesday") return [optionalItem];
+    if (day.id !== TODAY_PLAN_ITEM_ID) return [optionalItem];
 
     return [{
       ...optionalItem,
@@ -1006,6 +1127,15 @@ function screenHeader(eyebrow, title, action = "") {
 // Copies the landing <template> into #app, then fills its icon placeholders.
 function renderLanding() {
   app.innerHTML = landingTemplate.innerHTML;
+  const currentDate = app.querySelector("[data-current-date]");
+  if (currentDate) currentDate.textContent = shortDateLabel(todayCalendarDate);
+  const nextCommitment = nextFixedCommitment(demoState.schedule);
+  const nextTitle = app.querySelector("[data-next-commitment-title]");
+  const nextTime = app.querySelector("[data-next-commitment-time]");
+  if (nextTitle && nextCommitment) nextTitle.textContent = nextCommitment.type;
+  if (nextTime && nextCommitment) {
+    nextTime.textContent = `${nextCommitment.day} · ${nextCommitment.time}`;
+  }
   hydrateTemplateIcons();
 }
 
@@ -1240,7 +1370,7 @@ function renderToday() {
 
   return `
     <main class="screen">
-      ${screenHeader("TUESDAY, 28 JULY", `Good afternoon, ${escapeHtml(data.user.name)}.`, `<span class="readiness-dot">${data.checkInDone ? "Check-in done" : "Check-in due"}</span>`)}
+      ${screenHeader(todayHeadingLabel(), `${greetingForBangkok()}, ${escapeHtml(data.user.name)}.`, `<span class="readiness-dot">${data.checkInDone ? "Check-in done" : "Check-in due"}</span>`)}
       <div class="dashboard-grid">
         <section class="recommendation-card ${safety ? "safety-card" : ""}">
           <div class="card-topline"><span class="eyebrow">${safety ? "SAFETY GUIDANCE" : "TODAY’S RECOMMENDATION"}</span>${pill(rec.status, safety ? "warning" : "lime")}</div>
@@ -1402,7 +1532,7 @@ function renderWorkout(short = false) {
 }
 
 function planItemGuidance(item) {
-  if (item.id === "tue") {
+  if (item.id === TODAY_PLAN_ITEM_ID) {
     return {
       purpose: data.recommendation.purpose,
       activities: data.recommendation.activities?.length
@@ -1525,7 +1655,7 @@ function renderActivityLog() {
   const form = ui.logForm;
   const unplanned = ui.logConfig.unplanned;
   const planItem = data.plan.find((item) => item.id === ui.logConfig.planItemId);
-  const backAction = !unplanned && ui.logConfig.planItemId !== "tue" ? "back-training" : "back-today";
+  const backAction = !unplanned && ui.logConfig.planItemId !== TODAY_PLAN_ITEM_ID ? "back-training" : "back-today";
   return `
     <main class="focused-page log-page">
       <header class="focused-header"><button type="button" class="icon-button" data-action="${backAction}" aria-label="Back">${icon("back")}</button><span class="focused-title">${unplanned ? "Log another activity" : "Log your session"}</span><span></span></header>
@@ -1561,6 +1691,7 @@ function renderAdjustment() {
   const afterSummary = isSchedule
     ? commitmentSummary(pending.schedule)
     : "Mobility reset · 20 min · Easy";
+  const nextDayLabel = planDays[1].label;
   return `
     <main class="outcome-page adjustment-page">
       <div class="adjustment-card">
@@ -1568,9 +1699,9 @@ function renderAdjustment() {
         <h1>${isSchedule ? "Your schedule changes the week." : "Recovery needs a little more room."}</h1>
         <p>${isSchedule ? "Added commitments stay fixed; removed commitments stop affecting the plan. Optional work is recalculated around what remains." : "The high-effort team session you logged increases today’s load. Fixed commitments remain unchanged."}</p>
         <div class="change-comparison">
-          <div><small>${isSchedule ? "BEFORE" : "WED 29"}</small>${pill(isSchedule ? "CURRENT" : "PLANNED")}<h3>${isSchedule ? "Fixed commitments" : "Conditioning"}</h3><span>${escapeHtml(beforeSummary)}</span></div>
+          <div><small>${isSchedule ? "BEFORE" : nextDayLabel}</small>${pill(isSchedule ? "CURRENT" : "PLANNED")}<h3>${isSchedule ? "Fixed commitments" : "Conditioning"}</h3><span>${escapeHtml(beforeSummary)}</span></div>
           <span class="change-arrow">→</span>
-          <div class="new"><small>${isSchedule ? "AFTER" : "WED 29"}</small>${pill(isSchedule ? "UPDATED" : "RECOVERY", "lime")}<h3>${isSchedule ? "Fixed commitments" : "Mobility reset"}</h3><span>${escapeHtml(afterSummary)}</span></div>
+          <div class="new"><small>${isSchedule ? "AFTER" : nextDayLabel}</small>${pill(isSchedule ? "UPDATED" : "RECOVERY", "lime")}<h3>${isSchedule ? "Fixed commitments" : "Mobility reset"}</h3><span>${escapeHtml(afterSummary)}</span></div>
         </div>
         <div class="reason-box"><span class="round-icon">${icon("shield")}</span><div><strong>Why this changed</strong><p>${isSchedule ? "The recommendation system only protects practices and matches that are currently added." : "This avoids consecutive high-load days while preserving team commitments."}</p></div></div>
         <div class="button-row">${button("Apply changes", "apply-adjustment")}${button("Keep current plan", "dismiss-adjustment", { variant: "secondary" })}</div>
@@ -1613,7 +1744,7 @@ function renderWeek() {
 
   return `
     <main class="screen">
-      ${screenHeader("ROLLING PLAN", "Your next 7 days", '<span class="date-control">28 Jul — 3 Aug</span>')}
+      ${screenHeader("ROLLING PLAN", "Your next 7 days", `<span class="date-control">${dateRangeLabel(rollingCalendarDays[0], rollingCalendarDays[6])}</span>`)}
       <section class="week-card">
         <div class="week-summary">
           <div><span class="eyebrow">WEEK SHAPE</span><strong>${focusedSessions} focused session${focusedSessions === 1 ? "" : "s"}</strong><p>${hasMatch ? `with recovery protected around your match${matchCount === 1 ? "" : "es"}` : "balanced around the commitments you added"}</p></div>
@@ -1633,12 +1764,16 @@ function renderProgress() {
   const completed = data.activities.filter((activity) => activity.status === "Completed").length;
   const modified = data.activities.filter((activity) => activity.status === "Modified").length;
   const minutes = data.activities.reduce((sum, activity) => sum + Number(activity.duration || 0), 0);
+  const previousWeekLabel = dateRangeLabel(
+    addCalendarDays(todayCalendarDate, -7),
+    addCalendarDays(todayCalendarDate, -1)
+  ).toUpperCase();
 
   // Return early with an empty state when there are no activities to summarize.
   if (!data.activities.length) {
     return `
       <main class="screen">
-        ${screenHeader("21 — 27 JULY", "Your week, in context.", '<span class="date-control">Previous week</span>')}
+        ${screenHeader(previousWeekLabel, "Your week, in context.", '<span class="date-control">Previous week</span>')}
         <section class="empty-state"><span class="empty-icon">${icon("progress", 32)}</span><h2>Your first review is taking shape.</h2><p>Log a few sessions and check-ins. After seven days, useful patterns will appear here.</p></section>
       </main>`;
   }
@@ -1648,7 +1783,7 @@ function renderProgress() {
   const completePercent = Math.max(15, (completed / data.activities.length) * 100);
   return `
     <main class="screen">
-      ${screenHeader("21 — 27 JULY", "Your week, in context.", '<span class="date-control">Previous week</span>')}
+      ${screenHeader(previousWeekLabel, "Your week, in context.", '<span class="date-control">Previous week</span>')}
       <div class="progress-layout">
         <section class="stat-card accent-stat"><span class="eyebrow">APPROPRIATE CONSISTENCY</span><div class="stat-main"><strong>${completed + modified}</strong><span>sessions completed<br>or modified</span></div><p>Rest and recovery count when they are the appropriate recommendation.</p></section>
         <section class="stat-card"><span class="eyebrow">TRAINING TIME</span><div class="stat-main"><strong>${minutes}</strong><span>minutes<br>logged</span></div><div class="trend-bars">${bars}</div></section>
@@ -1766,7 +1901,7 @@ function resolveRouteScreen(requestedScreen) {
   return screen;
 }
 
-function defaultLogForm(unplanned = true, status = "Completed", planItemId = "tue") {
+function defaultLogForm(unplanned = true, status = "Completed", planItemId = TODAY_PLAN_ITEM_ID) {
   const planItem = data.plan.find((item) => item.id === planItemId);
   return {
     type: unplanned ? "Team practice" : planItem?.type || data.recommendation.type,
@@ -2040,6 +2175,7 @@ function submitCheckIn() {
   data = {
     ...data,
     checkInDone: true,
+    checkInDate: calendarDateKey(),
     checkIn: form,
     recommendation,
     adjustments: adjustment ? [adjustment, ...data.adjustments] : data.adjustments
@@ -2050,7 +2186,7 @@ function submitCheckIn() {
 }
 
 // Creates the temporary form values for a planned or unplanned activity.
-function openLog(unplanned, status = "Completed", planItemId = "tue") {
+function openLog(unplanned, status = "Completed", planItemId = TODAY_PLAN_ITEM_ID) {
   ui.logConfig = { unplanned, status, planItemId: unplanned ? null : planItemId };
   ui.logForm = defaultLogForm(unplanned, status, planItemId);
   setScreen("log");
@@ -2058,7 +2194,7 @@ function openLog(unplanned, status = "Completed", planItemId = "tue") {
 
 /*
  * Turns the temporary log form into a saved activity.
- * map() creates a new plan array, changing only Tuesday when appropriate.
+ * map() creates a new plan array, changing only the selected day when appropriate.
  * Date.now() supplies a simple numeric identifier based on the current time.
  */
 function saveActivity() {
@@ -2080,7 +2216,8 @@ function saveActivity() {
     ...form,
     id: Date.now(),
     title: ui.logConfig.unplanned ? form.type : planItem?.title || data.recommendation.title,
-    date: planItem?.day.replace("TODAY · ", "").replace(" · FIXED", "") || "Tue 28"
+    date: planItem?.day.replace("TODAY · ", "").replace(" · FIXED", "")
+      || shortDateLabel(todayCalendarDate)
   };
   const activities = [activity, ...data.activities];
   const plan = data.plan.map((item) => item.id === ui.logConfig.planItemId && !ui.logConfig.unplanned ? { ...item, status: form.status } : item);
@@ -2113,7 +2250,7 @@ function saveActivity() {
     ui.pending = { kind: "activity", originalPlan: clone(data.plan) };
     setScreen("adjustment");
   } else {
-    setScreen(ui.logConfig.planItemId && ui.logConfig.planItemId !== "tue" ? "week" : "today");
+    setScreen(ui.logConfig.planItemId && ui.logConfig.planItemId !== TODAY_PLAN_ITEM_ID ? "week" : "today");
   }
 }
 
@@ -2141,7 +2278,7 @@ function applyAdjustment() {
     };
     data = { ...data, schedule, plan: updatedPlan, adjustments: [adjustment, ...data.adjustments] };
   } else {
-    const updatedPlan = data.plan.map((item) => item.id === "wed"
+    const updatedPlan = data.plan.map((item) => item.id === planDays[1].id
       ? { ...item, type: "Recovery", title: "Mobility reset", duration: 20, intensity: "Easy", status: "Recovery" }
       : item);
     const adjustment = { id: Date.now(), title: "Recovery replaced conditioning", reason: "Consecutive high-load days avoided", undoable: true, beforePlan: pending.originalPlan };
