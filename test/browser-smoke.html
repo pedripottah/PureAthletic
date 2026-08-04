@@ -212,16 +212,40 @@
                 && page.querySelector("main h1")?.textContent === "How ready do you feel?",
               "Today's Training session did not require check-in"
             );
-            click('[data-action="back-today"]');
+            click('[data-action="submit-checkin"]');
             await waitFor(
-              () => frame.contentWindow.location.pathname === "/today",
-              "Check-in Back did not restore Today"
+              () => frame.contentWindow.location.pathname === "/check-in/result",
+              "Check-in result did not open from Training"
+            );
+            click('[data-action="continue-outcome"]');
+            await waitFor(
+              () => frame.contentWindow.location.pathname === "/training/workout",
+              "Today's workout did not open after check-in"
+            );
+            click('[data-action="open-planned-log"][data-status="Modified"]');
+            await waitFor(
+              () => page.querySelector('[data-form="activity-log"]'),
+              "Modified-session log did not open"
+            );
+            page.querySelector('[data-form="activity-log"]').requestSubmit();
+            await waitFor(
+              () => frame.contentWindow.location.pathname === "/today"
+                && page.querySelector(".recommendation-card.completed-card"),
+              "Today did not show the logged-session completion state"
             );
             click('.side-nav [data-action="navigate"][data-screen="week"]');
             await waitFor(
               () => frame.contentWindow.location.pathname === "/training",
-              "Training did not reopen after the check-in gate"
+              "Training did not reopen after logging today's session"
             );
+            const completedTodayRow = [...page.querySelectorAll(".plan-row.completed")]
+              .find((row) => row.querySelector(".plan-day")?.textContent.startsWith("TODAY ·"));
+            if (!completedTodayRow
+                || completedTodayRow.matches("a")
+                || !completedTodayRow.textContent.includes("MODIFIED")
+                || !completedTodayRow.textContent.includes("Logged")) {
+              throw new Error("Today's logged Training row is not clearly completed and locked");
+            }
           }
           const plannedMatch = [...page.querySelectorAll('a.plan-row[data-action="open-training-detail"]')]
             .find((row) => row.querySelector(".pill-dark")?.textContent === "MATCH");

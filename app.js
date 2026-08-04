@@ -1356,29 +1356,52 @@ function renderAppShell(content) {
 function renderToday() {
   const rec = data.recommendation;
   const safety = rec.status === "Safety";
+  const todayPlanItem = data.plan.find((item) => item.id === TODAY_PLAN_ITEM_ID) || {
+    id: TODAY_PLAN_ITEM_ID,
+    weekday: planDays[0].weekday,
+    status: "Planned"
+  };
+  const todayLog = latestCompletedLogForPlanItem(todayPlanItem);
+  const todayStatus = todayLog?.status
+    || (["Completed", "Modified"].includes(todayPlanItem?.status) ? todayPlanItem.status : "");
+  const sessionDone = Boolean(todayStatus) && !safety;
   const nextCommitment = nextFixedCommitment(data.schedule);
-  const recommendationActions = !data.checkInDone && !safety
+  const recommendationActions = sessionDone
+    ? ""
+    : !data.checkInDone && !safety
     ? button('Complete check-in <span aria-hidden="true">→</span>', "open-checkin")
     : safety
       ? button("Review guidance", "review-safety", { variant: "light" })
       : `<div class="button-row">${button("Start routine", "open-workout")}${button(`${Math.max(12, Math.round(rec.duration * 0.7))}-min version`, "open-short-workout", { variant: "light" })}</div>`;
-  const explanation = safety
+  const explanation = sessionDone
+    ? todayStatus === "Modified"
+      ? "You logged today’s session with adjustments. Adapting the work while keeping the intent is a successful training decision."
+      : "You logged today’s recommended session. The useful next step is recovery, not adding more work."
+    : safety
     ? "Safety rules take priority over the weekly goal and cannot be bypassed."
     : data.checkInDone
       ? rec.explanation || "Your check-in supports this age- and goal-matched routine."
       : `${rec.explanation || `Selected for ${ageBandLabel(data.user.ageBandId)}, ${data.user.experience}, and ${data.user.goal}.`} Check in first so it can respond to today’s readiness.`;
+  const cardStatus = sessionDone ? todayStatus : rec.status;
+  const cardTitle = sessionDone
+    ? todayStatus === "Modified"
+      ? "Today’s session is done—with smart adjustments."
+      : "Today’s session is complete."
+    : rec.title;
 
   return `
     <main class="screen">
       ${screenHeader(todayHeadingLabel(), `${greetingForBangkok()}, ${escapeHtml(data.user.name)}.`, `<span class="readiness-dot">${data.checkInDone ? "Check-in done" : "Check-in due"}</span>`)}
       <div class="dashboard-grid">
-        <section class="recommendation-card ${safety ? "safety-card" : ""}">
-          <div class="card-topline"><span class="eyebrow">${safety ? "SAFETY GUIDANCE" : "TODAY’S RECOMMENDATION"}</span>${pill(rec.status, safety ? "warning" : "lime")}</div>
-          <div class="recommendation-icon">${icon(safety ? "alert" : rec.type === "Recovery" ? "shield" : "bolt", 28)}</div>
-          <span class="session-type">${escapeHtml(rec.type)}</span>
-          <h2>${escapeHtml(rec.title)}</h2>
-          ${safety ? "" : `<div class="session-meta"><span>${icon("clock", 17)} ${rec.duration} min</span><span>${escapeHtml(rec.intensity)}</span></div>`}
-          <p>${escapeHtml(rec.purpose)}</p>
+        <section class="recommendation-card ${safety ? "safety-card" : ""} ${sessionDone ? "completed-card" : ""}">
+          <div class="card-topline"><span class="eyebrow">${safety ? "SAFETY GUIDANCE" : "TODAY’S RECOMMENDATION"}</span>${pill(cardStatus, safety ? "warning" : "lime")}</div>
+          <div class="recommendation-icon">${icon(safety ? "alert" : sessionDone ? "check" : rec.type === "Recovery" ? "shield" : "bolt", 28)}</div>
+          <span class="session-type">${sessionDone ? "DONE FOR TODAY" : escapeHtml(rec.type)}</span>
+          <h2>${escapeHtml(cardTitle)}</h2>
+          ${safety ? "" : sessionDone
+            ? `<div class="session-meta"><span>${icon("clock", 17)} ${todayLog?.duration || rec.duration} min logged</span><span>${escapeHtml(todayStatus)}</span></div>`
+            : `<div class="session-meta"><span>${icon("clock", 17)} ${rec.duration} min</span><span>${escapeHtml(rec.intensity)}</span></div>`}
+          <p class="${sessionDone ? "completion-quote" : ""}">${sessionDone ? "“The work is done. Recovery is part of the training now.”" : escapeHtml(rec.purpose)}</p>
           ${recommendationActions}
         </section>
         <div class="dashboard-side">
@@ -1613,6 +1636,26 @@ function trainingSessionRequiresCheckIn(item) {
     && data.recommendation.status !== "Safety";
 }
 
+function planItemScheduledDate(item) {
+  const planDay = planDays.find((day) => day.weekday === planItemWeekday(item));
+  return planDay ? calendarDateKey(planDay.date) : "";
+}
+
+function latestCompletedLogForPlanItem(item) {
+  if (!item) return null;
+  const scheduledDate = planItemScheduledDate(item);
+  return data.activities.find((activity) =>
+    activity.planItemId === item.id
+    && activity.scheduledDate === scheduledDate
+    && ["Completed", "Modified"].includes(activity.status)
+  ) || null;
+}
+
+function planItemCompletionStatus(item) {
+  return latestCompletedLogForPlanItem(item)?.status
+    || (["Completed", "Modified"].includes(item?.status) ? item.status : "");
+}
+
 function renderTrainingDetail() {
   const item = data.plan.find((candidate) => candidate.id === ui.selectedPlanItemId);
   if (!item) return renderWeek();
@@ -1739,6 +1782,17 @@ function renderWeek() {
   const rows = data.plan.map((item) => {
     // Nested template strings add time and duration only when those values exist.
     const meta = `${item.time ? `${item.time} · ` : ""}${item.duration ? `${item.duration} min · ` : ""}${item.intensity}`;
+    const completionStatus = planItemCompletionStatus(item);
+    if (completionStatus) {
+      return `
+        <div class="plan-row completed" aria-label="${escapeHtml(item.title)}, ${completionStatus.toLowerCase()} and logged">
+          <span class="day-dot completed-dot"></span>
+          <span class="plan-day">${escapeHtml(item.day)}</span>
+          <span class="plan-main"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(meta)} · Logged</small></span>
+          ${pill(completionStatus.toUpperCase(), "lime")}
+          <span class="completion-mark" aria-hidden="true">${icon("check", 17)}</span>
+        </div>`;
+    }
     return `
       <a href="/training/session/${encodeURIComponent(item.id)}" class="plan-row interactive" data-action="open-training-detail" data-id="${escapeHtml(item.id)}">
         <span class="day-dot ${item.fixed ? "fixed" : item.type.toLowerCase()}"></span>
@@ -1905,6 +1959,7 @@ function resolveRouteScreen(requestedScreen) {
   }
   if (screen === "training-detail") {
     const item = data.plan.find((candidate) => candidate.id === ui.selectedPlanItemId);
+    if (planItemCompletionStatus(item)) return "week";
     if (trainingSessionRequiresCheckIn(item)) return "checkin";
   }
   if (screen === "outcome" && !data.checkInDone) return "today";
@@ -2226,6 +2281,8 @@ function saveActivity() {
   const activity = {
     ...form,
     id: Date.now(),
+    planItemId: ui.logConfig.unplanned ? null : ui.logConfig.planItemId,
+    scheduledDate: planItem ? planItemScheduledDate(planItem) : calendarDateKey(todayCalendarDate),
     title: ui.logConfig.unplanned ? form.type : planItem?.title || data.recommendation.title,
     date: planItem?.day.replace("TODAY · ", "").replace(" · FIXED", "")
       || shortDateLabel(todayCalendarDate)

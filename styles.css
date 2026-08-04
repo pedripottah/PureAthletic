@@ -1083,6 +1083,23 @@ p {
   background: linear-gradient(145deg, #3a211c, #241b18);
 }
 
+.recommendation-card.completed-card {
+  background:
+    radial-gradient(circle at 80% 15%, rgba(201, 248, 92, 0.2), transparent 15rem),
+    linear-gradient(145deg, #18392d, #102920);
+}
+
+.completed-card .recommendation-icon {
+  transform: rotate(0);
+}
+
+.recommendation-card > p.completion-quote {
+  max-width: 500px;
+  color: #dce8e1;
+  font-size: 1.02rem;
+  font-style: italic;
+}
+
 .card-topline {
   display: flex;
   justify-content: space-between;
@@ -1931,6 +1948,32 @@ p {
 
 .plan-row.interactive:hover {
   background: #fafbf8;
+}
+
+.plan-row.completed {
+  color: #637169;
+  background: #f0f5eb;
+  border-color: #d1dfbf;
+  cursor: default;
+}
+
+.plan-row.completed .plan-main strong {
+  color: #536159;
+}
+
+.plan-row.completed .completed-dot {
+  background: #779b43;
+  box-shadow: 0 0 0 0.25rem rgba(119, 155, 67, 0.12);
+}
+
+.completion-mark {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  color: #29431e;
+  background: #d9ebbd;
+  border-radius: 50%;
 }
 
 .plan-main {
