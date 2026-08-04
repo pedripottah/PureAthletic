@@ -1991,10 +1991,10 @@ p {
   box-shadow: 0 0 0 0.25rem rgba(119, 155, 67, 0.12);
 }
 
-/* The status pill already communicates completion; the extra checkmark is
-   redundant and becomes a stray fifth grid item on mobile. */
+/* Keep the completion mark on desktop; on mobile it becomes a stray fifth
+   grid item and wraps below the completed row. */
 .plan-row.completed .completion-mark {
-  display: none;
+  display: grid;
 }
 
 .completion-mark {
@@ -2716,6 +2716,10 @@ p {
 
   .recommendation-card .button-row .button {
     width: 100%;
+  }
+
+  .plan-row.completed .completion-mark {
+    display: none;
   }
 
   .screen-header {
