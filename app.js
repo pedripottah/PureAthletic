@@ -1606,6 +1606,13 @@ function planItemGuidance(item) {
   };
 }
 
+function trainingSessionRequiresCheckIn(item) {
+  return item?.id === TODAY_PLAN_ITEM_ID
+    && !item.fixed
+    && !data.checkInDone
+    && data.recommendation.status !== "Safety";
+}
+
 function renderTrainingDetail() {
   const item = data.plan.find((candidate) => candidate.id === ui.selectedPlanItemId);
   if (!item) return renderWeek();
@@ -1895,6 +1902,10 @@ function resolveRouteScreen(requestedScreen) {
   if (screen === "adjustment" && !ui.pending) return "week";
   if (screen === "training-detail" && !data.plan.some((item) => item.id === ui.selectedPlanItemId)) {
     return "week";
+  }
+  if (screen === "training-detail") {
+    const item = data.plan.find((candidate) => candidate.id === ui.selectedPlanItemId);
+    if (trainingSessionRequiresCheckIn(item)) return "checkin";
   }
   if (screen === "outcome" && !data.checkInDone) return "today";
   if (screen === "safety" && data.recommendation.status !== "Safety") return "today";
@@ -2520,6 +2531,11 @@ app.addEventListener("click", (event) => {
   } else if (action === "open-training-detail") {
     ui.selectedPlanItemId = target.dataset.id;
     ui.workoutDone = [];
+    if (trainingSessionRequiresCheckIn(
+      data.plan.find((item) => item.id === ui.selectedPlanItemId)
+    )) {
+      ui.checkinForm = { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" };
+    }
     setScreen("training-detail");
   } else if (action === "open-checkin") {
     ui.checkinForm = { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" };

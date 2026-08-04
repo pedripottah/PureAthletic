@@ -202,6 +202,27 @@
           if (page.querySelectorAll('a.plan-row[data-action="open-training-detail"] .pill-dark').length !== 3) {
             throw new Error("The plan did not preserve all three fixed commitments");
           }
+          const todaySessionRow = [...page.querySelectorAll('a.plan-row[data-action="open-training-detail"]')]
+            .find((row) => row.querySelector(".plan-day")?.textContent.startsWith("TODAY ·")
+              && !row.querySelector(".pill-dark"));
+          if (todaySessionRow) {
+            todaySessionRow.click();
+            await waitFor(
+              () => frame.contentWindow.location.pathname === "/check-in"
+                && page.querySelector("main h1")?.textContent === "How ready do you feel?",
+              "Today's Training session did not require check-in"
+            );
+            click('[data-action="back-today"]');
+            await waitFor(
+              () => frame.contentWindow.location.pathname === "/today",
+              "Check-in Back did not restore Today"
+            );
+            click('.side-nav [data-action="navigate"][data-screen="week"]');
+            await waitFor(
+              () => frame.contentWindow.location.pathname === "/training",
+              "Training did not reopen after the check-in gate"
+            );
+          }
           const plannedMatch = [...page.querySelectorAll('a.plan-row[data-action="open-training-detail"]')]
             .find((row) => row.querySelector(".pill-dark")?.textContent === "MATCH");
           if (!/^SUN \d{1,2} · FIXED$/.test(plannedMatch?.querySelector(".plan-day")?.textContent || "")
@@ -238,7 +259,8 @@
             "Recovery Back did not restore Training"
           );
           const plannedRow = [...page.querySelectorAll('[data-action="open-training-detail"]')]
-            .find((row) => row.querySelector(".pill-neutral")?.textContent === "PLANNED");
+            .find((row) => !row.querySelector(".plan-day")?.textContent.startsWith("TODAY ·")
+              && row.querySelector(".pill-neutral")?.textContent === "PLANNED");
           const plannedId = plannedRow?.dataset.id;
           const plannedTitle = plannedRow?.querySelector(".plan-main strong")?.textContent;
           plannedRow?.click();
