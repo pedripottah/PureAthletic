@@ -298,6 +298,7 @@ const routeScreens = Object.fromEntries(
 const screenTitles = {
   landing: "PureAthletic · Age-aware football training",
   onboarding: "Create your plan · PureAthletic",
+  "generating-plan": "Building your plan · PureAthletic",
   today: "Today · PureAthletic",
   week: "Training plan · PureAthletic",
   progress: "Progress · PureAthletic",
@@ -345,6 +346,29 @@ let ui = {
   notifications: true,
   generatingPlan: false
 };
+
+const planGenerationSteps = [
+  {
+    title: "Reading your football week",
+    detail: "Mapping the days you can train around your team schedule."
+  },
+  {
+    title: "Protecting fixed commitments",
+    detail: "Keeping every practice and match exactly where you placed it."
+  },
+  {
+    title: "Applying junior safeguards",
+    detail: "Checking age-band limits, supervision, and recovery spacing."
+  },
+  {
+    title: "Balancing training and recovery",
+    detail: "Distributing useful work without overloading the week."
+  },
+  {
+    title: "Writing your first week",
+    detail: "Adding the final session details and recommendations."
+  }
+];
 
 // =============================================================================
 // DATA AND SAFETY HELPERS
@@ -1137,6 +1161,45 @@ function renderLanding() {
     nextTime.textContent = `${nextCommitment.day} · ${nextCommitment.time}`;
   }
   hydrateTemplateIcons();
+}
+
+function renderGeneratingPlan() {
+  const activeStep = Math.min(ui.generatingStep || 0, planGenerationSteps.length - 1);
+  const progress = Math.round(((activeStep + 1) / planGenerationSteps.length) * 100);
+  const currentStep = planGenerationSteps[activeStep];
+  return `
+    <main class="loading-screen" aria-labelledby="generating-plan-title">
+      <div class="loading-glow loading-glow-one" aria-hidden="true"></div>
+      <div class="loading-glow loading-glow-two" aria-hidden="true"></div>
+      <div class="loading-content">
+        <div class="loading-mark" aria-hidden="true">
+          <span class="brand-mark">${icon("bolt", 22)}</span>
+          <span class="loading-orbit loading-orbit-one"></span>
+          <span class="loading-orbit loading-orbit-two"></span>
+        </div>
+        <span class="section-kicker">YOUR WEEK, BUILT AROUND YOU</span>
+        <h1 id="generating-plan-title">Building your plan<span class="loading-dots" aria-hidden="true">…</span></h1>
+        <p class="loading-lead">We’re turning your answers into a clear, age-aware football week.</p>
+        <div class="loading-progress" aria-hidden="true">
+          <span style="width: ${progress}%"></span>
+        </div>
+        <div class="loading-status" aria-live="polite" aria-atomic="true">
+          <div>
+            <span>STEP ${activeStep + 1} OF ${planGenerationSteps.length}</span>
+            <strong>${currentStep.title}</strong>
+            <small>${currentStep.detail}</small>
+          </div>
+          <span class="loading-percent">${progress}%</span>
+        </div>
+        <div class="loading-steps" aria-label="Plan generation progress">
+          ${planGenerationSteps.map((step, index) => `
+            <div class="loading-step ${index < activeStep ? "complete" : ""} ${index === activeStep ? "active" : ""}">
+              <span class="loading-step-icon">${index < activeStep ? icon("check", 14) : index === activeStep ? '<i></i>' : ""}</span>
+              <span>${step.title}</span>
+            </div>`).join("")}
+        </div>
+      </div>
+    </main>`;
 }
 
 function onboardingStepIsValid(step, form = ui.onboardingForm) {
@@ -2079,6 +2142,7 @@ function render() {
 
   const focusedScreens = {
     onboarding: renderOnboarding,
+    "generating-plan": renderGeneratingPlan,
     checkin: renderCheckIn,
     outcome: renderOutcome,
     safety: renderOutcome,
@@ -2179,13 +2243,24 @@ async function finishOnboarding() {
   }
 
   ui.generatingPlan = true;
+  ui.generatingStep = 0;
+  ui.screen = "generating-plan";
   render();
+  const generationStartedAt = Date.now();
+  const generationTimer = window.setInterval(() => {
+    if (!ui.generatingPlan) return;
+    ui.generatingStep = Math.min(ui.generatingStep + 1, planGenerationSteps.length - 1);
+    render();
+  }, 900);
 
   const user = clone(ui.onboardingForm);
   user.name = user.name.trim();
   if (user.experience === "Advanced") user.experience = "Beginner";
 
   const catalog = await youthRecommendationDataPromise;
+  const remainingDisplayTime = Math.max(0, 4800 - (Date.now() - generationStartedAt));
+  await new Promise((resolve) => window.setTimeout(resolve, remainingDisplayTime));
+  window.clearInterval(generationTimer);
   const recommendation = catalog
     ? recommendationFromCatalog(user, catalog)
     : fallbackRecommendation(user);
@@ -2204,6 +2279,7 @@ async function finishOnboarding() {
     )
   };
   ui.generatingPlan = false;
+  ui.generatingStep = planGenerationSteps.length - 1;
   saveData();
   setScreen("today");
 }

@@ -2488,18 +2488,320 @@ p {
 }
 
 .loading-screen {
+  position: relative;
   display: grid;
   min-height: 100vh;
   place-items: center;
   align-content: center;
-  gap: 1rem;
+  padding: 2rem 1.25rem;
+  overflow: hidden;
   color: #fff;
-  background: var(--ink);
+  background:
+    radial-gradient(circle at 50% 28%, rgba(201, 248, 92, 0.08), transparent 24rem),
+    linear-gradient(145deg, #101a17, var(--ink) 55%, #182923);
 }
 
-.loading-screen > span {
-  color: #95a29c;
-  font-size: 0.75rem;
+.loading-screen::before {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  content: "";
+  mask-image: radial-gradient(circle at center, #000, transparent 72%);
+}
+
+.loading-glow {
+  position: absolute;
+  width: 20rem;
+  height: 20rem;
+  background: rgba(201, 248, 92, 0.08);
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: loading-float 5s ease-in-out infinite alternate;
+}
+
+.loading-glow-one {
+  top: -9rem;
+  right: -6rem;
+}
+
+.loading-glow-two {
+  bottom: -11rem;
+  left: -8rem;
+  animation-delay: -2.5s;
+}
+
+.loading-content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(100%, 30rem);
+  justify-items: center;
+  text-align: center;
+}
+
+.loading-mark {
+  position: relative;
+  display: grid;
+  width: 5.5rem;
+  height: 5.5rem;
+  place-items: center;
+  margin-bottom: 2.25rem;
+}
+
+.loading-mark .brand-mark {
+  position: relative;
+  z-index: 1;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1.1rem;
+  box-shadow: 0 0 0 0 rgba(201, 248, 92, 0.22);
+  animation: loading-pulse 1.8s ease-out infinite;
+}
+
+.loading-orbit {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(201, 248, 92, 0.28);
+  border-radius: 50%;
+  animation: loading-orbit 2.8s linear infinite;
+}
+
+.loading-orbit-two {
+  inset: 0.7rem;
+  border-color: rgba(255, 255, 255, 0.2);
+  animation-direction: reverse;
+  animation-duration: 2.1s;
+}
+
+.loading-screen .section-kicker {
+  color: var(--lime);
+}
+
+.loading-screen h1 {
+  margin: 0.75rem 0 0.8rem;
+  font-size: clamp(2.3rem, 8vw, 4rem);
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.loading-dots {
+  display: inline-block;
+  width: 1.15em;
+  color: var(--lime);
+  animation: loading-dots 1.2s steps(4, end) infinite;
+}
+
+.loading-lead {
+  max-width: 28rem;
+  margin-bottom: 1.75rem;
+  color: #aab7b0;
+  line-height: 1.6;
+}
+
+.loading-progress {
+  width: min(100%, 25rem);
+  height: 0.3rem;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+
+.loading-progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--lime-2), var(--lime));
+  border-radius: inherit;
+  box-shadow: 0 0 1rem rgba(201, 248, 92, 0.45);
+  transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.loading-status {
+  display: grid;
+  width: min(100%, 25rem);
+  min-height: 6.8rem;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1rem;
+  padding: 1.1rem 1.2rem;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 1rem;
+  box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.18);
+  text-align: left;
+  backdrop-filter: blur(12px);
+}
+
+.loading-status > div {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.loading-status > div > span {
+  color: var(--lime);
+  font-size: 0.61rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.loading-status strong {
+  font-size: 0.9rem;
+}
+
+.loading-status small {
+  color: #98a69f;
+  font-size: 0.71rem;
+  line-height: 1.45;
+}
+
+.loading-percent {
+  color: var(--lime);
+  font-size: 1.05rem;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.loading-steps {
+  display: grid;
+  width: min(100%, 25rem);
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.35rem;
+  justify-items: stretch;
+  text-align: center;
+}
+
+.loading-step {
+  display: grid;
+  min-width: 0;
+  min-height: 3.6rem;
+  align-content: start;
+  align-items: center;
+  justify-items: center;
+  gap: 0.45rem;
+  color: #687871;
+  font-size: 0.58rem;
+  line-height: 1.25;
+  transition: color 220ms ease, transform 220ms ease;
+}
+
+.loading-step.active {
+  color: #fff;
+  transform: translateY(-0.18rem);
+}
+
+.loading-step.complete {
+  color: #a6bd88;
+}
+
+.loading-step-icon {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: 0 0 1.5rem;
+  place-items: center;
+  border: 1px solid #405149;
+  border-radius: 50%;
+}
+
+.loading-step.active .loading-step-icon {
+  border-color: var(--lime);
+}
+
+.loading-step.active .loading-step-icon i {
+  width: 0.42rem;
+  height: 0.42rem;
+  background: var(--lime);
+  border-radius: 50%;
+  animation: loading-dot 900ms ease-in-out infinite alternate;
+}
+
+.loading-step.complete .loading-step-icon {
+  color: var(--ink);
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+@keyframes loading-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 248, 92, 0.22); }
+  50% { box-shadow: 0 0 0 0.8rem rgba(201, 248, 92, 0); }
+}
+
+@keyframes loading-orbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes loading-dots {
+  0% { opacity: 0.15; }
+  50% { opacity: 1; }
+  100% { opacity: 0.15; }
+}
+
+@keyframes loading-dot {
+  from { transform: scale(0.7); opacity: 0.45; }
+  to { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes loading-float {
+  from { transform: translate3d(-1rem, -0.5rem, 0) scale(0.95); }
+  to { transform: translate3d(1rem, 0.75rem, 0) scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-mark .brand-mark,
+  .loading-orbit,
+  .loading-glow,
+  .loading-dots,
+  .loading-step.active .loading-step-icon i {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px), (max-height: 720px) {
+  .loading-screen {
+    align-content: start;
+    overflow-y: auto;
+  }
+
+  .loading-mark {
+    margin-bottom: 1.35rem;
+  }
+
+  .loading-screen h1 {
+    font-size: clamp(2.15rem, 11vw, 3rem);
+  }
+
+  .loading-lead {
+    margin-bottom: 1.25rem;
+  }
+
+  .loading-steps {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+    text-align: left;
+  }
+
+  .loading-step {
+    min-height: 1.75rem;
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    font-size: 0.68rem;
+  }
+
+  .loading-step.active {
+    transform: translateX(0.2rem);
+  }
+
+  .loading-step-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-basis: 1.25rem;
+  }
 }
 
 @supports (min-height: 100dvh) {
