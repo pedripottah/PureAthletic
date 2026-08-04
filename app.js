@@ -369,6 +369,9 @@ const planGenerationSteps = [
     detail: "Adding the final session details and recommendations."
   }
 ];
+const PLAN_GENERATION_DURATION_MS = 6200;
+const PLAN_GENERATION_PROGRESS_DURATION_MS = 5700;
+const PLAN_GENERATION_STEP_INTERVAL_MS = 1100;
 
 // =============================================================================
 // DATA AND SAFETY HELPERS
@@ -563,6 +566,13 @@ function animateViewEntry() {
     ".week-card",
     ".progress-layout > *",
     ".profile-grid > *",
+    ".loading-mark",
+    ".loading-screen .section-kicker",
+    ".loading-screen h1",
+    ".loading-lead",
+    ".loading-progress",
+    ".loading-status",
+    ".loading-steps",
     ".history-toast"
   ];
   const elements = [...new Set(app.querySelectorAll(selectors.join(",")))];
@@ -1165,7 +1175,6 @@ function renderLanding() {
 
 function renderGeneratingPlan() {
   const activeStep = Math.min(ui.generatingStep || 0, planGenerationSteps.length - 1);
-  const progress = Math.round(((activeStep + 1) / planGenerationSteps.length) * 100);
   const currentStep = planGenerationSteps[activeStep];
   return `
     <main class="loading-screen" aria-labelledby="generating-plan-title">
@@ -1180,26 +1189,165 @@ function renderGeneratingPlan() {
         <span class="section-kicker">YOUR WEEK, BUILT AROUND YOU</span>
         <h1 id="generating-plan-title">Building your plan<span class="loading-dots" aria-hidden="true">…</span></h1>
         <p class="loading-lead">We’re turning your answers into a clear, age-aware football week.</p>
-        <div class="loading-progress" aria-hidden="true">
-          <span style="width: ${progress}%"></span>
+        <div class="loading-progress" role="progressbar" aria-label="Building your plan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span class="loading-progress-fill"></span>
         </div>
         <div class="loading-status" aria-live="polite" aria-atomic="true">
-          <div>
-            <span>STEP ${activeStep + 1} OF ${planGenerationSteps.length}</span>
-            <strong>${currentStep.title}</strong>
-            <small>${currentStep.detail}</small>
+          <div class="loading-status-copy">
+            <span data-generation-step>STEP ${activeStep + 1} OF ${planGenerationSteps.length}</span>
+            <strong data-generation-title>${currentStep.title}</strong>
+            <small data-generation-detail>${currentStep.detail}</small>
           </div>
-          <span class="loading-percent">${progress}%</span>
+          <span class="loading-percent">0%</span>
         </div>
         <div class="loading-steps" aria-label="Plan generation progress">
           ${planGenerationSteps.map((step, index) => `
-            <div class="loading-step ${index < activeStep ? "complete" : ""} ${index === activeStep ? "active" : ""}">
+            <div class="loading-step ${index < activeStep ? "complete" : ""} ${index === activeStep ? "active" : ""}" data-generation-index="${index}">
               <span class="loading-step-icon">${index < activeStep ? icon("check", 14) : index === activeStep ? '<i></i>' : ""}</span>
               <span>${step.title}</span>
             </div>`).join("")}
         </div>
       </div>
     </main>`;
+}
+
+function updatePlanGenerationScreen(stepIndex) {
+  const activeStep = Math.min(stepIndex, planGenerationSteps.length - 1);
+  const currentStep = planGenerationSteps[activeStep];
+  const statusCopy = app.querySelector(".loading-status-copy");
+
+  const applyUpdate = () => {
+    const stepLabel = app.querySelector("[data-generation-step]");
+    const title = app.querySelector("[data-generation-title]");
+    const detail = app.querySelector("[data-generation-detail]");
+    if (!stepLabel || !title || !detail) return;
+
+    stepLabel.textContent = "STEP " + (activeStep + 1) + " OF " + planGenerationSteps.length;
+    title.textContent = currentStep.title;
+    detail.textContent = currentStep.detail;
+
+    app.querySelectorAll("[data-generation-index]").forEach((element) => {
+      const index = Number(element.dataset.generationIndex);
+      const stepIcon = element.querySelector(".loading-step-icon");
+      element.classList.toggle("complete", index < activeStep);
+      element.classList.toggle("active", index === activeStep);
+      if (stepIcon) {
+        stepIcon.innerHTML = index < activeStep
+          ? icon("check", 14)
+          : index === activeStep
+            ? "<i></i>"
+            : "";
+      }
+    });
+
+    if (prefersReducedMotion()) {
+      const progress = Math.round(((activeStep + 1) / planGenerationSteps.length) * 100);
+      const progressFill = app.querySelector(".loading-progress-fill");
+      const progressBar = app.querySelector(".loading-progress");
+      const percent = app.querySelector(".loading-percent");
+      if (progressFill) progressFill.style.transform = "scaleX(" + (progress / 100) + ")";
+      if (progressBar) progressBar.setAttribute("aria-valuenow", String(progress));
+      if (percent) percent.textContent = progress + "%";
+    }
+  };
+
+  if (!statusCopy || prefersReducedMotion()) {
+    applyUpdate();
+    return;
+  }
+
+  const fadeOut = statusCopy.animate(
+    [
+      { opacity: 1, transform: "translateY(0)" },
+      { opacity: 0, transform: "translateY(-7px)" }
+    ],
+    {
+      duration: 180,
+      easing: "cubic-bezier(0.4, 0, 1, 1)",
+      fill: "forwards"
+    }
+  );
+
+  fadeOut.finished.then(() => {
+    if (!ui.generatingPlan) return;
+    applyUpdate();
+    statusCopy.animate(
+      [
+        { opacity: 0, transform: "translateY(9px)" },
+        { opacity: 1, transform: "translateY(0)" }
+      ],
+      {
+        duration: 420,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        fill: "forwards"
+      }
+    );
+  }).catch(() => {});
+}
+
+function startPlanGenerationProgress() {
+  const progressFill = app.querySelector(".loading-progress-fill");
+  const progressBar = app.querySelector(".loading-progress");
+  const percent = app.querySelector(".loading-percent");
+  if (!progressFill || !progressBar || !percent) return;
+  if (prefersReducedMotion()) {
+    progressFill.style.transform = "scaleX(0.2)";
+    progressBar.setAttribute("aria-valuenow", "20");
+    percent.textContent = "20%";
+    return;
+  }
+
+  progressFill.animate(
+    [
+      { transform: "scaleX(0)" },
+      { transform: "scaleX(1)" }
+    ],
+    {
+      duration: PLAN_GENERATION_PROGRESS_DURATION_MS,
+      easing: "cubic-bezier(0.32, 0, 0.15, 1)",
+      fill: "forwards"
+    }
+  );
+
+  const startedAt = performance.now();
+  function updatePercent(now) {
+    if (!ui.generatingPlan) return;
+    const progress = Math.min(
+      100,
+      Math.round(((now - startedAt) / PLAN_GENERATION_PROGRESS_DURATION_MS) * 100)
+    );
+    percent.textContent = progress + "%";
+    progressBar.setAttribute("aria-valuenow", String(progress));
+    if (progress < 100) window.requestAnimationFrame(updatePercent);
+  }
+  window.requestAnimationFrame(updatePercent);
+}
+
+async function animatePlanGenerationExit() {
+  if (prefersReducedMotion()) return;
+  const content = app.querySelector(".loading-content");
+  const glows = app.querySelectorAll(".loading-glow");
+  if (!content) return;
+
+  const animations = [
+    content.animate(
+      [
+        { opacity: 1, transform: "translateY(0) scale(1)" },
+        { opacity: 0, transform: "translateY(-14px) scale(0.985)" }
+      ],
+      {
+        duration: 360,
+        easing: "cubic-bezier(0.4, 0, 1, 1)",
+        fill: "forwards"
+      }
+    ),
+    ...Array.from(glows, (glow) => glow.animate(
+      [{ opacity: 1 }, { opacity: 0 }],
+      { duration: 420, easing: "ease-out", fill: "forwards" }
+    ))
+  ];
+
+  await Promise.all(animations.map((animation) => animation.finished.catch(() => {})));
 }
 
 function onboardingStepIsValid(step, form = ui.onboardingForm) {
@@ -2246,19 +2394,23 @@ async function finishOnboarding() {
   ui.generatingStep = 0;
   ui.screen = "generating-plan";
   render();
+  startPlanGenerationProgress();
   const generationStartedAt = Date.now();
   const generationTimer = window.setInterval(() => {
     if (!ui.generatingPlan) return;
     ui.generatingStep = Math.min(ui.generatingStep + 1, planGenerationSteps.length - 1);
-    render();
-  }, 900);
+    updatePlanGenerationScreen(ui.generatingStep);
+  }, PLAN_GENERATION_STEP_INTERVAL_MS);
 
   const user = clone(ui.onboardingForm);
   user.name = user.name.trim();
   if (user.experience === "Advanced") user.experience = "Beginner";
 
   const catalog = await youthRecommendationDataPromise;
-  const remainingDisplayTime = Math.max(0, 4800 - (Date.now() - generationStartedAt));
+  const remainingDisplayTime = Math.max(
+    0,
+    PLAN_GENERATION_DURATION_MS - (Date.now() - generationStartedAt)
+  );
   await new Promise((resolve) => window.setTimeout(resolve, remainingDisplayTime));
   window.clearInterval(generationTimer);
   const recommendation = catalog
@@ -2278,9 +2430,10 @@ async function finishOnboarding() {
       clone(initialPlan)
     )
   };
-  ui.generatingPlan = false;
   ui.generatingStep = planGenerationSteps.length - 1;
   saveData();
+  await animatePlanGenerationExit();
+  ui.generatingPlan = false;
   setScreen("today");
 }
 
