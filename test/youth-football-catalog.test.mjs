@@ -105,3 +105,14 @@ test("unsupported age groups and levels fail closed", () => {
     /Unsupported experience level/
   );
 });
+
+test("unsupported goals fail closed", () => {
+  assert.throws(
+    () =>
+      selectYouthFootballRoutine(
+        { ageGroup: "U12", experience: "beginner", goal: "elite" },
+        data
+      ),
+    /Unsupported goal/
+  );
+});
