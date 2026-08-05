@@ -16,7 +16,17 @@ Start any static web server in the project directory. For example:
 python3 -m http.server 8000
 ```
 
-Then open `http://localhost:8000`. You can also open `index.html` directly,
+Or use the included Node.js development server:
+
+```bash
+npm run dev
+```
+
+This starts the prototype at `http://localhost:3000`.
+
+Then open the URL printed by the server (usually `http://localhost:8000` for
+the Python command or `http://localhost:3000` for `npm run dev`). You can also
+open `index.html` directly,
 although a local server is recommended for consistent browser behavior.
 
 For static hosting, `npm run build` copies those same three files into `dist/`
