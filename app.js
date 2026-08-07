@@ -1926,7 +1926,8 @@ function renderTrainingDetail() {
   if (!item) return renderWeek();
 
   const guidance = planItemGuidance(item);
-  const canLog = item.type !== "Rest";
+  const isToday = item.id === TODAY_PLAN_ITEM_ID;
+  const canLog = isToday && item.type !== "Rest";
   const canCompleteSteps = canLog && !item.fixed;
   const durationLabel = item.duration ? `${item.duration} MIN` : item.type.toUpperCase();
   const rows = guidance.activities.map((activity, index) => {
@@ -2050,7 +2051,7 @@ function renderWeek() {
     const completionStatus = planItemCompletionStatus(item);
     if (completionStatus) {
       return `
-        <div class="plan-row completed" aria-label="${escapeHtml(item.title)}, ${completionStatus.toLowerCase()} and logged">
+        <div class="plan-row completed ${item.id === TODAY_PLAN_ITEM_ID ? "today-row" : ""}" aria-label="${escapeHtml(item.title)}, ${completionStatus.toLowerCase()} and logged">
           <span class="day-dot completed-dot"></span>
           <span class="plan-day">${escapeHtml(item.day)}</span>
           <span class="plan-main"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(meta)} · Logged</small></span>
@@ -2059,12 +2060,11 @@ function renderWeek() {
         </div>`;
     }
     return `
-      <a href="/training/session/${encodeURIComponent(item.id)}" class="plan-row interactive" data-action="open-training-detail" data-id="${escapeHtml(item.id)}">
+      <a href="/training/session/${encodeURIComponent(item.id)}" class="plan-row interactive ${item.id === TODAY_PLAN_ITEM_ID ? "today-row" : "view-only-row"}" data-action="open-training-detail" data-id="${escapeHtml(item.id)}">
         <span class="day-dot ${item.fixed ? "fixed" : item.type.toLowerCase()}"></span>
         <span class="plan-day">${escapeHtml(item.day)}</span>
         <span class="plan-main"><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(meta)}</small></span>
         ${pill(item.fixed ? item.type.toUpperCase() : item.status.toUpperCase(), item.fixed ? "dark" : item.type === "Recovery" ? "lime" : "neutral")}
-        ${icon("arrow", 18)}
       </a>`;
   }).join("");
 
@@ -2077,7 +2077,7 @@ function renderWeek() {
           <div class="load-bars" aria-label="Training load preview">${loadBars}</div>
         </div>
         <div class="plan-list">${rows}</div>
-        <div class="week-legend"><span><i class="legend-fixed"></i> Fixed team commitment</span><span><i class="legend-plan"></i> PureAthletic recommendation</span></div>
+        <div class="week-legend"><span><i class="legend-fixed"></i> Fixed team commitment</span><span><i class="legend-plan"></i> PureAthletic recommendation</span><span>Today is highlighted · future sessions are view-only</span></div>
       </section>
     </main>`;
 }
@@ -2541,6 +2541,7 @@ function submitCheckIn() {
 
 // Creates the temporary form values for a planned or unplanned activity.
 function openLog(unplanned, status = "Completed", planItemId = TODAY_PLAN_ITEM_ID) {
+  if (!unplanned && planItemId !== TODAY_PLAN_ITEM_ID) return;
   ui.logConfig = { unplanned, status, planItemId: unplanned ? null : planItemId };
   ui.logForm = defaultLogForm(unplanned, status, planItemId);
   setScreen("log");
@@ -2553,6 +2554,7 @@ function openLog(unplanned, status = "Completed", planItemId = TODAY_PLAN_ITEM_I
  */
 function saveActivity() {
   const form = clone(ui.logForm);
+  if (!ui.logConfig.unplanned && ui.logConfig.planItemId !== TODAY_PLAN_ITEM_ID) return;
   const planItem = data.plan.find((item) => item.id === ui.logConfig.planItemId);
   const hasValidLoad = form.status === "Skipped" || (
     Number.isFinite(Number(form.duration))
