@@ -343,7 +343,7 @@ let ui = {
   onboardingStep: 1,
   onboardingForm: clone(onboardingSeed.user),
   onboardingSchedule: clone(demoState.schedule),
-  checkinForm: { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" },
+  checkinForm: { sleep: 3, energy: 3, soreness: 3, stress: 3, pain: "None" },
   workoutDone: [],
   selectedPlanItemId: TODAY_PLAN_ITEM_ID,
   outcome: "good",
@@ -2885,11 +2885,11 @@ app.addEventListener("click", (event) => {
     if (trainingSessionRequiresCheckIn(
       data.plan.find((item) => item.id === ui.selectedPlanItemId)
     )) {
-      ui.checkinForm = { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" };
+      ui.checkinForm = { sleep: 3, energy: 3, soreness: 3, stress: 3, pain: "None" };
     }
     setScreen("training-detail");
   } else if (action === "open-checkin") {
-    ui.checkinForm = { sleep: 3, energy: 3, soreness: 2, stress: 2, pain: "None" };
+    ui.checkinForm = { sleep: 3, energy: 3, soreness: 3, stress: 3, pain: "None" };
     setScreen("checkin");
   } else if (action === "set-checkin-pain") {
     ui.checkinForm.pain = target.dataset.value;
