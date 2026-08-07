@@ -24,6 +24,7 @@
 
 // This is the name used to save and retrieve the app's data in localStorage.
 const STORAGE_KEY = "pureathletic-prototype-v2";
+const ONBOARDING_DRAFT_KEY = "pureathletic-onboarding-draft-v1";
 const YOUTH_DATA_BASE = "/data/youth-football";
 
 // querySelector() connects JavaScript to elements that already exist in index.html.
@@ -352,6 +353,47 @@ let ui = {
   notifications: data.preferences?.notifications !== false,
   generatingPlan: false
 };
+
+function loadOnboardingDraft() {
+  try {
+    const saved = sessionStorage.getItem(ONBOARDING_DRAFT_KEY);
+    if (!saved) return null;
+    const draft = JSON.parse(saved);
+    if (!Number.isInteger(draft.step) || draft.step < 1 || draft.step > 5) return null;
+    if (!draft.form || !draft.schedule) return null;
+    return draft;
+  } catch {
+    return null;
+  }
+}
+
+function saveOnboardingDraft() {
+  if (data.onboarded || ui.screen !== "onboarding") return;
+  try {
+    sessionStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify({
+      step: ui.onboardingStep,
+      form: ui.onboardingForm,
+      schedule: ui.onboardingSchedule
+    }));
+  } catch {
+    // Session storage can be unavailable in private browsing; onboarding still works.
+  }
+}
+
+function clearOnboardingDraft() {
+  try {
+    sessionStorage.removeItem(ONBOARDING_DRAFT_KEY);
+  } catch {
+    // Ignore unavailable session storage.
+  }
+}
+
+const savedOnboardingDraft = loadOnboardingDraft();
+if (!data.onboarded && savedOnboardingDraft) {
+  ui.onboardingStep = savedOnboardingDraft.step;
+  ui.onboardingForm = savedOnboardingDraft.form;
+  ui.onboardingSchedule = savedOnboardingDraft.schedule;
+}
 
 const planGenerationSteps = [
   {
@@ -1376,6 +1418,7 @@ function onboardingStepIsValid(step, form = ui.onboardingForm) {
  * `panel` starts empty, then the matching if block fills it with that step's HTML.
  */
 function renderOnboarding() {
+  saveOnboardingDraft();
   const step = ui.onboardingStep;
   const form = ui.onboardingForm;
   const schedule = ui.onboardingSchedule;
@@ -2444,6 +2487,7 @@ async function finishOnboarding() {
   };
   ui.generatingStep = planGenerationSteps.length - 1;
   saveData();
+  clearOnboardingDraft();
   await animatePlanGenerationExit();
   ui.generatingPlan = false;
   setScreen("today");
@@ -2703,6 +2747,7 @@ function syncSelectedButtons(action, selectedValue, field = "") {
 // `input` fires immediately while a user types or changes a number.
 app.addEventListener("input", (event) => {
   updateBoundField(event.target);
+  if (event.target.dataset.scope === "onboarding") saveOnboardingDraft();
 
   if (event.target.dataset.scope === "onboarding" && event.target.dataset.field === "name") {
     const continueButton = app.querySelector('[data-action="onboarding-next"]');
@@ -2724,6 +2769,7 @@ app.addEventListener("input", (event) => {
 // `change` handles completed changes; checkboxes also need a visual rerender.
 app.addEventListener("change", (event) => {
   updateBoundField(event.target);
+  if (event.target.dataset.scope === "onboarding") saveOnboardingDraft();
   if (event.target.type === "checkbox" || event.target.dataset.field === "ageBandId") {
     const selector = selectorForBoundControl(event.target);
     render();
@@ -2755,6 +2801,7 @@ app.addEventListener("click", (event) => {
   const action = target.dataset.action;
 
   if (action === "start-onboarding") {
+    clearOnboardingDraft();
     ui.onboardingStep = 1;
     ui.onboardingForm = clone(onboardingSeed.user);
     ui.onboardingSchedule = normalizeSchedule(demoState.schedule);
@@ -2768,6 +2815,7 @@ app.addEventListener("click", (event) => {
     if (ui.onboardingStep === 1) navigateBack("landing");
     else {
       ui.onboardingStep -= 1;
+      saveOnboardingDraft();
       window.scrollTo({ top: 0, behavior: "instant" });
       render();
       focusScreenHeading();
@@ -2781,6 +2829,7 @@ app.addEventListener("click", (event) => {
     }
     if (ui.onboardingStep < 5) {
       ui.onboardingStep += 1;
+      saveOnboardingDraft();
       window.scrollTo({ top: 0, behavior: "instant" });
       render();
       focusScreenHeading();
@@ -2790,9 +2839,11 @@ app.addEventListener("click", (event) => {
   } else if (action === "set-experience") {
     if (target.dataset.value === "Advanced") return;
     ui.onboardingForm.experience = target.dataset.value;
+    saveOnboardingDraft();
     syncSelectedButtons("set-experience", target.dataset.value);
   } else if (action === "set-goal") {
     ui.onboardingForm.goal = target.dataset.value;
+    saveOnboardingDraft();
     syncSelectedButtons("set-goal", target.dataset.value);
   } else if (action === "add-commitment" || action === "remove-commitment") {
     const scheduleScopes = {
@@ -2810,6 +2861,7 @@ app.addEventListener("click", (event) => {
       if (action === "add-commitment") {
         const commitment = createCommitment(type);
         schedule.commitments.push(commitment);
+        saveOnboardingDraft();
         render();
         focusAfterRender(
           `[data-action="remove-commitment"][data-commitment-id="${CSS.escape(commitment.id)}"]`
@@ -2818,6 +2870,7 @@ app.addEventListener("click", (event) => {
         schedule.commitments = schedule.commitments.filter(
           (commitment) => commitment.id !== target.dataset.commitmentId
         );
+        saveOnboardingDraft();
         render();
         focusAfterRender(
           `[data-action="add-commitment"][data-commitment-type="${type}"]`
