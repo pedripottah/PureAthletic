@@ -2477,6 +2477,9 @@ async function finishOnboarding() {
     ...clone(demoState),
     onboarded: true,
     user,
+    activities: [],
+    adjustments: [],
+    checkInDone: false,
     recommendation,
     schedule,
     plan: planWithRecommendationAndSchedule(

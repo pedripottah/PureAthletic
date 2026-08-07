@@ -191,6 +191,16 @@
             throw new Error("Primary navigation routes are incorrect");
           }
 
+          click('.side-nav [data-action="navigate"][data-screen="progress"]');
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/progress",
+            "Progress route did not open"
+          );
+          if (!page.body.textContent.includes("Your first review is taking shape.")
+              || page.body.textContent.includes("53")) {
+            throw new Error("A customized profile started with seeded progress data");
+          }
+
           click('.side-nav [data-action="navigate"][data-screen="week"]');
           await waitFor(
             () => frame.contentWindow.location.pathname === "/training",
