@@ -192,6 +192,9 @@ const demoState = {
       { id: "practice-1", type: "practice", day: "Thursday", time: "19:00" },
       { id: "match-1", type: "match", day: "Saturday", time: "15:00" }
     ]
+  },
+  preferences: {
+    notifications: true
   }
 };
 
@@ -218,7 +221,10 @@ const onboardingSeed = {
   plan: initialPlan,
   activities: [],
   adjustments: [],
-  schedule: demoState.schedule
+  schedule: demoState.schedule,
+  preferences: {
+    notifications: true
+  }
 };
 
 /*
@@ -343,7 +349,7 @@ let ui = {
   logConfig: { unplanned: false, status: "Completed", planItemId: TODAY_PLAN_ITEM_ID },
   logForm: null,
   pending: null,
-  notifications: true,
+  notifications: data.preferences?.notifications !== false,
   generatingPlan: false
 };
 
@@ -415,6 +421,11 @@ function loadData() {
     restored.user.ageBandId = selectedAgeBand.value;
     delete restored.user.ageGroup;
     restored.schedule = normalizeSchedule(restored.schedule);
+    restored.activities = Array.isArray(restored.activities) ? restored.activities : [];
+    restored.adjustments = Array.isArray(restored.adjustments) ? restored.adjustments : [];
+    restored.preferences = {
+      notifications: restored.preferences?.notifications !== false
+    };
     const currentPlanDate = calendarDateKey(todayCalendarDate);
     const planDateChanged = restored.planDate !== currentPlanDate;
 
@@ -2372,6 +2383,7 @@ function enterDemo() {
     data.schedule,
     data.plan
   );
+  ui.notifications = data.preferences.notifications;
   saveData();
   setScreen("today");
 }
@@ -2893,6 +2905,11 @@ app.addEventListener("click", (event) => {
     setScreen("adjustment");
   } else if (action === "toggle-notifications") {
     ui.notifications = !ui.notifications;
+    data.preferences = {
+      ...(data.preferences || {}),
+      notifications: ui.notifications
+    };
+    saveData();
     target.setAttribute("aria-checked", String(ui.notifications));
     target.querySelector("small").textContent = ui.notifications
       ? "On · before optional training"
@@ -2904,6 +2921,7 @@ app.addEventListener("click", (event) => {
     if (window.confirm("Delete all local prototype data? This cannot be undone.")) {
       localStorage.removeItem(STORAGE_KEY);
       data = clone(onboardingSeed);
+      ui.notifications = true;
       setScreen("landing");
     }
   } else if (action === "reset-demo") {

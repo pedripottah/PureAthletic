@@ -323,6 +323,22 @@
             "Activity log Back did not restore Today"
           );
 
+          click('.side-nav [data-action="navigate"][data-screen="profile"]');
+          await waitFor(
+            () => frame.contentWindow.location.pathname === "/profile"
+              && page.querySelector('[data-action="toggle-notifications"]'),
+            "Profile did not open"
+          );
+          const reminderToggle = page.querySelector('[data-action="toggle-notifications"]');
+          const previousReminderState = reminderToggle.getAttribute("aria-checked");
+          reminderToggle.click();
+          const savedAfterPreferenceChange = JSON.parse(
+            frame.contentWindow.localStorage.getItem("pureathletic-prototype-v2")
+          );
+          if (savedAfterPreferenceChange.preferences?.notifications === (previousReminderState === "true")) {
+            throw new Error("Reminder preference was not persisted");
+          }
+
           result.textContent =
             "PASS: onboarding, routes, history, week actions, validation, and responsive state";
         } catch (error) {
