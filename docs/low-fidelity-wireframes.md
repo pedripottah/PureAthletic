@@ -3,7 +3,8 @@
 **Status:** Working baseline for prototype testing  
 **Source:** [V1 User Flow](user-flow.md) and [V1 Decision Sheet](decision-sheet.md)  
 **Primary viewport:** Mobile, 390 × 844 px  
-**Scope:** Adult amateur football players using the responsive web application
+**Scope:** Junior footballers in team age groups U5–U17, supported by a parent
+or guardian, using the responsive web application
 
 ## 1. Prototype objective
 

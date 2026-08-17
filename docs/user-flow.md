@@ -2,7 +2,8 @@
 
 **Status:** Working baseline for low-fidelity wireframes  
 **Source:** [V1 Decision Sheet](decision-sheet.md)  
-**Scope:** Adult amateur football players using the responsive web application
+**Scope:** Junior footballers in team age groups U5–U17, supported by a parent
+or guardian, using the responsive web application
 
 ## 1. Flow objective
 
@@ -78,11 +79,10 @@ flowchart TD
     B -->|Create account| C[Enter email and credentials]
     B -->|Sign in| D[Authenticate]
     C --> E[Confirm age]
-    E --> F{At least 18?}
-    F -->|No| G[Explain that V1 is unavailable]
-    F -->|Yes| H[Accept training-guidance disclaimer]
+    E --> F[Confirm parent or guardian approval]
+    F --> G[Accept training-guidance disclaimer]
 
-    H --> I[Name, position, and experience]
+    G --> I[Name, age band, position, and experience]
     I --> J[Choose one primary goal]
     J --> K[Add team practices and matches]
     K --> L[Add training availability]
