@@ -76,12 +76,23 @@ classification for profile, schedule, readiness, pain, activity, adjustment,
 consent, and audit records. Then implement authentication, server-side
 persistence, authorization, export, and deletion together.
 
-### P2 — Formalize the adaptive rule engine
+### P1 — Unify the planning boundary before API work
 
-Move the prototype's adjustment behavior into a separately testable module.
-Every rule should have explicit inputs, outputs, priority, explanation text,
-undo policy, and practitioner approval status. Add scenario tests for every
-safe, unsafe, and schedule-conflict branch.
+The repository currently contains a youth catalog selector, a separate legacy
+recommendation engine, a static weekly plan, and UI-level check-in adjustments.
+Before integrating an AI API, choose the canonical content schema and move
+catalog selection, day-by-day scheduling, readiness restrictions, adaptation,
+decision traces, and safe fallbacks behind one independently tested planner.
+The [AI Integration Strategy](ai-integration-strategy.md) defines the required
+contract and the limited order of AI experimentation.
+
+### P1 — Build and test the canonical planner
+
+Move the prototype's catalog selection, weekly scheduling, and adjustment
+behavior into a separately testable module. Every rule should have explicit
+inputs, outputs, priority, explanation text, undo policy, and practitioner
+approval status. Add scenario tests for every safe, unsafe, and
+schedule-conflict branch.
 
 ## Recommended order of immediate work
 
@@ -94,11 +105,14 @@ safe, unsafe, and schedule-conflict branch.
    verification.
 5. Fix high-severity usability, safety-copy, accessibility, and consent issues.
 6. Write the production architecture and data-contract decision record.
-7. Extract and independently test the adaptive rule engine.
+7. Unify the catalog and weekly planner behind an independently tested
+   planning boundary.
 8. Build authentication, persistence, authorization, export, deletion,
    monitoring, backups, and recovery together.
-9. Re-run practitioner and legal reviews against the exact release candidate.
-10. Start a small, supported closed beta only after all gates pass.
+9. Run an offline AI experiment with synthetic profiles and approved content;
+   keep it disabled in the user-facing product.
+10. Re-run practitioner and legal reviews against the exact release candidate.
+11. Start a small, supported closed beta only after all gates pass.
 
 ## Explicitly defer
 

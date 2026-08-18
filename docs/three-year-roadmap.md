@@ -122,6 +122,9 @@ needed, and who is accountable for safety decisions.
 - Add structured logs, error monitoring, uptime checks, and privacy-preserving
   product analytics.
 - Establish a release checklist and a vulnerability-reporting path.
+- Unify the catalog, weekly scheduler, readiness/adaptation rules, and decision
+  trace into one tested planning boundary before beginning an offline AI
+  experiment with synthetic profiles.
 
 ### Exit gate
 
@@ -186,6 +189,8 @@ wish list.
 
 - Consider AI only for constrained explanations, alternatives from approved
   content, and summaries—not for independent safety decisions.
+- Treat free-form plan generation as out of scope unless a new safety, privacy,
+  practitioner, and evaluation review explicitly changes that decision.
 - Send the minimum structured context, validate outputs server-side, log model
   and prompt versions, test prompt injection and unsafe outputs, and retain a
   deterministic fallback.

@@ -52,6 +52,7 @@ Supporting product-foundation documents:
 - [Research Session Form](docs/research-session-form.md)
 - [Practitioner and Safeguarding Review Packet](docs/safety-review-packet.md)
 - [Risk and Data Foundation](docs/risk-and-data-foundation.md)
+- [AI Integration Strategy](docs/ai-integration-strategy.md)
 
 ## U5–U17 training foundation
 

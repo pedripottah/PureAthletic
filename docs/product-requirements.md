@@ -258,6 +258,7 @@ AI is an assistant inside a controlled planning system, not the sole decision-ma
 - Suggest exercise alternatives from an approved exercise library.
 - Summarize a completed week.
 - Personalize tone and level of detail.
+- Rank already-approved candidate routines after deterministic safety filtering.
 
 ### Inappropriate uses
 
@@ -266,8 +267,15 @@ AI is an assistant inside a controlled planning system, not the sole decision-ma
 - Override pain and recovery rules.
 - Produce an unvalidated training plan directly for the user.
 - Make unsupported claims about injury prevention, calorie burn, or expected performance.
+- Browse arbitrary internet content to make a live training decision.
 
-All AI outputs shown in the product should be grounded in structured application data, constrained to an expected format, and validated before display.
+AI experimentation may begin with synthetic profiles only after the catalog,
+day-by-day planner, data contract, decision traces, and safety scenarios are
+stable. User-facing AI should begin only after server-side authorization,
+privacy review, practitioner approval, strict output validation, and a
+deterministic fallback are available. All AI outputs shown in the product must
+be grounded in structured application data, constrained to an expected format,
+and validated before display.
 
 ## 10. Data model
 

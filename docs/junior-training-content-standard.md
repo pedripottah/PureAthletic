@@ -78,6 +78,11 @@ work to maximize.
 
 ## AI recommendation boundary
 
+The implementation sequence and API gates are defined in the
+[AI Integration Strategy](ai-integration-strategy.md). The current prototype
+must first unify its catalog, weekly planner, and safety rules before any API
+can influence user-facing output.
+
 The deterministic rule engine is the authority. A future AI service may:
 
 - rank routines that have already passed the rules;
