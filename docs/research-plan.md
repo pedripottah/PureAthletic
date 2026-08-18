@@ -173,6 +173,10 @@ Phase 0 research is not complete until:
 
 ## Session record template
 
+For a participant-friendly version of the session questions, use the [Research
+Session Form](research-session-form.md). It uses short scales and multiple
+choice checks so participants do not need to write long responses.
+
 ```text
 Session ID:
 Date:
