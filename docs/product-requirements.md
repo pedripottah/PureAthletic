@@ -343,41 +343,49 @@ The primary product signal is not time spent in the app. It is whether athletes 
 
 ## 14. Delivery milestones
 
-### Milestone 1: Product foundation
+The detailed three-year sequence, exit criteria, research cadence, security
+controls, accessibility expectations, and operational gates are maintained in
+the [Three-Year Product and Engineering Roadmap](three-year-roadmap.md).
 
-- Confirm the target user through five athlete interviews.
-- Review the training rules with a qualified practitioner.
-- Create low-fidelity screen flows.
-- Finalize the data model and privacy classification.
+The current milestones are intentionally evidence-led:
 
-### Milestone 2: Non-adaptive prototype
+### Milestone 1: Discovery and safety foundation
 
-- Implement authentication and onboarding.
-- Generate a plan from approved templates.
-- Build the dashboard, calendar, workout detail, and logging flows.
-- Test the complete journey with seeded data.
+- Confirm the first cohort and narrow problem through research.
+- Turn assumptions into ranked research questions and hypotheses.
+- Review catalog content, rules, thresholds, supervision, and copy with a
+  qualified practitioner.
+- Create the data inventory, threat model, privacy assessment, consent model,
+  and safeguarding escalation plan.
 
-### Milestone 3: Adaptation
+### Milestone 2: Prototype validation
 
-- Implement readiness check-ins.
-- Add the explicit adjustment-rule engine.
-- Add adjustment history, explanations, and undo behavior.
-- Build automated tests for every safety and scheduling rule.
+- Test the current prototype with representative users in small rounds.
+- Include accessibility and safety-interpretation testing.
+- Run browser smoke checks through the normal verification workflow.
+- Fix high-severity findings and document the continue/narrow/stop decision.
 
-### Milestone 4: Controlled AI
+### Milestone 3: Production foundation
 
-- Add structured AI-generated explanations and weekly summaries.
-- Validate all model output before storage or display.
-- Add fallback copy for unavailable or invalid AI output.
-- Test prompt-injection and unsafe-output scenarios.
+- Define the production architecture and data contracts.
+- Implement authentication, guardian consent, authorization, persistence,
+  export, deletion, audit records, backups, monitoring, and recovery.
+- Establish CI, dependency/security checks, release versioning, and rollback.
 
-### Milestone 5: Private beta
+### Milestone 4: Deterministic MVP and closed beta
 
-- After the release gates are approved, recruit 5–10 junior-player and
-  parent/guardian pairs across the supported age bands.
-- Run a four-week pilot.
-- Review usage, interviews, recommendation quality, and safety incidents.
-- Decide which assumptions to change before expanding the feature set.
+- Extract and independently test the adaptive rule engine.
+- Version rules, catalog content, explanations, and recommendations.
+- Re-run practitioner and legal reviews against the release candidate.
+- Run a small, supported four-week pilot only after every release gate passes.
+
+### Milestone 5: Reliability and carefully bounded expansion
+
+- Continue user research and accessibility testing throughout delivery.
+- Improve reliability, performance, support, data quality, and privacy controls.
+- Consider AI only for constrained explanations and summaries with deterministic
+  fallback and server-side validation.
+- Evaluate every new category or feature as a separate evidence and risk review.
 
 ## 15. Open product decisions
 

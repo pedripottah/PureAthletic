@@ -3,6 +3,13 @@
 **Review date:** 17 August 2026  
 **Review scope:** Current repository, documented V1 journey, training catalog, and automated checks.
 
+The long-term sequencing and release gates now live in the
+[Three-Year Product and Engineering Roadmap](three-year-roadmap.md). The first
+working artifacts are the [Research Plan](research-plan.md), [Practitioner and
+Safeguarding Review Packet](safety-review-packet.md), and [Risk and Data
+Foundation](risk-and-data-foundation.md). This file records the current review
+and the next short-term actions.
+
 ## Review outcome
 
 The prototype is ready for structured usability and practitioner review. It is
@@ -76,16 +83,22 @@ Every rule should have explicit inputs, outputs, priority, explanation text,
 undo policy, and practitioner approval status. Add scenario tests for every
 safe, unsafe, and schedule-conflict branch.
 
-## Recommended order of work
+## Recommended order of immediate work
 
-1. Create the practitioner/safeguarding review packet.
-2. Conduct the small adult usability review.
-3. Fix only the highest-impact usability and safety-copy issues.
-4. Add browser smoke execution to the test workflow.
-5. Finalize the production data model and privacy classification.
-6. Build authentication and server persistence.
-7. Harden and independently test the adaptive rule engine.
-8. Re-run practitioner and legal reviews before any junior beta.
+1. Create the research plan, participant criteria, consent materials, and
+   practitioner/safeguarding review packet.
+2. Record the threat model, data inventory, privacy classification, retention
+   assumptions, and incident/escalation plan.
+3. Conduct the first usability and practitioner review on the current app.
+4. Add browser smoke execution and a manual WCAG 2.2 AA checklist to release
+   verification.
+5. Fix high-severity usability, safety-copy, accessibility, and consent issues.
+6. Write the production architecture and data-contract decision record.
+7. Extract and independently test the adaptive rule engine.
+8. Build authentication, persistence, authorization, export, deletion,
+   monitoring, backups, and recovery together.
+9. Re-run practitioner and legal reviews against the exact release candidate.
+10. Start a small, supported closed beta only after all gates pass.
 
 ## Explicitly defer
 
@@ -93,7 +106,7 @@ Do not add AI-generated plans, social features, wearables, payments,
 leaderboards, native mobile apps, or additional training categories until the
 core planning loop has passed practitioner review and user testing.
 
-## Definition of the next milestone
+## Definition of the next short-term milestone
 
 The next milestone is complete when:
 
@@ -103,3 +116,6 @@ The next milestone is complete when:
 - the top usability issues have been fixed;
 - browser smoke checks run through the project test workflow; and
 - the production data/privacy boundary is approved for implementation.
+- a threat model, accessibility checklist, and incident/escalation plan exist;
+- the research findings are linked to concrete backlog decisions; and
+- the next architecture decision is documented with its trade-offs.
