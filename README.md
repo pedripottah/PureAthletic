@@ -49,6 +49,8 @@ Supporting product-foundation documents:
 - [Prototype Review](docs/project-review.md)
 - [Three-Year Product and Engineering Roadmap](docs/three-year-roadmap.md)
 - [Phase 0 Research Plan](docs/research-plan.md)
+- [Research Preparation Pack](docs/research-preparation.md)
+- [Prototype Verification Checklist](docs/prototype-verification-checklist.md)
 - [Research Session Form](docs/research-session-form.md)
 - [Practitioner and Safeguarding Review Packet](docs/safety-review-packet.md)
 - [Risk and Data Foundation](docs/risk-and-data-foundation.md)
