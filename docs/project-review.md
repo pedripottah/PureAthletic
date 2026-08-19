@@ -5,10 +5,13 @@
 
 The long-term sequencing and release gates now live in the
 [Three-Year Product and Engineering Roadmap](three-year-roadmap.md). The first
-working artifacts are the [Research Plan](research-plan.md), [Practitioner and
-Safeguarding Review Packet](safety-review-packet.md), and [Risk and Data
-Foundation](risk-and-data-foundation.md). This file records the current review
-and the next short-term actions.
+working artifacts are the [Research Plan](research-plan.md), [Research
+Preparation Pack](research-preparation.md), [Practitioner and Safeguarding
+Review Packet](safety-review-packet.md), and [Risk and Data
+Foundation](risk-and-data-foundation.md). The [Prototype Verification
+Checklist](prototype-verification-checklist.md) defines the current
+pre-research manual checks. This file records the current review and the next
+short-term actions.
 
 ## Review outcome
 

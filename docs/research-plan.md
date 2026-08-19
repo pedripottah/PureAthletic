@@ -4,6 +4,9 @@
 **Owner:** Project founder/research lead
 **Version:** 1.0
 
+Use the [Research Preparation Pack](research-preparation.md) to prepare the
+first adult sessions and the separate practitioner review.
+
 ## Purpose
 
 This plan validates whether PureAthletic solves a meaningful problem clearly and
