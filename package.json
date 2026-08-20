@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
+    "verify": "npm test && npm run validate:training && npm run build",
     "start": "node scripts/serve.mjs",
     "test": "node --test",
     "validate:training": "node scripts/validate-training-library.mjs && node scripts/validate-youth-football-data.mjs",
