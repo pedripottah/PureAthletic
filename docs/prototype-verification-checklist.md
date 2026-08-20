@@ -17,6 +17,7 @@ local server because they load the app in a same-origin iframe.
 
 ## Automated checks
 
+- Run `npm run verify` for the complete automated check set below.
 - [ ] `npm test`
 - [ ] `npm run validate:training`
 - [ ] `npm run build`
