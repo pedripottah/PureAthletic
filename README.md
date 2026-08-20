@@ -85,6 +85,12 @@ npm run validate:training
 npm test
 ```
 
+Run the combined pre-sharing check with:
+
+```bash
+npm run verify
+```
+
 ## Who is it for?
 
 The current research prototype is focused on junior footballers in team age
