@@ -28,6 +28,7 @@ const pageRoutes = new Set([
   "/profile/schedule"
 ]);
 const assetPaths = new Map([
+  ["/favicon.svg", "favicon.svg"],
   ["/styles.css", "styles.css"],
   ["/app.js", "app.js"],
   ["/data/youth-football/sources.json", "data/youth-football/sources.json"],
@@ -41,7 +42,8 @@ const contentTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
-  ".json": "application/json; charset=utf-8"
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml"
 };
 
 function normalizedRoute(pathname) {
