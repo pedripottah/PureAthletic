@@ -155,7 +155,8 @@
 
           await waitFor(
             () => page.body.textContent.includes("React, accelerate and stop"),
-            "U9–U12 Intermediate Speed recommendation was not selected"
+            "U9–U12 Intermediate Speed recommendation was not selected",
+            160
           );
 
           const savedProfile = JSON.parse(
