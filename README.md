@@ -33,6 +33,21 @@ For static hosting, `npm run build` copies those same three files into `dist/`
 and generates a small static-file hosting adapter. The build script uses only
 Node.js itself and installs no packages or frameworks.
 
+## Verify the prototype
+
+Run the automated verification suite with:
+
+```bash
+npm run verify
+```
+
+For the browser checks, start `npm run dev` and open both of these pages in a
+real browser. Each page must show `PASS` before sharing the prototype for
+research:
+
+- `http://localhost:3000/test/browser-smoke.html`
+- `http://localhost:3000/test/responsive-smoke.html`
+
 The previous Next.js/React implementation is preserved in
 [`archive/nextjs`](archive/nextjs).
 
