@@ -1,10 +1,17 @@
 # PureAthletic V1 Low-Fidelity Wireframes
 
-**Status:** Working baseline for prototype testing  
-**Source:** [V1 User Flow](user-flow.md) and [V1 Decision Sheet](decision-sheet.md)  
-**Primary viewport:** Mobile, 390 × 844 px  
+**Status:** Target-product design concepts; partially represented in prototype
+**Last reviewed:** 24 August 2026
+**Source:** [V1 User Flow](user-flow.md) and [V1 Decision Sheet](decision-sheet.md)
+**Primary viewport:** Mobile, 390 × 844 px
 **Scope:** Junior footballers in team age groups U5–U17, supported by a parent
 or guardian, using the responsive web application
+
+These wireframes intentionally extend beyond the current five-step onboarding
+and local-only app. Authentication, verified consent, availability, equipment,
+supervision, and production account controls are concepts, not implemented or
+approved behavior. Validate decision status in the
+[Decision Sheet](decision-sheet.md) before building from a wireframe.
 
 ## 1. Prototype objective
 
@@ -86,8 +93,8 @@ Use visible text labels with any supporting icon:
 │  ✓ Adjusts when your week changes   │
 │  ✓ Explains every recommendation    │
 │                                     │
-│  General U5–U17 guidance with       │
-│  parent or guardian approval.       │
+│  U5–U17 research concept.           │
+│  Not approved training guidance.    │
 └─────────────────────────────────────┘
 ```
 
@@ -98,6 +105,10 @@ Use visible text labels with any supporting icon:
 - Footer links → privacy, terms, and training-guidance disclaimer
 
 ### WF-02 — Create account / sign in
+
+**Illustrative only.** Email/password authentication is not a product decision.
+Replace this screen after the account owner, jurisdiction, age/consent model,
+recovery process, and authentication threat model are approved.
 
 ```text
 ┌─────────────────────────────────────┐
@@ -169,9 +180,11 @@ Onboarding progress is saved after every step. Back navigation preserves all ent
 └─────────────────────────────────────┘
 ```
 
-Do not continue without parent or guardian approval. Public release remains
-blocked until the minor-specific practitioner, safeguarding, consent, privacy,
-legal, and account-control reviews are complete.
+The checkbox represents only the research prototype’s acknowledgement. A
+production account must not treat a checkbox as verified consent or proof of a
+guardian relationship. The final eligibility and responsible-adult flow is
+open and blocked on jurisdiction-specific practitioner, safeguarding, consent,
+privacy, legal, and account-control reviews.
 
 ### WF-04 — Athlete basics
 
@@ -194,7 +207,7 @@ legal, and account-control reviews are complete.
 │  Training experience               │
 │  ( ) Beginner                      │
 │  ( ) Intermediate                  │
-│  (x) Advanced — In development     │
+│  ( ) Advanced — Not available      │
 │                                     │
 │  [ Continue ]                       │
 └─────────────────────────────────────┘
@@ -213,11 +226,11 @@ Use one-select cards. Each option includes a short, plain-language definition.
 │  ( ) Match readiness               │
 │      Feel prepared around fixtures  │
 │  ( ) Strength                      │
-│      Build force and robustness     │
+│      Build movement-control basics  │
 │  ( ) Speed                         │
-│      Improve acceleration and pace  │
+│      Practise reaction and control  │
 │  ( ) Endurance                     │
-│      Sustain repeated effort        │
+│      Build repeatable ball movement │
 │  ( ) General fitness               │
 │      Build a balanced base          │
 │                                     │
@@ -251,6 +264,10 @@ The add form requires type, date or recurring weekday, start time, and estimated
 
 ### WF-07 — Independent training availability
 
+**Deferred from the active prototype.** Retain this concept for the target
+planner, but do not merge it into current Step 4. Test whether a separate,
+progressively disclosed step is understandable and worth its data burden.
+
 ```text
 ┌─────────────────────────────────────┐
 │  Step 5 of 8                        │
@@ -270,25 +287,33 @@ The add form requires type, date or recurring weekday, start time, and estimated
 
 ### WF-08 — Equipment
 
+**Deferred from the active prototype.** The final choices must map exactly to
+reviewed catalog requirements and distinguish equipment from supervision.
+
 ```text
 ┌─────────────────────────────────────┐
 │  Step 6 of 8                        │
 │  What equipment can you use?        │
 │  Select all that apply.             │
 │                                     │
-│  [✓] Bodyweight only                │
-│  [✓] Resistance bands               │
-│  [ ] Dumbbells                      │
-│  [ ] Barbell and plates             │
-│  [ ] Gym machines                   │
-│  [ ] Field or open space            │
-│  [ ] Cones                          │
+│  [✓] Football                       │
+│  [✓] Training markers               │
+│  [ ] Safe field or open space       │
+│  [ ] Exercise mat / soft surface    │
+│  [ ] Stable support or target       │
+│  [ ] Wall or training partner       │
+│  [ ] Resistance band                │
 │                                     │
 │  [ Continue ]                       │
 └─────────────────────────────────────┘
 ```
 
 ### WF-09 — Current training, limitations, and pain
+
+**Concept requiring research and specialist review.** Do not implement a
+free-text limitations field. Decide whether current pain belongs in onboarding
+at all, or only in the pre-session check-in, before collecting health-related
+data.
 
 ```text
 ┌─────────────────────────────────────┐
@@ -302,17 +327,17 @@ The add form requires type, date or recurring weekday, start time, and estimated
 │  ( ) None  ( ) Mild                │
 │  ( ) Moderate  ( ) Severe          │
 │                                     │
-│  Physical limitations (optional)    │
-│  [_______________________________]  │
-│  [_______________________________]  │
-│                                     │
-│  Do not include medical records.    │
+│  Why we ask                         │
+│  Pain pauses automated optional     │
+│  training for adult review.         │
 │                                     │
 │  [ Continue ]                       │
 └─────────────────────────────────────┘
 ```
 
-Moderate or severe pain does not lead to normal plan generation. Show conservative guidance, retain the athlete’s saved onboarding progress, and explain that PureAthletic cannot assess or clear an injury.
+Any reported pain pauses normal automated plan generation for responsible-adult
+review. Severe pain adds stop-training/professional-advice guidance. Retain
+saved progress and explain that PureAthletic cannot assess or clear an injury.
 
 ### WF-10 — Review and generate
 
@@ -447,7 +472,8 @@ The workout remains visible but its start action is replaced by **Complete check
 └─────────────────────────────────────┘
 ```
 
-Pain uses words, not only a numeric scale. Selecting moderate or severe pain reveals a short explanation before submission without asking the athlete to diagnose the cause.
+Pain uses words, not only a numeric scale. Selecting any pain reveals a short
+explanation before submission without asking the athlete to diagnose the cause.
 
 ### WF-14 — Today, recommendation confirmed
 
@@ -507,20 +533,20 @@ Pain uses words, not only a numeric scale. Selecting moderate or severe pain rev
 └─────────────────────────────────────┘
 ```
 
-### WF-16 — Moderate or severe pain
+### WF-16 — Pain and escalation
 
-**Moderate pain**
+**Mild or moderate pain**
 
 ```text
 ┌─────────────────────────────────────┐
 │  Training recommendation changed    │
 ├─────────────────────────────────────┤
-│  You reported moderate pain.        │
+│  You reported pain.                 │
 │                                     │
-│  We removed today's intense         │
-│  optional workout. PureAthletic     │
-│  cannot assess an injury or tell    │
-│  you when it is safe to return.     │
+│  We paused today's automated        │
+│  optional workout for adult review. │
+│  PureAthletic cannot assess injury  │
+│  or say when return is safe.        │
 │                                     │
 │  Consider speaking with a qualified │
 │  healthcare or sports professional  │
@@ -534,7 +560,9 @@ Pain uses words, not only a numeric scale. Selecting moderate or severe pain rev
 └─────────────────────────────────────┘
 ```
 
-For severe pain, the heading becomes **Stop training and seek qualified advice**. Do not show a workout or an undo action. Emergency language should be added only after jurisdiction-specific professional review.
+For severe pain, the heading becomes **Stop training and seek qualified
+advice**. Do not show a workout or an undo action. Emergency language should be
+added only after jurisdiction-specific professional review.
 
 ## 6. Week and workout
 
@@ -669,7 +697,8 @@ Closing the workout preserves progress and offers **Resume**, **Finish and log**
 
 - Selecting **Modified** reveals approved modification categories and optional notes.
 - Selecting **Skipped** makes duration and effort unnecessary and reveals an optional skip reason.
-- Moderate or severe pain invokes the same safety boundary used in the readiness check-in.
+- Any pain invokes the same responsible-adult-review boundary used in the
+  readiness check-in; severe pain adds stop-training guidance.
 
 ### WF-21 — Unplanned activity
 
@@ -937,7 +966,10 @@ On larger screens:
 
 - Target WCAG 2.2 AA for the complete core journey.
 - Use semantic headings, landmarks, labels, buttons, and form controls.
-- Maintain at least a 44 × 44 CSS-pixel target for important touch actions.
+- Meet WCAG 2.2 AA target-size/spacing requirements and use at least a 44 × 44
+  CSS-pixel project target for important touch actions where practical. The
+  larger size is a usability target, not a claim that WCAG AA always requires
+  44 × 44.
 - Provide visible keyboard focus and logical focus order.
 - Pair icons and colors with text labels.
 - Announce saved, failed, and materially changed states to assistive technology.
@@ -953,7 +985,7 @@ The clickable prototype should support these six scenarios:
 1. **Eligible first-time athlete:** Landing → account → onboarding → generated plan → Today.
 2. **Normal training day:** Today → readiness check-in → confirmed workout → complete → log → Today.
 3. **Poor readiness:** Today → check-in → reduced session → recovery detail → log.
-4. **Pain safety:** Today → check-in with moderate or severe pain → safety guidance → Today with no intense optional recommendation.
+4. **Pain safety:** Today → check-in with any pain → responsible-adult guidance → Today with no automated optional recommendation.
 5. **Unplanned high load:** Today → unplanned activity → adjustment preview → apply → updated Week → undo attempt.
 6. **Schedule change and review:** Profile → edit team schedule → plan-change preview → confirm → Week → Progress.
 
@@ -986,7 +1018,7 @@ Observe:
 | Eligible athlete reaches a first plan | WF-01–WF-11 |
 | Today has one unmistakable primary recommendation | WF-12 and WF-14 |
 | Check-in and activity log can target under one minute | WF-13 and WF-20–WF-21 |
-| Moderate and severe pain do not lead to intense training | WF-09, WF-13, and WF-16 |
+| Any pain does not lead to automated optional training | WF-09, WF-13, and WF-16 |
 | Session states do not rely on color | Shared status language and WF-17 |
 | Every plan change explains what and why | WF-15, WF-22, and WF-23 |
 | Confirmation and undo follow the safety boundary | WF-16, WF-22, and WF-23 |
@@ -1000,6 +1032,9 @@ Observe:
 - Whether **Use 25-minute version** is distinct enough from modifying a workout.
 - Whether adjustment confirmation contains enough context without showing the entire week.
 - Whether **completed or appropriately modified** feels motivating and credible.
-- Whether the moderate- and severe-pain language is clear, conservative, and appropriate after professional review.
+- Whether pain and escalation language is clear, conservative, and appropriate after professional review.
 
-The next design artifact should be a clickable grayscale prototype of the six routes above. Visual exploration should begin only after the core tasks, content order, and safety states are tested with representative athletes.
+The next design revision should narrow these concepts to the cohort and minimum
+inputs supported by research. Do not expand the current clickable prototype to
+cover every wireframe before the core tasks, content order, and safety states
+are tested with adults and reviewed by qualified specialists.

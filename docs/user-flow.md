@@ -1,9 +1,15 @@
 # PureAthletic V1 User Flow
 
-**Status:** Working baseline for low-fidelity wireframes  
-**Source:** [V1 Decision Sheet](decision-sheet.md)  
+**Status:** Target-product flow; not a current implementation map
+**Last reviewed:** 24 August 2026
+**Source:** [V1 Decision Sheet](decision-sheet.md)
 **Scope:** Junior footballers in team age groups U5–U17, supported by a parent
 or guardian, using the responsive web application
+
+The first beta cohort, account owner, and consent model remain open. The active
+prototype omits authentication and several target onboarding inputs. Use the
+[Prototype Review](project-review.md) for current behavior and the
+[Decision Sheet](decision-sheet.md) for decision status.
 
 ## 1. Flow objective
 
@@ -75,19 +81,19 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Landing page] --> B{Account action}
-    B -->|Create account| C[Enter email and credentials]
+    A[Landing page] --> B{Identity action}
+    B -->|Begin setup| C[Use approved account-owner flow]
     B -->|Sign in| D[Authenticate]
-    C --> E[Confirm age]
-    E --> F[Confirm parent or guardian approval]
+    C --> E[Apply approved age and eligibility flow]
+    E --> F[Record responsible-adult involvement where required]
     F --> G[Accept training-guidance disclaimer]
 
     G --> I[Name, age band, position, and experience]
     I --> J[Choose one primary goal]
     J --> K[Add team practices and matches]
     K --> L[Add training availability]
-    L --> M[Select available equipment]
-    M --> N[Training frequency, limitations, and pain]
+    L --> M[Select equipment and supervision context]
+    M --> N[Collect only approved readiness context]
     N --> O[Review answers]
     O --> P{Ready to generate?}
     P -->|Edit| I
@@ -106,11 +112,17 @@ flowchart TD
 
 ### Onboarding requirements
 
+- The account-owner, age/eligibility, and consent flow is selected only after
+  jurisdiction-specific privacy, legal, and safeguarding review.
 - Progress is saved after each step.
 - Back navigation preserves entered information.
 - Structured inputs are sufficient; free-text notes remain optional.
 - The athlete reviews all information before plan generation.
 - A scheduling conflict is explained in plain language and never produces an unsafe fallback plan.
+
+Availability, equipment, and qualified-supervision inputs describe the target
+planner. They are deferred from current onboarding Step 4 until the rollout
+gates in the Decision Sheet are met.
 
 ## 5. Today, readiness, and pain safety
 
@@ -126,11 +138,11 @@ flowchart TD
     G --> H[Do not recommend a workout]
     H --> I[Record safety adjustment and explanation]
 
-    F -->|Moderate| J[Block intense optional training]
-    J --> K[Replace with conservative recovery guidance]
+    F -->|Mild or moderate| J[Pause automated optional training]
+    J --> K[Ask for responsible-adult review]
     K --> I
 
-    F -->|None or mild| L{Readiness very poor?}
+    F -->|None| L{Readiness very poor?}
     L -->|Yes| M[Reduce or replace today's optional session]
     M --> I
     L -->|No| N[Keep current recommendation]
@@ -145,7 +157,9 @@ flowchart TD
 - Safety actions occur immediately and cannot be bypassed with a simple undo.
 - A later check-in may produce a new recommendation, but it does not erase the earlier safety record.
 - Fixed team commitments remain visible; the product does not diagnose, provide return-to-play clearance, or move those commitments.
-- Moderate or severe pain language directs the athlete toward appropriate qualified support without claiming a diagnosis.
+- Every pain response pauses automated optional training for responsible-adult
+  review; severe pain additionally directs the athlete toward qualified support
+  without claiming a diagnosis.
 
 Exact thresholds and athlete-facing wording require practitioner review before the private beta.
 
@@ -172,7 +186,7 @@ flowchart TD
     J --> K
     K --> L[Save activity log]
     L --> M[Calculate session load when applicable]
-    M --> N[Reevaluate the next 24–48 hours and remaining plan]
+    M --> N[Reevaluate the reviewed recovery horizon and remaining plan]
     N --> O{Adjustment needed?}
     O -->|No| P[Show saved confirmation]
     O -->|Safety action| Q[Apply safe change immediately]
@@ -296,6 +310,9 @@ flowchart TD
 
 Account deletion must be deliberately confirmed and must not be presented as an ordinary one-click action.
 
+Availability and equipment editing remain target-product flows and are not
+currently active planning controls in the prototype.
+
 ## 11. Core screen inventory
 
 | Screen | Primary job | Main exit |
@@ -320,7 +337,7 @@ The low-fidelity wireframes are ready for review when:
 - A new eligible athlete can reach their first plan without an unexplained branch.
 - The Today screen has one unmistakable primary recommendation.
 - Readiness and activity logging can each be completed in under one minute.
-- Moderate and severe pain paths never lead directly to an intense workout recommendation.
+- No pain path leads directly to an automated optional workout recommendation.
 - Planned, fixed, completed, modified, skipped, recovery, and rest states are distinguishable without relying on color alone.
 - Any proposed plan change explains what changed and why.
 - Confirmation and undo behavior match the safety boundary.
