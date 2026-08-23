@@ -130,6 +130,12 @@
           if (page.querySelector('[data-action="onboarding-next"]').disabled) {
             throw new Error("An empty commitment list should be optional");
           }
+          if (page.body.textContent.includes("Days available for optional training")
+              || page.body.textContent.includes("Equipment available for optional training")
+              || page.body.textContent.includes("A qualified coach can supervise optional sessions")
+              || page.querySelector('[data-field="qualifiedSupervisionAvailable"]')) {
+            throw new Error("Deferred planner inputs should not appear on onboarding Step 4");
+          }
 
           click('[data-action="onboarding-next"]');
           await waitFor(
@@ -167,6 +173,21 @@
           }
           if (savedProfile.user.name !== "Alex" || savedProfile.schedule.commitments.length !== 3) {
             throw new Error("Name or unlimited commitments were not saved cleanly");
+          }
+          const deferredPlannerFields = [
+            "canonicalPlan",
+            "routineRecommendation",
+            "plannerVersions",
+            "canonicalPlanNeedsRefresh"
+          ];
+          if (deferredPlannerFields.some((field) => field in savedProfile)
+              || "qualifiedSupervisionAvailable" in savedProfile.user) {
+            throw new Error("Deferred planner data was saved with the profile");
+          }
+          const optionalPlan = savedProfile.plan.filter((item) => !item.fixed);
+          if (!optionalPlan.some((item) => ["Planned", "Recovery"].includes(item.status))
+              || optionalPlan.every((item) => item.title === "Open day")) {
+            throw new Error("Generated Training plan incorrectly fell back to all open days");
           }
           const savedMatch = savedProfile.schedule.commitments.find((commitment) => commitment.type === "match");
           if (savedMatch?.day !== "Sunday" || savedMatch.time !== "17:30") {
