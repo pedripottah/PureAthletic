@@ -30,6 +30,10 @@ local server because they load the app in a same-origin iframe.
   guardian-approval simulation, disclaimer, age band, goal, schedule, and
   experience.
 - [ ] Refresh during onboarding; completed answers remain available.
+- [ ] Confirm onboarding Step 4 shows only fixed practices and matches, without
+  optional-training availability, equipment, or qualified-coach controls.
+- [ ] Generate a plan and confirm Training shows the earlier mixed weekly plan,
+  rather than every non-fixed day appearing as `Open day`.
 - [ ] Confirm Today shows one clear next action and its explanation.
 - [ ] Complete a readiness check-in and verify the recommendation changes when
   appropriate.
