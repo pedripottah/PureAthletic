@@ -1,126 +1,112 @@
-# PureAthletic V1 — Quick Product Summary
+# PureAthletic — Quick Product Summary
 
-**Purpose:** A quick-reading summary of the product requirements, decisions, user flow, and low-fidelity wireframes.
+**Status:** Orientation summary; not a source of release approval
+**Last reviewed:** 24 August 2026
 
-## The product in one sentence
+Read the [documentation guide](README.md) before using this summary to make a
+product or engineering decision.
 
-PureAthletic helps junior footballers and their responsible adults decide what
-general training may be appropriate next by creating an age- and goal-aware
-seven-day plan that responds to fixed football commitments, completed activity,
-readiness, and pain feedback.
+## Product in one sentence
 
-## Who V1 is for
+PureAthletic is exploring whether a structured, age-aware football planner can
+help a player and responsible adult understand the next appropriate training or
+recovery action around team commitments, recent activity, and readiness.
 
-- Team age groups U5–U17 with parent or guardian approval
-- Amateur football players
-- Athletes who have fixed team practices or matches
-- Athletes who also train independently
-- People without regular access to a personal strength and conditioning coach
+## Problem and promise
 
-## The problem it solves
+Team football, independent training, school, work, free play, matches, and
+recovery compete for the same week. Static workout plans do not adapt when the
+schedule or the athlete’s condition changes.
 
-Amateur players often combine team training, matches, gym sessions, and running without knowing how those activities affect one another. A static workout plan cannot respond when the athlete is tired, misses a session, reports pain, or completes unexpected activity.
+The target product should answer:
 
-PureAthletic should answer:
+> What should I do next, why, and when should I not follow an automated
+> suggestion?
 
-> What is the most appropriate thing for me to do next?
+The intended loop is:
 
-## The core experience
+`Set up → plan → check in → train or rest → log → adjust → review`
 
-```mermaid
-flowchart LR
-    A[Create profile] --> B[Generate 7-day plan]
-    B --> C[Check readiness]
-    C --> D[Train or rest]
-    D --> E[Log activity]
-    E --> F[Adjust remaining plan]
-    F --> G[Review progress]
-    G --> B
-```
+## Audience status
 
-## Main parts of the website
+The research catalog spans team groups U5–U17, but that range is not yet a
+validated first-release cohort. Research must determine a narrower initial
+cohort, responsible-adult role, account ownership model, and primary use case.
+No junior beta is authorized by the existence of the catalog or prototype.
 
-| Area | Purpose |
-| --- | --- |
-| Today | Show the athlete's next recommendation and why it is appropriate |
-| Week | Show the seven-day plan, practices, matches, recovery, and rest |
-| Progress | Summarize completed activity, readiness, workload trends, and achievements |
-| Profile | Manage athlete details, schedule, equipment, privacy, export, and deletion |
+Adult-only prototype research using fictional profiles comes first. Any future
+research involving children requires an approved protocol, appropriate guardian
+consent and child assent, safeguarding arrangements, privacy/legal review, and
+qualified oversight.
 
-## What the athlete can do
+## Target product
 
-- Create an account and complete onboarding
-- Choose a primary training goal
-- Add team practices, matches, availability, and equipment
-- Receive a structured seven-day plan
-- Complete a short readiness check-in
-- View full workout instructions
-- Complete, modify, or skip a planned session
-- Log an unplanned activity
-- Review proposed plan changes and their reasons
-- Undo non-safety changes when it remains safe
-- Review weekly progress
-- Export data or delete the account
+The target experience may eventually:
 
-## Important planning rules
+- capture an age band, goal, fixed practices and matches, availability,
+  equipment, supervision context, and minimal readiness inputs;
+- generate a rolling seven-day plan from approved content and deterministic
+  safety and scheduling rules;
+- distinguish fixed team commitments from optional recommendations;
+- explain what changed and why after readiness, activity, or schedule changes;
+- support completion, modification, skipping, and unplanned activity logs; and
+- provide a restrained weekly review without streak pressure or false
+  physiological precision.
 
-- Practices and matches are fixed and never moved automatically.
-- High-load lower-body training is not placed immediately before a match.
-- The plan preserves at least one rest or low-load day when the fixed schedule allows it.
-- Poor readiness may reduce an optional session or replace it with recovery.
-- Moderate pain blocks intense optional training.
-- Severe pain produces stop-training guidance instead of a workout recommendation.
-- Moving or removing a normal future session requires confirmation.
-- Every adjustment explains what changed and why.
+Availability, equipment, and qualified-supervision inputs remain target-product
+requirements, but are deliberately deferred from the current onboarding UI.
 
-Training and pain rules must be reviewed by a qualified sports-performance practitioner before the private beta.
+## Current prototype
 
-## Role of AI
+The current vanilla JavaScript prototype demonstrates the journey with browser
+storage and seeded/local data. It is useful for adult usability and
+practitioner review, but it is not a production planner:
 
-The planner itself uses approved workout templates and deterministic rules. AI does not decide whether training is safe.
+- guardian approval is simulated by a checkbox, not verified consent;
+- there is no real authentication, account isolation, backend, or production
+  data protection;
+- the browser selects a catalog routine but the visible week still uses the
+  earlier plan template and UI-level adjustment logic;
+- optional-training availability, equipment, and coach-supervision controls are
+  not shown on onboarding Step 4; and
+- the canonical planner is tested development groundwork and is not deployed.
 
-AI may later help rewrite validated explanations or weekly summaries in natural language. Approved fallback text must work when AI is unavailable or produces invalid output.
+## Non-negotiable boundaries
 
-## What V1 deliberately excludes
+- PureAthletic does not diagnose, treat, rehabilitate, or clear an injury.
+- Any reported pain pauses automated optional training for responsible-adult
+  review; severe pain produces stop-training and professional-advice guidance.
+- Team practices and matches are fixed and never moved automatically.
+- Safety-critical behavior is deterministic, versioned, testable, and reviewed.
+- AI cannot invent or approve training, override safety rules, or become a
+  dependency for the core journey.
+- Minor data is minimized, private by default, and excluded from unnecessary
+  analytics or external processing.
+- No training streak, leaderboard, or engagement mechanism should encourage
+  training when rest is appropriate.
 
-- Injury diagnosis, rehabilitation, or return-to-play clearance
-- Wearable integrations
-- Native mobile applications
-- Social feeds, leaderboards, or messaging
-- Coach, club, or parent portals
-- Payments and subscriptions
-- Live GPS tracking
-- Nutrition or supplement prescriptions
-- Unrestricted AI-generated training plans
+## What is deliberately out of scope
 
-## Current project stage
+- diagnosis, rehabilitation, and return-to-play clearance;
+- unrestricted AI-generated training;
+- social feeds, messaging, public profiles, leaderboards, and streak pressure;
+- wearables, live tracking, nutrition/supplement prescriptions, payments, and
+  additional sports before the core loop is validated; and
+- a minor-facing beta before every named release gate passes.
 
-The product foundation has been documented:
+## Current priority
 
-1. [Product Requirements](product-requirements.md) define the complete V1 scope.
-2. [Decision Sheet](decision-sheet.md) records the chosen product direction and remaining assumptions.
-3. [User Flow](user-flow.md) shows how athletes and the system move through the experience.
-4. [Low-Fidelity Wireframes](low-fidelity-wireframes.md) translate the flow into screen layouts without final visual styling.
+The next valuable work is evidence, not feature volume:
 
-An initial Next.js prototype scaffold also exists in the working tree. It is an implementation preview, not yet the finished product.
+1. Run adult-only usability sessions on the current prototype.
+2. Obtain qualified review of the exact catalog, rules, supervision assumptions,
+   pain behavior, and copy.
+3. Select a narrow first cohort and responsible-adult/account model.
+4. Resolve the production data, privacy, consent, safeguarding, and
+   authorization boundary.
+5. Finish and review one canonical planner before integrating it into the
+   browser or experimenting with AI.
 
-## How these documents relate
-
-```text
-Requirements → Decisions → User flow → Wireframes → Code → Testing
-```
-
-- **Requirements** describe what the product must accomplish.
-- **Decisions** choose a specific direction where several options exist.
-- **User flows** describe the steps and branches in the experience.
-- **Wireframes** arrange information and actions on each screen.
-- **Code** makes the designed behavior functional.
-- **Testing** checks that the implementation satisfies the requirements safely.
-
-## Current open validations
-
-- Test whether athletes understand the rolling seven-day plan.
-- Confirm when athletes prefer to complete readiness check-ins.
-- Confirm whether match readiness is the clearest private-beta focus.
-- Review training and pain rules with a qualified practitioner.
-- Complete a jurisdiction-specific privacy review before beta recruitment.
+For detail, use the [Product Requirements](product-requirements.md),
+[Decision Sheet](decision-sheet.md), and
+[Project Review](project-review.md).

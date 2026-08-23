@@ -1,187 +1,129 @@
 # PureAthletic V1 Decision Sheet
 
-**Status:** Working baseline for product design  
-**Last updated:** 28 July 2026  
-**Purpose:** Turn the product requirements into a small set of explicit decisions for the user flow, wireframes, and first implementation.
+**Status:** Active decision register
+**Last updated:** 24 August 2026
+**Owner:** Product founder
 
-## 1. Product focus
+This register separates product constraints from reversible decisions and
+untested assumptions. “Working decision” does not mean user-validated,
+practitioner-approved, legally reviewed, or implemented. See the
+[documentation guide](README.md) for conflict rules.
 
-| Decision | V1 choice | Status | Reason |
+## Status vocabulary
+
+- **Product constraint:** may change only through an explicit product and risk
+  decision.
+- **Working decision:** current direction; evidence may change it.
+- **Hypothesis:** must be tested before it defines a beta.
+- **Needs specialist review:** cannot be relied on for junior release.
+- **Deferred:** intentionally outside the active prototype or milestone.
+- **Open:** no responsible decision has been made.
+
+## Product focus
+
+| Decision | Current direction | Status | Evidence or next action |
 | --- | --- | --- | --- |
-| Primary audience | Junior footballers in team age groups U5–U17, supported by a parent or guardian | Revised | Recommendations now require developmental age bands and minor-specific release gates. |
-| Primary user problem | Help the athlete decide what training is appropriate to do next around practices, matches, availability, and recovery | Locked | This is the clearest expression of the product's day-to-day value. |
-| Core product promise | Keep the athlete's next seven days realistic, balanced, and responsive to what they actually do | Locked | It keeps the experience focused on practical planning rather than broad performance analysis. |
-| Private-beta focus | Recruit athletes primarily interested in match readiness | Proposed; validate in interviews | Match readiness connects the plan directly to football commitments and makes the adaptive value easy to evaluate. |
-| Supported goals | General fitness, strength, speed, endurance, and match readiness; the athlete chooses one primary goal | Locked | These are already part of the required onboarding scope and keep personalization understandable. |
-| Platform | Responsive, mobile-first web application | Locked | Most daily check-ins and activity logs will happen on a phone, while a web application keeps V1 delivery manageable. |
+| User problem | Help a footballer understand the next appropriate action around team commitments, recent activity, and recovery | Working decision | Test comprehension and perceived value in adult research |
+| Research catalog | U5–U17 football, Beginner and Intermediate; Advanced research-only | Working decision; needs specialist review | Catalog coverage is not proof that all bands should launch |
+| First beta cohort | A narrower junior football cohort with responsible-adult support | Open | Choose only after adult research, practitioner input, and account/consent analysis |
+| Initial use case | Match readiness around an existing team week | Hypothesis | Compare with general training-planning needs in interviews |
+| Platform | Responsive, mobile-first web app | Working decision | Current prototype supports this direction |
+| Product promise | A realistic, explainable next seven days—not maximum training volume | Product constraint | Preserve across design and metrics |
 
-## 2. Initial plan and weekly structure
+## Product and safety constraints
 
-| Decision | V1 choice | Status | Reason |
+| Constraint | Required behavior |
+| --- | --- |
+| Fixed commitments | Practices and matches remain visible and are never moved automatically |
+| Safety authority | Deterministic, versioned rules—not AI—control safety-critical behavior |
+| Pain | Any reported pain pauses automated optional training for responsible-adult review; severe pain adds stop-training/professional-advice guidance |
+| Medical boundary | No diagnosis, treatment, rehabilitation, or return-to-play clearance |
+| Content | Recommendations use reviewed, approved IDs; missing or conflicting inputs produce a conservative fallback |
+| Explanation | Every material adjustment states what changed, why, confirmation state, and undo availability |
+| Engagement | No streaks, rankings, or nudges that reward training through rest or pain |
+| Data | Collect only what an active feature needs; treat readiness, pain, limitations, and notes as sensitive |
+| Accessibility | Design and verify the complete core journey against WCAG 2.2 AA |
+
+All training thresholds, supervision rules, pain wording, and age-band content
+remain blocked on qualified practitioner review of the exact version.
+
+## Experience decisions
+
+| Decision | Current direction | Status | Next evidence |
 | --- | --- | --- | --- |
-| First plan start | Start on the day onboarding is completed and cover seven consecutive days | Proposed; test in prototype | The athlete receives value immediately instead of waiting for Monday. |
-| Ongoing planning horizon | Always show today plus the following six days | Proposed; test in prototype | A rolling view supports the question “What should I do next?” and handles changing schedules more naturally. |
-| Fixed commitments | Team practices and matches are entered by the athlete and are never moved automatically | Locked | These commitments are controlled by the team, not by PureAthletic. |
-| Minimum recovery | Preserve at least one rest or low-load day within every seven-day plan whenever fixed commitments allow it | Locked | This is a core safety and workload constraint. |
-| Match protection | Do not schedule high-load lower-body training immediately before a match | Locked, pending practitioner review | This rule is explicit in the product requirements but requires professional validation before beta use. |
-| Plan generation | Select sessions from approved templates using deterministic scheduling rules | Locked | V1 plans must be predictable, testable, and auditable. |
+| Planning horizon | Today plus the following six days | Working decision | Test against Monday-to-Sunday expectations |
+| Primary navigation | Today, Week, Progress, Profile | Working decision | Observe findability in adult sessions |
+| Default destination | Today with one clear next action | Working decision | Test task success without prompting |
+| Readiness timing | Before the first optional session of the day | Hypothesis | Compare with morning or on-demand timing |
+| Readiness inputs | Sleep, energy, soreness, stress, and pain in under one minute | Working decision; needs specialist review | Validate comprehension, necessity, and thresholds |
+| Session outcomes | Completed, modified, skipped, or unplanned | Working decision | Confirm labels and logging burden |
+| Plan changes | Preview non-safety changes; apply safety restrictions immediately; allow undo only after a fresh safety check | Working decision | Scenario-test every branch |
+| Progress | Appropriate completion, duration/context trends, and explanations without prescriptive scores | Hypothesis | Test motivation and risk of overtraining interpretations |
 
-## 3. Onboarding
+## Onboarding decisions
 
-Onboarding will be a short, resumable sequence:
+The active research prototype has five steps. Step 4 collects only fixed
+practices and matches. The checkbox labelled as guardian approval is a research
+simulation and must never be described as verifiable consent.
 
-1. Confirm parent or guardian approval and accept the training-guidance disclaimer.
-2. Choose a team age-group band and enter preferred name, football position,
-   and training experience.
-3. Choose one primary goal.
-4. Add recurring team practices and upcoming matches.
-5. Add independent-training availability and time per day.
-6. Select available equipment.
-7. Report current training frequency, physical limitations, and current pain.
-8. Review the information and generate the first plan.
+The target product may later collect independent-training availability,
+available time, equipment, and qualified-supervision context. Those inputs are
+**deferred** from the current UI until:
 
-| Decision | V1 choice | Status | Reason |
+1. a narrower first cohort and account owner are selected;
+2. the minimum safe input set is agreed with a practitioner;
+3. placement and wording pass usability testing;
+4. the canonical planner is reviewed and ready to consume them; and
+5. a deliberate storage migration and privacy purpose are documented.
+
+Current onboarding principles:
+
+- structured inputs must be sufficient; free text is optional and minimized;
+- every requested field must map to an active decision or be removed;
+- progress and Back behavior preserve completed answers; and
+- the user reviews inputs before generation.
+
+## Identity, consent, and data decisions
+
+| Decision | Current direction | Status | Required before beta |
 | --- | --- | --- | --- |
-| Eligibility | Select U5–U8, U9–U12, U13–U15, or U16–U17 and confirm parent or guardian approval | Revised | The four choices match the catalog’s developmental bands. Public release remains blocked by practitioner, safeguarding, consent, privacy, legal, and minor-account reviews. |
-| Required fields | Require only information needed to generate a safe and useful plan | Locked | This supports the principle of minimizing data entry. |
-| Free text | Optional only; structured choices must be enough to generate a plan | Locked | Free text is harder to validate and may contain unnecessary sensitive information. |
-| Completion target | A typical athlete should finish onboarding in five minutes or less | Proposed; validate in usability tests | A short setup reduces abandonment while still gathering necessary planning inputs. |
+| Account owner for minors | Undecided: guardian-owned, linked guardian/athlete, or age-dependent model | Open | Jurisdiction, safeguarding, privacy, and usability review |
+| Authentication | No provider or email/password method selected | Open | Threat model, recovery, accessibility, and age/consent model |
+| Guardian involvement | Meaningful, verifiable, revocable, and versioned where legally/ethically required | Product constraint; implementation open | Approved consent and withdrawal flow |
+| Authorization | Server-side ownership checks for every record and operation | Product constraint | Negative cross-account tests |
+| Export/deletion | Understandable export and deletion covering derived records, subject to documented lawful exceptions | Product constraint; needs legal review | End-to-end tests and retention policy |
+| Analytics | No health/free-text payloads; collect only approved product events | Product constraint | Data map and privacy review |
+| Advertising | No use of pain, readiness, activity, or minor profiling for advertising | Product constraint | Preserve as business-model boundary |
 
-## 4. Daily experience and navigation
+## AI decision
 
-The primary navigation will contain four destinations:
+AI is deferred from user-facing behavior. If revisited, the first candidate is
+a constrained explanation or weekly summary over approved planner output. It
+must be server-side, schema-validated, evaluated, monitored, disableable, and
+backed by deterministic fallback. It may not select safety outcomes, invent
+training, or receive unnecessary minor data. See the
+[AI Integration Strategy](ai-integration-strategy.md).
 
-- **Today:** recommendation, readiness, explanation, next commitment, and recent changes.
-- **Week:** seven-day plan and fixed commitments.
-- **Progress:** weekly review and simple trends.
-- **Profile:** athlete details, schedule, equipment, notifications, privacy, export, and deletion.
+## V1 boundary
 
-| Decision | V1 choice | Status | Reason |
-| --- | --- | --- | --- |
-| Default screen | Today dashboard | Locked | The next recommended action should be visible immediately. |
-| Main call to action | Start or review today's recommended activity | Locked | Each screen should make the athlete's next action obvious. |
-| Readiness timing | Prompt once per day on the Today screen, before the first optional training session | Proposed; validate in interviews | This gathers useful information close to the training decision without requiring a separate routine. |
-| Check-in length | Five structured inputs completed in under one minute: sleep, energy, soreness, stress, and pain | Locked | These inputs match the planning model and the low-friction principle. |
-| Workout detail | Show purpose, duration, difficulty, warm-up, exercises with sets/reps or time, rest guidance, and approved alternatives | Locked | The athlete should not need another source to complete an independent session. |
-| Session outcomes | Complete, complete with modifications, skip, or log an unplanned activity | Locked | These outcomes cover the required activity-recording behavior. |
+The target core loop remains:
 
-## 5. Plan adjustments
+`Onboard → plan → check in → train or rest → log → adjust → review`
 
-| Situation | V1 response | Confirmation | Undo |
-| --- | --- | --- | --- |
-| Readiness is acceptable | Keep the plan unchanged | No | Not applicable |
-| Readiness is very poor | Reduce today's optional session or replace it with recovery | No; explain immediately | Yes, unless blocked by a pain rule |
-| Moderate pain is reported | Do not recommend intense training; show conservative guidance and replace optional intense work | No; safety action is immediate | No direct override; the athlete may submit a later check-in |
-| Severe pain is reported | Recommend stopping training and seeking advice from a qualified professional; do not prescribe a workout | No; safety action is immediate | No direct override |
-| Unplanned high-load activity is logged | Reevaluate optional sessions during the following 24–48 hours | Preview material schedule changes | Yes |
-| High-priority session is missed | Offer to move it only when an appropriate open day exists | Yes | Yes |
-| Low-priority session is missed | Offer to remove it instead of crowding the week | Yes | Yes |
-| Fixed team commitment changes | Keep the new commitment fixed and recalculate affected optional sessions | Yes for moved or removed optional sessions | Yes |
+Explicitly deferred: additional sports, social features, public profiles,
+messaging, leaderboards, streaks, coach/club portals, wearables, live location,
+nutrition/supplement prescriptions, payments, native apps, and unrestricted AI
+training generation.
 
-Additional rules:
+## Decisions required next
 
-- A fixed team practice or match is never moved automatically.
-- Safety rules take priority over goals, adherence, and user preference.
-- Moving or removing a future session requires confirmation unless an immediate safety restriction applies.
-- Every adjustment states what changed, why it changed, and whether it can be undone.
-- Every applied adjustment is recorded with the rule and content version that produced it.
+1. Select the first cohort and account owner only after research evidence.
+2. Approve or reject each catalog/rule/supervision assumption with a qualified
+   practitioner.
+3. Decide the minimum onboarding input set for that cohort.
+4. Decide jurisdiction and complete privacy, safeguarding, consent, and legal
+   analysis before designing production identity.
+5. Decide whether the validated problem justifies a production build.
 
-The complete adjustment matrix must be reviewed by a qualified sports-performance practitioner before the private beta.
-
-## 6. Progress and motivation
-
-| Decision | V1 choice | Status | Reason |
-| --- | --- | --- | --- |
-| Primary progress measure | Planned sessions completed or appropriately modified during the week | Proposed; validate in interviews | It rewards useful engagement without encouraging athletes to maximize training load. |
-| Supporting measures | Total training duration, session-load trend, readiness trend, and notable achievements | Locked | These provide context without claiming precise physiological measurement. |
-| Session load | Duration in minutes multiplied by perceived exertion | Locked | It is simple and already defined in the product requirements. |
-| Presentation | Show trends and plain-language context, not prescriptive scores or competitive rankings | Locked | The product should avoid false precision and unsafe competition. |
-| Streaks | Do not use daily training streaks in V1 | Locked | Streaks may encourage training when rest is the appropriate recommendation. |
-
-## 7. AI boundary
-
-| Decision | V1 choice | Status | Reason |
-| --- | --- | --- | --- |
-| Plan creation | Deterministic rules and approved templates only | Locked | AI must not be the sole training decision-maker. |
-| Initial prototype | Use deterministic, prewritten explanations | Locked | The complete journey can be tested without adding model variability or cost. |
-| Later V1 AI | AI may rewrite validated explanations and weekly summaries using structured application data | Locked | This provides useful personalization without allowing AI to alter safety decisions. |
-| Failure behavior | Display approved fallback copy whenever AI output is unavailable or invalid | Locked | Core guidance must never depend on model availability. |
-| Sensitive data | Send only the minimum structured context required for the output | Locked | Pain and health-related data require additional care. |
-
-## 8. Privacy and account controls
-
-| Decision | V1 choice | Status | Reason |
-| --- | --- | --- | --- |
-| Authentication | Email-based account creation and sign-in | Locked | This is part of the required V1 scope. The exact email method is a technical decision. |
-| Authorization | Every athlete can access only their own records | Locked | This is a functional acceptance criterion. |
-| Sensitive inputs | Treat pain, physical limitations, readiness, and activity notes as sensitive data | Locked, pending legal review | These fields can reveal health-related information. |
-| Data collection | Do not collect information that is not used by a V1 feature | Locked | Data minimization reduces privacy risk and interface complexity. |
-| Account controls | Provide data export and permanent account deletion | Locked | Both are required for V1. |
-| Advertising | Do not use health- or pain-related information for advertising | Locked | This is an explicit privacy boundary. |
-
-Jurisdiction-specific privacy review is required before recruiting beta participants.
-
-## 9. Interface direction
-
-| Decision | V1 choice | Status | Reason |
-| --- | --- | --- | --- |
-| Visual character | Calm, athletic, credible, and encouraging | Proposed; test in visual exploration | The interface should feel performance-oriented without creating pressure or resembling a clinical system. |
-| Information density | One primary action per screen with optional detail revealed progressively | Locked | The core decision should remain easy to understand on a phone. |
-| Status language | Use direct labels such as Planned, Completed, Modified, Skipped, Recovery, and Rest | Locked | Explicit language is more accessible than icon- or color-only communication. |
-| Accessibility | Meet WCAG 2.2 AA for the core journey | Locked | Accessibility should be built into components and content from the beginning. |
-
-## 10. V1 boundaries
-
-V1 includes the complete planning loop:
-
-`Onboard → generate plan → check readiness → train or rest → log activity → adjust plan → review week`
-
-V1 does not include:
-
-- Wearable or health-platform integrations
-- Native mobile applications
-- Social features, leaderboards, messaging, or public profiles
-- Coach, team, or parent portals
-- Payments or subscriptions
-- Live GPS tracking
-- Nutrition or supplement prescriptions
-- Injury diagnosis, rehabilitation, or return-to-play clearance
-- AI-generated exercises outside the approved library
-
-## 11. Required validation before implementation or beta
-
-### Before high-fidelity interface design
-
-- Test the rolling seven-day planning concept with low-fidelity screens.
-- Confirm that the proposed navigation matches how athletes look for information.
-- Check whether athletes prefer the readiness prompt on opening the app or immediately before training.
-- Confirm that match readiness is the clearest private-beta focus.
-
-### Before building the rule engine
-
-- Finalize the planning-rules matrix with concrete thresholds and examples.
-- Review all training, pain, recovery, and workload rules with a qualified practitioner.
-- Define the approved workout and exercise library.
-
-### Before private beta
-
-- Complete a jurisdiction-specific privacy review.
-- Test account isolation, export, and deletion.
-- Verify every safety and scheduling rule with automated tests.
-- Review all athlete-facing safety and disclaimer language.
-
-## 12. Next validation
-
-The detailed [user flow](user-flow.md) and [low-fidelity wireframes](low-fidelity-wireframes.md) now cover:
-
-- First-time onboarding and plan generation
-- Normal daily use
-- Poor-readiness and pain branches
-- Completed, modified, skipped, and unplanned activities
-- Plan-change confirmation and undo
-- Weekly review
-- Schedule editing and plan recalculation
-
-The next step is to test the clickable prototype with qualified reviewers first,
-then with representative junior-player and parent/guardian pairs only after the
-minor-specific release gates are approved.
+Record each decision with date, owner, evidence links, affected documents, and
+the trigger for re-review.

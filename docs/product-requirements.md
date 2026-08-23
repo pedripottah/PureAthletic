@@ -1,10 +1,24 @@
 # PureAthletic Version One Product Requirements
 
+**Status:** Target-product requirements; research and specialist review pending
+**Last reviewed:** 24 August 2026
+**Owner:** Product founder
+
+These requirements describe intended outcomes, not everything implemented in
+the current prototype. The [Decision Sheet](decision-sheet.md) records which
+choices are constraints, working decisions, hypotheses, deferred, or open.
+
 ## 1. Product summary
 
-PureAthletic is an adaptive training planner for junior and amateur athletes. It turns an athlete's goals, schedule, training history, and recovery feedback into a practical weekly plan, then adjusts that plan as circumstances change.
+PureAthletic is a proposed adaptive training planner for youth football. It is
+intended to turn a player’s goal, fixed schedule, recent activity, and minimal
+readiness information into an explainable weekly plan, then adjust optional
+work when circumstances change.
 
-Version one will focus on amateur football players who also train independently. This gives the product a clear initial audience while leaving the underlying model flexible enough to support other sports later.
+The research catalog covers U5–U17, but the first release cohort has not been
+selected. Version one must choose a narrower football cohort and
+responsible-adult/account model from research and specialist evidence before a
+private beta is defined.
 
 ### Core promise
 
@@ -12,7 +26,8 @@ Version one will focus on amateur football players who also train independently.
 
 ### Core feedback loop
 
-1. The athlete creates a profile and describes their goal and availability.
+1. Once selected and approved, the account owner establishes a player profile
+   and supplies the minimum approved planning inputs.
 2. PureAthletic generates a seven-day training plan.
 3. The athlete logs completed activity and daily readiness.
 4. PureAthletic evaluates the new information using explicit safety and scheduling rules.
@@ -20,9 +35,9 @@ Version one will focus on amateur football players who also train independently.
 
 ## 2. Target user
 
-### Primary user
+### Candidate primary user
 
-An amateur football player who:
+A team-based youth footballer, with an appropriate responsible adult, who:
 
 - Trains with a team one or more times per week.
 - Wants to improve strength, speed, fitness, or general performance.
@@ -30,11 +45,14 @@ An amateur football player who:
 - Needs a plan that fits around school, work, team practice, and matches.
 - Has limited knowledge of programming training load and recovery.
 
-### Initial age policy
+### Research age coverage and release policy
 
-The current research prototype covers team age groups U5–U17 and requires
-parent or guardian approval during onboarding. This does not make the product
-ready for public release to minors. A qualified youth-sport practitioner,
+The current catalog covers team age groups U5–U17 and the prototype simulates
+parent or guardian approval during onboarding. The checkbox is not verified
+consent, age assurance, or an account-control mechanism. Catalog coverage does
+not decide the first beta cohort or make the product ready for minors.
+
+A qualified youth-sport practitioner,
 child-safeguarding review, verifiable consent flow, jurisdiction-specific
 privacy and legal review, and appropriate minor account and communication
 controls remain mandatory release gates.
@@ -61,7 +79,8 @@ PureAthletic should answer one practical question every day:
 
 ### Included
 
-- Email-based account creation and authentication.
+- A production identity and account model appropriate to the selected cohort
+  and responsible-adult relationship; the authentication method remains open.
 - Athlete onboarding and profile management.
 - One primary sport: football.
 - Recording fixed commitments such as team practice and matches.
@@ -96,12 +115,14 @@ PureAthletic should answer one practical question every day:
 
 ### 6.1 Account and onboarding
 
-The athlete creates an account and supplies:
+The approved account owner establishes a player profile and supplies:
 
 - Team age-group band: U5–U8, U9–U12, U13–U15, or U16–U17. The athlete chooses
   the band containing their registered team group; avoid collecting an exact
   team group or date of birth in the training-recommendation payload.
-- Parent or guardian approval record and applicable consent-policy version.
+- The responsible-adult relationship and any required approval/consent record,
+  actor, version, timestamp, withdrawal state, and legal basis appropriate to
+  the chosen jurisdiction. The prototype checkbox does not satisfy this.
 - Preferred name.
 - Football position.
 - Training experience: Beginner or Intermediate in the current product.
@@ -110,9 +131,18 @@ The athlete creates an account and supplies:
 - Primary goal: general fitness, strength, speed, endurance, or match readiness.
 - Typical team-practice and match schedule.
 - Available independent-training days and approximate time per day.
-- Available equipment.
-- Current training frequency.
-- Known physical limitations or current pain.
+- Available equipment and the supervision required by candidate content.
+- Only the minimum current-activity and readiness inputs that an approved rule
+  demonstrably needs.
+
+Availability, equipment, and qualified-supervision inputs are target-product
+requirements but are deferred from the active onboarding prototype. Do not add
+them back until their placement, purpose, persistence, and planner integration
+meet the rollout gates in the Decision Sheet.
+
+Do not collect medical history or free-text physical limitations by default.
+Any health-related field requires a defined decision purpose, structured safe
+handling, retention decision, practitioner input, and privacy/legal review.
 
 Before generating a plan, the athlete must acknowledge that PureAthletic provides general training guidance and is not a medical service.
 
@@ -127,7 +157,10 @@ The system creates a seven-day plan containing:
 - A short purpose statement.
 - Complete workout instructions where applicable.
 
-The plan must avoid placing a high-load lower-body workout immediately before a match. It must also preserve at least one low-load or rest day in a normal week.
+The plan must apply versioned, practitioner-approved match buffers, recovery
+spacing, and weekly optional-session limits. Until those thresholds are
+approved for the selected cohort, missing or uncertain context produces a
+conservative fallback rather than extra training.
 
 ### 6.3 Daily use
 
@@ -188,7 +221,7 @@ At the end of each week, the athlete sees:
 ### Required screens
 
 1. Landing page
-2. Sign up and sign in
+2. Account setup and sign-in appropriate to the approved account model
 3. Onboarding
 4. Today dashboard
 5. Weekly calendar
@@ -234,10 +267,14 @@ This is an internal planning signal, not a medical measurement. Trends matter mo
 
 The first implementation should use explicit rules that can be tested. Examples:
 
-- Moderate or severe pain prevents automatic recommendation of intense training and displays appropriate safety guidance.
+- Any reported pain pauses automated optional training and asks for
+  responsible-adult review; exact language and escalation require practitioner
+  approval.
 - Severe pain recommends stopping training and seeking qualified professional advice.
 - Very poor readiness reduces the day's optional session or replaces it with recovery.
-- A newly logged high-load session triggers reevaluation of the following 24–48 hours.
+- A newly logged high-load session triggers reevaluation over the configured,
+  practitioner-reviewed recovery horizon; 24–48 hours is a research candidate,
+  not an approved universal threshold.
 - A missed high-priority session may move only if an appropriate open day exists.
 - A missed low-priority session may be removed rather than creating a crowded week.
 - A match takes priority over independent conditioning.
@@ -269,9 +306,10 @@ AI is an assistant inside a controlled planning system, not the sole decision-ma
 - Make unsupported claims about injury prevention, calorie burn, or expected performance.
 - Browse arbitrary internet content to make a live training decision.
 
-AI experimentation may begin with synthetic profiles only after the catalog,
-day-by-day planner, data contract, decision traces, and safety scenarios are
-stable. User-facing AI should begin only after server-side authorization,
+Offline AI experimentation may begin with synthetic profiles only after the
+catalog, day-by-day planner, data contract, decision traces, and safety
+scenarios are stable and reviewed. User-facing AI should begin only after
+server-side authorization,
 privacy review, practitioner approval, strict output validation, and a
 deterministic fallback are available. All AI outputs shown in the product must
 be grounded in structured application data, constrained to an expected format,
@@ -283,7 +321,8 @@ and validated before display.
 
 | Entity | Purpose |
 | --- | --- |
-| User | Authentication, contact, and account status |
+| Account | Authentication, contact, and account status |
+| ResponsibleAdultRecord | Relationship/authority and approval or consent evidence where required |
 | AthleteProfile | Sport, position, experience, goals, equipment, and preferences |
 | Availability | Recurring days and time available for independent training |
 | FixedCommitment | Team practice, match, or other immovable activity |
@@ -294,7 +333,7 @@ and validated before display.
 | ReadinessCheckIn | Sleep, energy, soreness, stress, and pain |
 | PlanAdjustment | Before/after change, rule invoked, explanation, and timestamp |
 | WeeklySummary | Aggregated adherence, load, readiness, and narrative summary |
-| ConsentRecord | Terms, privacy, age confirmation, and policy versions accepted |
+| ApprovalConsentRecord | Actor, authority, purpose, policy version, status, timestamps, and withdrawal where required |
 
 ### Important data rules
 
@@ -308,7 +347,9 @@ and validated before display.
 
 - Clearly state that recommendations are general training guidance.
 - Never present the product as a replacement for a coach, doctor, or physiotherapist.
-- Provide immediate conservative guidance when users report moderate or severe pain.
+- Pause automated optional training and provide immediate conservative guidance
+  for any reported pain; add stop-training and qualified-support wording for
+  severe pain.
 - Do not use pain or health data for advertising.
 - Encrypt data in transit and at rest using the chosen platform's supported controls.
 - Apply row-level authorization so users can access only their own records.
@@ -342,7 +383,8 @@ The private beta should evaluate:
 - Weekly plan-view rate.
 - Percentage of planned sessions logged.
 - Median time required to log a session.
-- Percentage of users completing at least three readiness check-ins per week.
+- Readiness check-in frequency and distribution; set a target only after
+  research establishes when check-ins are useful rather than burdensome.
 - Four-week retention.
 - Athlete-reported confidence in knowing what to do next.
 - Number and severity of unsafe, confusing, or inappropriate recommendations.
@@ -368,7 +410,9 @@ The current milestones are intentionally evidence-led:
 
 ### Milestone 2: Prototype validation
 
-- Test the current prototype with representative users in small rounds.
+- Test the current prototype with adults first in small rounds. Include
+  children only through a separately approved age-appropriate protocol after
+  the cohort, consent/assent, safeguarding, privacy, and specialist gates pass.
 - Include accessibility and safety-interpretation testing.
 - Run browser smoke checks through the normal verification workflow.
 - Fix high-severity findings and document the continue/narrow/stop decision.
@@ -376,13 +420,15 @@ The current milestones are intentionally evidence-led:
 ### Milestone 3: Production foundation
 
 - Define the production architecture and data contracts.
-- Implement authentication, guardian consent, authorization, persistence,
-  export, deletion, audit records, backups, monitoring, and recovery.
+- Implement authentication, the selected account-owner and consent/approval
+  model, authorization, persistence, export, deletion, audit records, backups,
+  monitoring, and recovery.
 - Establish CI, dependency/security checks, release versioning, and rollback.
 
 ### Milestone 4: Deterministic MVP and closed beta
 
-- Extract and independently test the adaptive rule engine.
+- Finish, independently review, and integrate one canonical adaptive planner;
+  development-only extraction by itself does not satisfy this milestone.
 - Version rules, catalog content, explanations, and recommendations.
 - Re-run practitioner and legal reviews against the release candidate.
 - Run a small, supported four-week pilot only after every release gate passes.
@@ -399,6 +445,8 @@ The current milestones are intentionally evidence-led:
 
 These questions should be resolved through interviews and prototype testing:
 
+- Which age band and responsible-adult/account model should define the first
+  private-beta cohort?
 - Which goal produces the clearest value for the first cohort?
 - Should plan generation begin from the current day or always from Monday?
 - How much workout detail do users need during a team-season week?
@@ -406,15 +454,18 @@ These questions should be resolved through interviews and prototype testing:
 - When should an adjustment happen automatically versus require confirmation?
 - How should the app behave when the athlete's team schedule changes frequently?
 - Which progress measure feels most motivating without encouraging unsafe overtraining?
+- Which onboarding inputs are essential, and which introduce more burden or
+  sensitive data than value?
 
-## 16. Recommended technical direction
+## 16. Technical decision principles
 
-The following stack is suitable for a small web-first MVP, but it is not a product requirement:
+The framework, identity provider, database, hosting platform, and AI provider
+are architecture decisions—not product requirements. Select them only after the
+first cohort, account owner, jurisdiction, research-supported flow, data contract, threat
+model, and operating capacity are known.
 
-- Next.js and TypeScript for the application.
-- Tailwind CSS for the interface.
-- PostgreSQL with Supabase for authentication, storage, and row-level security.
-- OpenAI Responses API for constrained explanations and summaries.
-- Vercel for deployment.
-
-Technical implementation should begin only after the onboarding, weekly planning, logging, and adjustment flows have been sketched and reviewed.
+The production architecture must keep safety rules and secrets server-side,
+enforce record ownership on every operation, support versioned migrations and
+rollback, provide export/deletion/audit behavior, and be small enough for the
+project to operate reliably. Record the choice and rejected alternatives in an
+architecture decision before implementation.
