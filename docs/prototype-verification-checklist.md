@@ -1,5 +1,8 @@
 # PureAthletic — Prototype Verification Checklist
 
+**Status:** Pre-share checklist for the current local research prototype
+**Last reviewed:** 24 August 2026
+
 Use this checklist before sharing the prototype for research. It supplements
 automated tests; it is not evidence of production readiness or junior release.
 The two HTML smoke pages are browser-run checks, not part of the current
@@ -23,6 +26,10 @@ local server because they load the app in a same-origin iframe.
 - [ ] `npm run build`
 - [ ] Browser smoke page reports `PASS`.
 - [ ] Responsive smoke page reports `PASS`.
+
+Passing these checks verifies only the encoded prototype contract. It does not
+approve training content, establish WCAG conformance, satisfy privacy/legal
+requirements, or authorize junior use.
 
 ## Core journey
 

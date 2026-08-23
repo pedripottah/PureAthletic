@@ -1,8 +1,10 @@
 # PureAthletic — Practitioner and Safeguarding Review Packet
 
 **Status:** Awaiting qualified review
-**Version under review:** Prototype as of 18 August 2026
-**Scope:** U5–U17 football training guidance with responsible-adult support
+**Packet last reviewed:** 24 August 2026
+**Version under review:** Record the exact commit and artifact before sending
+**Scope:** Research catalog and prototype behavior across U5–U17; launch cohort
+not yet selected
 
 ## Review purpose
 
@@ -21,15 +23,21 @@ treat, rehabilitate, clear, or predict medical or athletic outcomes. It does
 not replace a parent/guardian, coach, doctor, physiotherapist, or other
 qualified professional.
 
-The current product boundary is:
+The current research boundary is:
 
 - Football only.
 - Team age bands U5–U8, U9–U12, U13–U15, and U16–U17.
 - Beginner and Intermediate recommendations only.
 - Advanced content remains unavailable.
-- Parent or guardian approval is required in the intended junior product.
+- The prototype simulates guardian approval; it does not implement verifiable
+  consent or prove a guardian relationship.
 - Team practices and matches are fixed context, not automatically movable work.
-- The deterministic rule engine is the authority for safety-critical behavior.
+- Deterministic rules are the intended authority for safety-critical behavior,
+  but the active browser still contains static and UI-level planning paths.
+
+Review the deployed prototype and the development-only canonical planner as
+separate artifacts. Approval of one does not approve the other or authorize
+their integration.
 
 ## Materials for the reviewer
 
@@ -40,13 +48,17 @@ Provide the reviewer with:
 3. `data/youth-football/routine-catalog.json`
 4. `data/youth-football/recommendation-index.json`
 5. `docs/junior-training-content-standard.md`
-6. `docs/user-flow.md`
-7. `docs/low-fidelity-wireframes.md`
-8. The current deployed or locally served prototype.
-9. The scenario matrix below and automated test results.
+6. `lib/canonical-planner.mjs` and its scenario tests, clearly labelled
+   development-only.
+7. `docs/user-flow.md` and `docs/low-fidelity-wireframes.md`, clearly labelled
+   as target design rather than current behavior.
+8. The exact deployed or locally served prototype commit.
+9. The scenario matrix below, automated output, and recorded browser-smoke
+   results.
 
 The reviewer should receive a versioned copy of all materials, not an informal
-description or changing development branch.
+description or changing development branch. A source list or passing validator
+does not establish that the derived routines or thresholds are appropriate.
 
 ## Review domains
 
@@ -125,9 +137,11 @@ required change, and approval status.
 | Match completed today | Is the next recommendation appropriately easy? |
 | Three team commitments in seven days | Does optional work reduce rather than crowd the week? |
 | Low sleep and high soreness | Does the plan choose easy recovery or rest? |
-| Any pain response | Is automated training paused and adult review clear? |
+| Mild pain | Is automated optional training paused and adult review clear? |
+| Moderate pain | Is automated optional training paused without implying diagnosis? |
+| Severe pain | Is there stop-training guidance and appropriate qualified-support wording? |
 | Red-flag symptom | Is there no workout recommendation and a clear escalation? |
-| Unplanned high-load activity | Is the next 24–48 hours reassessed conservatively? |
+| Unplanned high-load activity | What recovery horizon should be reassessed for this cohort, and is the fallback conservative? |
 | Missing readiness input | Does the app avoid false precision? |
 | Schedule changed after plan generation | Are fixed commitments preserved and changes explained? |
 | Guardian approval withdrawn | Is access or junior guidance paused appropriately? |

@@ -1,7 +1,8 @@
 # PureAthletic — Risk and Data Foundation
 
-**Status:** Initial design baseline; requires jurisdiction-specific legal review
-**Version:** 1.0
+**Status:** Draft design baseline; requires jurisdiction-specific legal review
+**Last reviewed:** 24 August 2026
+**Version:** 1.1
 
 ## Purpose
 
@@ -28,10 +29,10 @@ conservative recommendations to reduce these risks.
 | Data area | Examples | Classification | Minimum use | Initial retention decision |
 | --- | --- | --- | --- | --- |
 | Account | Login identifier, account status | Personal | Authentication and support | Define with legal review |
-| Guardian relationship | Approval status, policy version, timestamps | Sensitive personal | Eligibility and accountability | Keep while account is active plus required record period |
+| Responsible-adult relationship | Actor, relationship/authority evidence, approval or consent status, policy version, timestamps, withdrawal | Sensitive personal | Eligibility and accountability where required | Do not set until jurisdiction and account model are approved |
 | Athlete profile | Preferred name, age band, position, goal, experience | Personal; age-related | Plan selection | Minimize and review periodically |
-| Schedule | Practices, matches, availability, equipment | Personal | Safe planning | Keep while needed for active planning |
-| Readiness | Sleep, energy, soreness, stress, pain response | Health-related/sensitive | Conservative adjustment | Short retention unless needed for audit or user history |
+| Schedule | Practices and matches; future availability/equipment inputs | Personal | Planning | Availability/equipment are deferred from the active UI; retain only while used |
+| Readiness | Sleep, energy, soreness, stress, pain response | Potentially health-related/sensitive; legal classification varies | Conservative adjustment | Short retention unless an approved audit purpose requires more |
 | Activity | Duration, exertion, completion, notes | Personal; potentially health-related | Planning and progress | User-controlled history with deletion support |
 | Recommendation | Routine, rule, content version, explanation | Product/audit | Explain and reproduce decisions | Retain according to audit policy |
 | Adjustment | Before/after plan, rule, timestamp, undo status | Product/audit | Explain changes and incidents | Retain according to audit policy |
@@ -40,6 +41,8 @@ conservative recommendations to reduce these risks.
 
 Exact retention periods, lawful bases, age assurance, international transfers,
 and guardian-consent mechanisms require advice for each launch jurisdiction.
+Consent is not a substitute label for every lawful basis; record the approved
+purpose and basis for each processing activity separately.
 
 ## Data minimization rules
 
@@ -60,7 +63,7 @@ Every record must have an owner, creation/update timestamps, and a defined
 authorization policy.
 
 - `Account`
-- `GuardianConsent`
+- `ResponsibleAdultRecord` or a jurisdiction-appropriate alternative
 - `AthleteProfile`
 - `Availability`
 - `FixedCommitment`
@@ -78,7 +81,9 @@ authorization policy.
 
 Important relationships:
 
-- An account may have one active athlete profile in the first release.
+- The account owner and relationship model are open. Do not assume the athlete
+  directly owns the account or that one account maps to one profile until the
+  first cohort, jurisdiction, consent model, and recovery process are decided.
 - Every athlete-owned record references the owning account directly or through
   a verifiable ownership chain.
 - A planned session may reference one activity log; an unplanned activity may
@@ -86,15 +91,17 @@ Important relationships:
 - A recommendation decision records the rule-set and content versions used.
 - A plan adjustment records before/after state, reason, actor, and whether it
   was automatic, confirmed, or undone.
-- Consent records are append-only from the application’s perspective; a new
-  policy version creates a new record rather than overwriting history.
+- Approval/consent records, where applicable, are append-only from the
+  application’s perspective; a new policy version creates a new record rather
+  than overwriting history.
 
 ## Threat model baseline
 
 ### Assets to protect
 
 - Minor and guardian identity data.
-- Pain, readiness, activity, and physical-limitation information.
+- Pain, readiness, activity, and any later-approved physical-limitation
+  information.
 - Consent and safeguarding records.
 - Recommendation rules and content versions.
 - Authentication sessions, recovery mechanisms, and export files.

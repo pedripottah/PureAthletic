@@ -1,13 +1,21 @@
 # PureAthletic — Research Session Form
 
+**Status:** Adult prototype-research instrument
+**Last reviewed:** 24 August 2026
+
 Use this form after a participant completes the prototype tasks. Keep the
 participant’s answers separate from identifying information. Use fictional
 profile data and do not collect real medical details.
 
+This form is not a consent record. Store consent and contact information
+separately in approved private storage.
+
 ## Participant details
 
-**Session ID:** ____________________  
-**Date:** ____________________  
+**Session ID:** ____________________
+**Date:** ____________________
+**Prototype commit/version:** ____________________
+**Browser/viewport:** ____________________
 **Participant type:**
 
 - [ ] Football player
@@ -15,6 +23,9 @@ profile data and do not collect real medical details.
 - [ ] Coach
 - [ ] Practitioner
 - [ ] Other: ____________________
+
+Qualified content/safeguarding reviewers should use the Safety Review Packet;
+use this form for them only as a supplemental usability instrument.
 
 **Device:**
 
@@ -50,11 +61,15 @@ Complete one row immediately after each task.
 ## Comprehension checks
 
 Ask these after the relevant task. Do not show the choices until the
-participant answers, then record the closest choice.
+participant answers. Record the answer verbatim first, then mark the closest
+choice. Recognition after choices are shown is weaker evidence than an
+unprompted explanation.
 
 ### What should the participant do next?
 
 After viewing Today, what would you do next?
+
+**Unprompted answer:** ______________________________________________
 
 - [ ] Start or review today’s recommendation.
 - [ ] Add as many extra sessions as possible.
@@ -65,14 +80,20 @@ After viewing Today, what would you do next?
 
 ### Why was the activity recommended?
 
+**Unprompted answer:** ______________________________________________
+
 - [ ] It fits the goal, schedule, and current readiness.
 - [ ] The app always assigns the same workout.
 - [ ] It guarantees better performance.
 - [ ] I am not sure.
 
-**Correct answer:** It fits the goal, schedule, and current readiness.
+**Expected concept:** The recommendation should follow the supplied planning
+context and the app should show a specific reason. Record if the participant
+cannot find that evidence or assumes a guarantee.
 
 ### What happens after reporting pain?
+
+**Unprompted answer:** ______________________________________________
 
 - [ ] The app should pause or restrict automated training and involve a
   responsible adult where appropriate.
@@ -80,10 +101,13 @@ After viewing Today, what would you do next?
 - [ ] The app should diagnose the injury.
 - [ ] I am not sure.
 
-**Correct answer:** The app should pause or restrict automated training and
-involve a responsible adult where appropriate.
+**Expected concept:** Any pain pauses automated optional training for
+responsible-adult review; severe pain adds stop-training/professional-advice
+guidance. The app does not diagnose.
 
 ### What is a fixed commitment?
+
+**Unprompted answer:** ______________________________________________
 
 - [ ] A practice or match that the app should not move automatically.
 - [ ] An optional workout that can always be rescheduled.
@@ -94,6 +118,8 @@ involve a responsible adult where appropriate.
 automatically.
 
 ### What does a plan adjustment mean?
+
+**Unprompted answer:** ______________________________________________
 
 - [ ] The app changed optional work because new schedule or recovery
   information affected the week.
@@ -188,5 +214,5 @@ ________________________________________________________________
 
 ________________________________________________________________
 
-**Owner:** ____________________  **Priority:** P0 / P1 / P2  
+**Owner:** ____________________  **Priority:** P0 / P1 / P2
 **Follow-up required:** Yes / No

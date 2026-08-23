@@ -2,10 +2,17 @@
 
 ## Status and scope
 
-This is a draft content and decision foundation for healthy junior footballers
-in team age groups U5–U17. Beginner and Intermediate catalog selection is
-connected to the local research prototype. Advanced remains research-only and
-cannot be selected or recommended.
+**Status:** Draft specialist standard; not practitioner-approved
+**Last reviewed:** 24 August 2026
+
+This is a content and decision foundation for research using fictional profiles
+of healthy junior footballers in team age groups U5–U17. Beginner and
+Intermediate catalog selection is connected to the local research prototype.
+Advanced remains research-only and cannot be selected or recommended.
+
+The catalog’s age coverage is not a decision to launch every age band. No
+routine is approved for real-world prescription until a qualified reviewer has
+approved the exact content, rules, supervision assumptions, and interface copy.
 
 Before any junior feature is released, it requires:
 
@@ -21,7 +28,16 @@ or supplements, or guarantee performance improvements.
 
 ## Evidence-informed boundaries
 
-The content is informed by:
+Source material informs hypotheses; it does not automatically validate an
+original routine or numeric threshold. Use sources in this order:
+
+1. governing-body, public-health, pediatric, and peer-reviewed consensus or
+   clinical guidance for safety and developmental boundaries;
+2. governing-body coach education for football-specific session design; and
+3. commercial coaching platforms only for taxonomy, organization, and
+   usability inspiration—not for medical, workload, or release decisions.
+
+Current references include:
 
 - [FIFA’s age-specific grassroots library](https://www.fifatrainingcentre.com/en/practice/grassroots.php);
 - [The Coaching Manual’s age-appropriate curricula](https://www.thecoachingmanual.com/season-plan-curriculums-1);
@@ -42,7 +58,11 @@ commitments.
 
 ## Session standard
 
-Every approved session:
+The current catalog encodes the following candidate conventions. Duration,
+effort, structure, and supervision remain subject to exact-version qualified
+review for each selected cohort.
+
+Every candidate session currently:
 
 - lasts 12–40 minutes according to the age-band limit;
 - uses only easy or moderate intensity in the currently available levels;
@@ -50,15 +70,17 @@ Every approved session:
   an easy finish for older bands;
 - provides technique instructions, coaching cues, an easier option, and a
   controlled progression;
-- uses qualified adult supervision for strength, speed, movement-control, and
-  mixed sessions; and
+- declares a supervision level that the planner must verify before selection;
+  physical sessions requiring technique feedback use a qualified coach; and
 - prioritizes controlled movement over load, repetitions, or speed.
 
 For U5–U8, “strength” means playful balance and body control without external
 loading. Older beginners use low-resistance, technique-first strength work.
-Progression occurs
-only after at least three successful sessions, changes one variable at a time,
-and never increases resistance by more than 10 percent at once.
+Progression changes one variable at a time and depends on demonstrated movement
+control and qualified feedback. Existing “three successful sessions” and
+percentage-based progression values are provisional encoded hypotheses, not
+approved universal rules. They require a traceable source rationale and
+qualified review before release.
 
 Maximal lifting, one-repetition maximum testing, training to failure, punishment
 exercise, unsupervised loaded strength, and all-out conditioning tests are not
@@ -69,19 +91,24 @@ part of the library.
 Pain at any reported level, a health concern, or a listed red-flag symptom stops
 automated recommendations and directs the player to a responsible adult.
 
-Low energy, high soreness, or low sleep restricts recommendations to easy
-recovery. Within 24 hours of a match or a high-load activity, only short, easy
-recovery or technical work may be suggested. The app permits at most three
-independent performance sessions in seven days and must treat team football,
-matches, school activity, recovery, and free play as fixed context rather than
-work to maximize.
+Low energy, high soreness, or low sleep should trigger a conservative candidate
+or no optional session, using thresholds approved for the selected cohort.
+Match buffers, recovery spacing, session-duration ceilings, target effort, and
+weekly session limits currently encoded in the data are review candidates, not
+established clinical facts. Each must record its rationale, cohort, owner,
+approval state, and test scenarios before release.
+
+The planner must treat team football, matches, school activity, recovery, and
+free play as context rather than work to maximize. Missing, stale, or
+contradictory context must not produce confident extra training.
 
 ## AI recommendation boundary
 
 The implementation sequence and API gates are defined in the
-[AI Integration Strategy](ai-integration-strategy.md). The current prototype
-must first unify its catalog, weekly planner, and safety rules before any API
-can influence user-facing output.
+[AI Integration Strategy](ai-integration-strategy.md). The development-only
+canonical planner is a step toward unifying the catalog, weekly scheduler, and
+safety rules, but the active browser does not consume it. That boundary must be
+completed and reviewed before any API can influence user-facing output.
 
 The deterministic rule engine is the authority. A future AI service may:
 
@@ -106,7 +133,11 @@ content are outside the recommendation payload.
 - `data/youth-football/recommendation-index.json` maps all 60 age-band, level,
   and goal combinations.
 - `lib/youth-football-catalog.mjs` validates and selects catalog content.
+- `lib/canonical-planner.mjs` is development-only scheduling groundwork and is
+  not included in the current deployment artifact.
 - `data/junior` retains the earlier U12–U17 safety-rule prototype.
 
 Run `npm run validate:training` to validate all references and constraints. Run
-`npm test` to evaluate the safety and recommendation scenarios.
+`npm test` to evaluate encoded safety and recommendation scenarios. Passing
+these checks proves schema and rule consistency only; it is not practitioner
+approval or evidence that a routine is safe for an individual athlete.

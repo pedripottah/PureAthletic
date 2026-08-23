@@ -1,8 +1,15 @@
 # PureAthletic — Research Preparation Pack
 
+**Status:** Operational guide for adult-only prototype sessions
+**Last reviewed:** 24 August 2026
+
 This document turns the Phase 0 research plan into a small, executable first
 round. It is preparation guidance, not approval for junior recruitment or
 production use.
+
+The checklist below is not a participant information sheet, privacy notice, or
+consent form. Prepare those separately for the selected jurisdiction and storage
+process before recruitment.
 
 ## Round 1 — adult prototype research
 
@@ -38,7 +45,8 @@ not approval of the exact prototype version.
 1. Explain that this is prototype research, not medical or performance advice.
 2. Confirm consent before taking notes; use a session ID instead of a name.
 3. Ask about a recent planning decision before showing the prototype.
-4. Run the tasks in `docs/research-plan.md` without coaching the participant.
+4. Run the current-prototype tasks in `docs/research-plan.md` without coaching
+   the participant; discuss deferred inputs only after the observed journey.
 5. Record first action, hesitation, help requested, misunderstanding, and final
    outcome for each task.
 6. Ask the short questions in `docs/research-session-form.md` and check whether

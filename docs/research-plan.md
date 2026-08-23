@@ -1,8 +1,9 @@
 # PureAthletic — Phase 0 Research Plan
 
-**Status:** Ready for preparation
+**Status:** Draft adult-research protocol; recruitment materials still required
 **Owner:** Project founder/research lead
-**Version:** 1.0
+**Last reviewed:** 24 August 2026
+**Version:** 1.1
 
 Use the [Research Preparation Pack](research-preparation.md) to prepare the
 first adult sessions and the separate practitioner review.
@@ -22,7 +23,8 @@ of athletic performance.
 
 ## Decisions this research must inform
 
-1. Which first cohort and problem should define the private beta?
+1. Whether the problem is valuable enough to continue, and which first cohort
+   and problem could define a private beta.
 2. Is match readiness a clearer first use case than general improvement goals?
 3. Do users understand the rolling seven-day plan?
 4. When do users expect to complete the readiness check-in?
@@ -37,8 +39,9 @@ of athletic performance.
 
 ### Round 1 — Adult discovery and prototype usability
 
-**Participants:** 4–6 adults who play or coach football, plus 2 parents or
-guardians. Do not present this round as approval for junior use.
+**Participants:** At least five adults total, including football player/coach
+and parent/guardian perspectives. Aim for 2–3 in each perspective where
+recruitment allows. Do not present this round as approval for junior use.
 
 **Activities:** 30-minute interview followed by a 30–45-minute prototype task
 session.
@@ -61,7 +64,9 @@ and release-blocking controls.
 
 **Participants:** 4–8 representative users in approved, age-appropriate
 sessions, including responsible adults and users with relevant accessibility
-needs where possible.
+needs where possible. This round is conditional; it cannot start until the
+cohort, protocol, consent/assent, safeguarding, privacy, and specialist gates
+are approved.
 
 **Activities:** Moderated task sessions using the revised prototype.
 
@@ -117,7 +122,7 @@ Record the first independent action, hesitation, misunderstanding, and final
 outcome for each task.
 
 1. Create a profile and explain what information is being requested.
-2. Choose an age band, goal, availability, and fixed team commitments.
+2. Choose an age band and goal, then add fixed team commitments on Step 4.
 3. Generate the first seven-day plan and explain its structure.
 4. Find what to do today and explain why it was selected.
 5. Complete a readiness check-in.
@@ -126,6 +131,11 @@ outcome for each task.
 8. Log an unexpected high-load activity and review the proposed plan change.
 9. Find the weekly review and explain what the measures mean.
 10. Find privacy, export, and deletion controls.
+
+After the task journey, show the deferred availability, equipment, and
+supervision concepts from the wireframes separately. Ask what participants
+would expect, what feels essential, and where those questions belong. Do not
+pretend those controls are in the active prototype.
 
 ## Measures
 
@@ -198,4 +208,4 @@ Evidence-backed findings:
 Open questions:
 Recommended backlog actions:
 Researcher:
-``` 
+```
