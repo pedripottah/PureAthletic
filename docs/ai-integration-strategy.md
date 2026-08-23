@@ -1,7 +1,7 @@
 # PureAthletic — AI Integration Strategy
 
-**Status:** Approved direction for experimentation; production use gated
-**Last reviewed:** 23 August 2026
+**Status:** Deferred working strategy; no API integration approved
+**Last reviewed:** 24 August 2026
 
 ## The short answer
 
@@ -15,9 +15,10 @@ summary. AI-generated plan personalization can be explored in parallel, but it
 must remain behind the deterministic planner and hard safety rules until it has
 passed evaluation and practitioner review.
 
-The project is not at the API-integration point yet. The next foundation is to
-unify the catalog selector, weekly scheduler, adaptation rules, and safety
-decisions into one tested planning boundary.
+The project is not at the API-integration point. A development-only canonical
+planner now exists, but the next work is to finish, review, and deliberately
+integrate one catalog, scheduler, adaptation, and safety boundary—not to call a
+model API.
 
 ## Current implementation reality
 
@@ -25,7 +26,7 @@ The current prototype has useful pieces, but they are not yet a production
 planner:
 
 - `lib/youth-football-catalog.mjs` selects one age-band, experience, and goal
-  routine from the reviewed catalog.
+  routine from the current research catalog.
 - `lib/junior-recommendation-engine.mjs` filters and scores a different legacy
   library using readiness, pain, supervision, equipment, and schedule context.
 - `lib/canonical-planner.mjs` is a versioned, independently tested planning
@@ -43,7 +44,7 @@ path are resolved. The live browser therefore uses the earlier prototype flow.
 
 ### Deferred onboarding and browser rollout
 
-The following planner inputs remain approved future requirements, but should
+The following planner inputs remain documented candidate requirements, but should
 not currently appear on onboarding Step 4 or be persisted as active planner
 inputs in browser profile data:
 
@@ -95,7 +96,7 @@ to this for every day:
     {
       "date": "2026-08-18",
       "dayType": "optional_session",
-      "fixedCommitmentId": null,
+      "fixedCommitmentIds": [],
       "routineId": "approved-routine-id",
       "durationMinutes": 23,
       "intensity": "easy",
@@ -140,19 +141,22 @@ receive this structured decision context, not raw application state.
 
 ## Integration phases
 
-### A. Planner foundation — next engineering phase
+### A. Planner foundation — current engineering phase
 
 Before the API:
 
 1. Select one canonical routine/content schema and archive or migrate the other
    path deliberately.
-2. Extract plan generation from `app.js` into a separately tested module.
-3. Move readiness, pain, schedule, and high-load adaptation into the same
-   decision boundary.
-4. Add daily session variants, not just one routine per onboarding profile.
-5. Add decision traces, content versions, reason codes, and safe fallbacks.
-6. Create scenario tests for every hard stop, restriction, conflict, and empty
-   candidate set.
+2. Treat `lib/canonical-planner.mjs` as development groundwork until catalog
+   selection, readiness, pain, schedule, supervision, equipment, high-load
+   adaptation, and safe fallback behavior share one contract.
+3. Add daily session variants, not just one routine per onboarding profile.
+4. Complete decision traces, content/rule versions, reason codes, stale-input
+   handling, and scenario tests for every hard stop, restriction, conflict, and
+   empty candidate set.
+5. Obtain qualified review of the exact contract and output examples.
+6. Design the deferred browser inputs, persistence migration, and rollback
+   before reconnecting the planner to the UI.
 
 This is what makes the plan more specific every day. More specificity should
 come from better structured inputs, approved session variants, and scheduling
@@ -160,9 +164,9 @@ logic—not from asking a model to improvise.
 
 ### B. Offline AI experiment — after the planner foundation
 
-Use synthetic profiles and the approved local catalog. Build a small script or
-private experiment that sends only structured, non-identifying inputs and asks
-for strict JSON such as:
+Use synthetic profiles and a practitioner-reviewed, versioned catalog. Build a
+small private experiment that sends only structured, non-identifying inputs and
+asks for strict JSON such as:
 
 ```json
 {
@@ -182,9 +186,10 @@ Create a scenario set covering normal schedules, dense schedules, poor
 readiness, pain, red flags, missing data, unexpected activity, and conflicting
 commitments. Compare AI-assisted output with expected deterministic results.
 
-Use repeatable evaluations rather than judging a few attractive examples. The
-OpenAI API provides evaluation objects and runs for testing model behavior
-against structured data sources. [OpenAI Evals API](https://platform.openai.com/docs/api-reference/evals/deleteRun?lang=python)
+Use repeatable evaluations rather than judging a few attractive examples. If
+OpenAI is selected after an architecture/privacy decision, its official
+[evals guide](https://developers.openai.com/api/docs/guides/evals) describes
+repeatable evaluation workflows.
 
 ### D. First production AI — explanations and summaries
 
@@ -209,14 +214,16 @@ review.
 ## Use project documents as controlled knowledge
 
 The model should not browse the internet for live training decisions. Convert
-reviewed sources into versioned structured records with source IDs, age-band
+practitioner-reviewed source material into versioned structured records with
+source IDs, age-band
 scope, approval status, effective date, and expiry/review date.
 
-Use retrieval only to provide relevant approved records to the model. File
-search/vector retrieval can help locate documents, but retrieval is not a
-safety control; the server still validates IDs, constraints, and output.
-OpenAI’s Responses API supports file search and function/tool integration, while
-structured outputs can require a defined JSON schema. [OpenAI API quickstart](https://platform.openai.com/docs/quickstart/make-your-first-api-request)
+Use retrieval only to provide relevant approved records to the model. Retrieval
+is not a safety control; the server still validates IDs, constraints, and
+output. If OpenAI is selected, the official
+[Responses API reference](https://developers.openai.com/api/reference/resources/responses/methods/create)
+documents structured JSON outputs and tool inputs. Provider selection remains
+an architecture and privacy decision.
 
 ## Minimum technical architecture
 
@@ -236,11 +243,14 @@ Schema validation + allowlist checks + safety re-check
 Plan shown to user, with fallback if AI fails
 ```
 
-The browser must never contain the API key. API calls must occur server-side.
+The browser must never contain a provider API key. API calls must occur
+server-side.
 Do not send names, contact details, precise locations, free-text medical notes,
-or unnecessary identifiers. OpenAI’s API documentation describes server-side
-JavaScript usage and the available Responses API tools; data handling and
-retention must still be reviewed for the chosen deployment. [OpenAI API data controls](https://platform.openai.com/docs/models/default-usage-policies-by-endpoint)
+or unnecessary identifiers. Data handling, storage settings, retention,
+location, subprocessors, and eligibility for any additional controls must be
+reviewed for the chosen provider and deployment. For OpenAI, use the current
+[API data-controls guide](https://developers.openai.com/api/docs/guides/your-data)
+rather than assuming a request option satisfies the project’s privacy duties.
 
 ## Evaluation gates
 

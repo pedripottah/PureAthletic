@@ -1,8 +1,8 @@
 # PureAthletic — Three-Year Product and Engineering Roadmap
 
 **Status:** Working long-term plan
-**Last reviewed:** 18 August 2026
-**Applies to:** The junior football product and its future web application
+**Last reviewed:** 24 August 2026
+**Applies to:** The football-planning research project and any future web service
 
 ## Purpose
 
@@ -50,9 +50,11 @@ automated novelty.
 The prototype already demonstrates onboarding, age-aware catalog selection,
 Today/Week/Progress/Profile screens, readiness, activity logging, schedule
 changes, plan adjustments, local export/deletion, and deterministic catalog
-validation. The main gaps are evidence from real users, professional approval,
-production identity and data controls, independently tested rule behavior,
-browser-level verification, accessibility evidence, and operational readiness.
+validation. A canonical planner exists as development-only groundwork and is not
+connected to the browser build. The first beta cohort and account owner remain
+open. The main gaps are evidence from users, professional approval, a unified
+reviewed planner, production identity/data controls, automated browser
+verification, accessibility evidence, and operational readiness.
 
 ## Phase 0 — Discovery and safety foundation
 
@@ -63,7 +65,8 @@ recruitment.
 
 - Confirm the first narrow problem and cohort, preferably one clear use case
   such as match readiness around an existing team schedule.
-- Interview athletes, parents/guardians, coaches, and at least one practitioner.
+- Run adult-only interviews with footballer/coach and parent/guardian
+  perspectives, plus a separate qualified practitioner review.
 - Turn assumptions into research questions and rank them by risk.
 - Produce a practitioner review packet for catalog content, thresholds, pain
   behavior, supervision, and athlete-facing wording.
@@ -79,7 +82,7 @@ needed, and who is accountable for safety decisions.
 
 ## Phase 1 — Prototype validation
 
-**Timing:** First university term or equivalent focused work period.
+**Timing:** After Phase 0 exit evidence; calendar dates do not override the gate.
 
 ### Outcomes
 
@@ -105,7 +108,7 @@ needed, and who is accountable for safety decisions.
 
 ## Phase 2 — Production foundation
 
-**Timing:** After Phase 1 evidence supports continuing.
+**Timing:** Only after Phase 1 evidence supports continuing.
 
 ### Outcomes
 
@@ -114,8 +117,9 @@ needed, and who is accountable for safety decisions.
 - Establish TypeScript or equivalent type checking, formatting, linting,
   dependency scanning, CI, preview deployments, environment separation, and
   reproducible builds.
-- Implement authentication, verified guardian consent, session management,
-  authorization, account isolation, audit records, export, and deletion.
+- Implement authentication, the selected account-owner and consent/approval
+  model, session management, authorization, account isolation, audit records,
+  export, and deletion.
 - Define database migrations, backups, restore tests, retention, and incident
   response before storing real user data.
 - Keep safety-critical recommendation logic server-authoritative and versioned.
@@ -135,19 +139,20 @@ and rolled back.
 
 ## Phase 3 — Deterministic MVP and controlled closed beta
 
-**Timing:** Second university year, only after the production foundation passes.
+**Timing:** Only after the production foundation passes.
 
 ### Outcomes
 
-- Rebuild the validated core loop on production infrastructure:
+- Rebuild the research-supported core loop on production infrastructure:
   onboarding → plan → check-in → train/rest → log → adjust → review.
-- Extract the adaptive rule engine from UI code. Each rule needs explicit
+- Finish and integrate the canonical adaptive planner. Each rule needs explicit
   inputs, priority, output, explanation, undo policy, test scenarios, source,
   and practitioner approval status.
 - Version the catalog, rules, plan, and safety copy so every recommendation can
   be explained after the fact.
-- Release to a small, supported cohort with parents/guardians and a clear
-  support/escalation process.
+- Release to the selected small, supported cohort with the approved responsible
+  adults, account controls, and support/escalation process its protocol
+  requires.
 - Review safety signals weekly and pause releases when a serious issue appears.
 
 ### Exit gate
@@ -160,7 +165,7 @@ and rolled back.
 
 ## Phase 4 — Reliability, accessibility, and learning
 
-**Timing:** Second to third university year.
+**Timing:** After a controlled pilot demonstrates a product worth operating.
 
 ### Outcomes
 
@@ -183,7 +188,7 @@ wish list.
 
 ## Phase 5 — Carefully bounded intelligence and scale decisions
 
-**Timing:** Final university year and beyond; optional.
+**Timing:** Optional and evidence-dependent; no target date.
 
 ### Outcomes
 
@@ -220,23 +225,25 @@ content/rule versions, rollback method, and owner for post-release monitoring.
 
 ## Initial backlog, in order
 
-1. Complete the [Phase 0 Research Plan](research-plan.md), participant
-   criteria, consent materials, and [Practitioner/Safeguarding Review
-   Packet](safety-review-packet.md).
-2. Complete the [Risk and Data Foundation](risk-and-data-foundation.md),
-   including the threat model, data inventory, privacy classification,
-   retention assumptions, and incident/escalation plan.
-3. Run the first usability and practitioner review round on the current app.
+1. Prepare approved adult-research information/consent materials and run the
+   [Phase 0 Research Plan](research-plan.md) using the current prototype.
+2. Run the [Practitioner/Safeguarding Review Packet](safety-review-packet.md)
+   against an exact version and record every condition or rejection.
+3. Select or reject a narrow first cohort/problem from the evidence.
 4. Add browser smoke execution and a manual WCAG 2.2 AA checklist to CI/release
    verification.
 5. Resolve high-severity usability, safety-copy, accessibility, and consent
    findings.
-6. Write the production architecture and data-contract decision record.
-7. Extract and scenario-test the adaptive rule engine before backend integration.
-8. Build identity, consent, authorization, persistence, export, deletion,
+6. Complete the unresolved account, privacy, consent, retention, incident, and
+   data decisions in the [Risk and Data Foundation](risk-and-data-foundation.md).
+7. Finish and review the canonical planner; keep it out of the browser until
+   the deferred-input and persistence rollout gates pass.
+8. Write the production architecture and data-contract decision only if the
+   research supports continuing.
+9. Build identity, consent, authorization, persistence, export, deletion,
    monitoring, backups, and recovery as one production-foundation milestone.
-9. Re-run professional review against the exact release candidate.
-10. Start a small, supported closed beta only after every release gate passes.
+10. Re-run professional review against the exact release candidate.
+11. Start a small, supported closed beta only after every release gate passes.
 
 ## Explicitly defer
 
