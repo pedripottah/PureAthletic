@@ -1,7 +1,7 @@
 # PureAthletic — AI Integration Strategy
 
 **Status:** Approved direction for experimentation; production use gated
-**Last reviewed:** 18 August 2026
+**Last reviewed:** 23 August 2026
 
 ## The short answer
 
@@ -28,16 +28,33 @@ planner:
   routine from the reviewed catalog.
 - `lib/junior-recommendation-engine.mjs` filters and scores a different legacy
   library using readiness, pain, supervision, equipment, and schedule context.
-- `app.js` loads the youth catalog for onboarding, but its seven-day plan still
-  starts from `initialPlan` and its check-in adjustments are implemented in UI
+- `lib/canonical-planner.mjs` is a versioned, independently tested planning
+  foundation, but it is not imported by the browser or copied into the current
+  deployment artifact.
+- `app.js` loads the youth catalog for onboarding, while its seven-day plan
+  still starts from `initialPlan` and its check-in adjustments remain in UI
   handlers.
 - The youth catalog and legacy junior library are separate data systems with
   different schemas and boundaries.
 
-Therefore the first engineering task is not “call the API.” It is to choose the
-canonical catalog and safety model, extract one server- or module-authoritative
-planner, and make the browser consume its output. Until then, an AI response
-would be decorating a prototype rather than personalizing a trustworthy plan.
+The canonical planner remains development-only until practitioner review,
+broader scenario coverage, persistence design, and the remaining legacy demo
+path are resolved. The live browser therefore uses the earlier prototype flow.
+
+### Deferred onboarding and browser rollout
+
+The following planner inputs remain approved future requirements, but should
+not currently appear on onboarding Step 4 or be persisted as active planner
+inputs in browser profile data:
+
+- days available for optional training;
+- equipment available for optional training;
+- whether a qualified coach can supervise optional sessions.
+
+These inputs should return only when their placement and wording have been
+simplified, the planner output has completed review, and a deliberate storage
+migration is ready. Until that rollout, the canonical planner and its tests are
+engineering groundwork rather than a deployed user-facing feature.
 
 ## What should generate the daily plan?
 

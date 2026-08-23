@@ -468,6 +468,32 @@ function loadData() {
     restored.preferences = {
       notifications: restored.preferences?.notifications !== false
     };
+    // The canonical planner is still future work. Remove fields saved by its
+    // short-lived browser rollout and rebuild the visible plan through the
+    // established recommendation-and-schedule path below.
+    const deferredPlannerFields = [
+      "canonicalPlan",
+      "routineRecommendation",
+      "plannerVersions",
+      "canonicalPlanNeedsRefresh"
+    ];
+    const usedSavedCanonicalPlannerData = deferredPlannerFields.some(
+      (field) => field in restored
+    );
+    const usedDeferredPlannerData = usedSavedCanonicalPlannerData
+      || "qualifiedSupervisionAvailable" in restored.user;
+    if (usedSavedCanonicalPlannerData) {
+      restored.user.availability = clone(onboardingSeed.user.availability);
+      restored.user.equipment = clone(onboardingSeed.user.equipment);
+    } else if ("qualifiedSupervisionAvailable" in restored.user) {
+      restored.user.availability = clone(demoState.user.availability);
+      restored.user.equipment = clone(demoState.user.equipment);
+    }
+    delete restored.canonicalPlan;
+    delete restored.routineRecommendation;
+    delete restored.plannerVersions;
+    delete restored.canonicalPlanNeedsRefresh;
+    delete restored.user.qualifiedSupervisionAvailable;
     const currentPlanDate = calendarDateKey(todayCalendarDate);
     const planDateChanged = restored.planDate !== currentPlanDate;
 
@@ -490,13 +516,13 @@ function loadData() {
     restored.plan = planWithRecommendationAndSchedule(
       restored.recommendation || demoState.recommendation,
       restored.schedule,
-      !planDateChanged && Array.isArray(restored.plan)
+      !planDateChanged && !usedDeferredPlannerData && Array.isArray(restored.plan)
         ? restored.plan
         : clone(initialPlan)
     );
     restored.planDate = currentPlanDate;
 
-    if (previousAgeGroup || usedLegacySchedule || checkInExpired || planDateChanged) {
+    if (previousAgeGroup || usedLegacySchedule || usedDeferredPlannerData || checkInExpired || planDateChanged) {
       if (previousAgeGroup && restored.recommendation?.explanation) {
         restored.recommendation.explanation = restored.recommendation.explanation
           .replace(previousAgeGroup, selectedAgeBand.label);
