@@ -33,6 +33,16 @@
             throw new Error("The PureAthletic favicon is missing");
           }
 
+          const researchNotice = page.querySelector(
+            '.research-notice[aria-labelledby="research-notice-title"]'
+          );
+          if (!researchNotice
+              || !researchNotice.textContent.includes("Adult research prototype")
+              || !researchNotice.textContent.includes("Use fictional profiles only")
+              || !researchNotice.textContent.includes("training or medical advice")) {
+            throw new Error("The landing-page research boundary is missing");
+          }
+
           const click = (selector) => {
             const control = page.querySelector(selector);
             if (!control) throw new Error(`Missing control: ${selector}`);

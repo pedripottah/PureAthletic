@@ -29,3 +29,16 @@ test("the local preview exposes both browser smoke pages", async () => {
   assert.match(browserSmoke, /<iframe id="site" src="\/"/);
   assert.match(responsiveSmoke, /<iframe id="site" src="\/"/);
 });
+
+test("the landing page states the adult-only research boundary", async () => {
+  const index = await readProjectFile("index.html");
+
+  assert.match(
+    index,
+    /<aside class="research-notice" aria-labelledby="research-notice-title">/
+  );
+  assert.match(index, /Adult research prototype/);
+  assert.match(index, /Use fictional profiles only/);
+  assert.match(index, /Do not follow its workouts as\s+training or medical advice/);
+  assert.doesNotMatch(index, /with parent or guardian approval/);
+});
