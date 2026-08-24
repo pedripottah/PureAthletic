@@ -111,6 +111,9 @@ Run the combined pre-sharing check with:
 npm run verify
 ```
 
+This also checks that local links and linked headings in the Markdown
+documentation still resolve.
+
 ## Who is it for?
 
 The research catalog covers junior football team groups U5–U17, but the first
