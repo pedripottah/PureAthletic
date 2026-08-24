@@ -82,6 +82,7 @@ As of 24 August 2026:
 | [Research Plan](research-plan.md) | Research questions and rounds | Research protocol baseline |
 | [Research Preparation](research-preparation.md) | Adult-session procedure | Operational research guide |
 | [Research Session Form](research-session-form.md) | Session evidence capture | Research instrument |
+| [Research Round Summary](research-round-summary.md) | Anonymised synthesis and decision record | Research instrument |
 | [Prototype Verification](prototype-verification-checklist.md) | Pre-research checks | Current prototype checklist |
 | [Safety Review Packet](safety-review-packet.md) | Qualified review scope | Review instrument, not approval |
 | [Junior Content Standard](junior-training-content-standard.md) | Training-content controls | Draft specialist standard |

@@ -72,6 +72,7 @@ Supporting product-foundation documents:
 - [Research Preparation Pack](docs/research-preparation.md)
 - [Prototype Verification Checklist](docs/prototype-verification-checklist.md)
 - [Research Session Form](docs/research-session-form.md)
+- [Research Round Summary](docs/research-round-summary.md)
 - [Practitioner and Safeguarding Review Packet](docs/safety-review-packet.md)
 - [Risk and Data Foundation](docs/risk-and-data-foundation.md)
 - [AI Integration Strategy](docs/ai-integration-strategy.md)

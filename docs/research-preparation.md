@@ -103,7 +103,7 @@ one severe misunderstanding because other participants were successful.
 
 For each session, retain only the completed session form, anonymised findings,
 severity, evidence strength, and a concrete backlog decision. After the round,
-summarise:
+complete the [Research Round Summary](research-round-summary.md) and summarise:
 
 - at least five completed adult sessions across relevant roles;
 - the top five usability or safety findings and their dispositions;

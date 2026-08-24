@@ -190,6 +190,9 @@ For a participant-friendly version of the session questions, use the [Research
 Session Form](research-session-form.md). It uses short scales and multiple
 choice checks so participants do not need to write long responses.
 
+After the round, use the [Research Round Summary](research-round-summary.md) to
+combine anonymised evidence, assign findings, and record the product decision.
+
 ```text
 Session ID:
 Date:
