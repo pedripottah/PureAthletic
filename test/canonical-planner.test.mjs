@@ -105,6 +105,12 @@ test("low readiness falls back without creating a performance session", () => {
 
   assert.equal(plan.decisionTrace.outcome, "recovery_or_rest");
   assert.equal(plan.decisionTrace.fallbackUsed, true);
+  assert.deepEqual(plan.athleteContext, {
+    ageGroup: "U14",
+    ageBandId: "u13-u15",
+    experience: "intermediate",
+    goalId: "speed"
+  });
   assert.equal(plan.days.filter((day) => day.routineId).length, 0);
   assert.equal(plan.days[0].dayType, "recovery_or_rest");
   assert.ok(plan.days[0].reasonCodes.includes("low_readiness"));
