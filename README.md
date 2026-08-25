@@ -41,6 +41,11 @@ Run the automated verification suite with:
 npm run verify
 ```
 
+This runs the application and data tests, makes live HTTP requests against a
+temporary local preview, validates documentation links, builds `dist/`, and
+checks the generated static routes and hosting adapter. It does not replace the
+real-browser checks below.
+
 For the browser checks, start `npm run dev` and open both of these pages in a
 real browser. Each page must show `PASS` before sharing the prototype for
 research:
