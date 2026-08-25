@@ -1,57 +1,20 @@
 import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 
+import {
+  deployedFiles,
+  pageRoutes
+} from "../lib/site-manifest.mjs";
+
 const outputDirectory = new URL("../dist/", import.meta.url);
 const projectDirectory = new URL("../", import.meta.url);
-const pageRoutes = [
-  "/",
-  "/onboarding",
-  "/today",
-  "/training",
-  "/progress",
-  "/profile",
-  "/check-in",
-  "/check-in/result",
-  "/safety",
-  "/training/workout",
-  "/training/workout/short",
-  "/training/session/mon",
-  "/training/session/tue",
-  "/training/session/wed",
-  "/training/session/thu",
-  "/training/session/fri",
-  "/training/session/sat",
-  "/training/session/sun",
-  "/activity/log",
-  "/training/review",
-  "/profile/schedule"
-];
-const staticFiles = [
-  "index.html",
-  "favicon.svg",
-  "styles.css",
-  "app.js",
-  "data/youth-football/sources.json",
-  "data/youth-football/taxonomy.json",
-  "data/youth-football/routine-catalog.json",
-  "data/youth-football/recommendation-index.json"
-];
-const contentTypes = {
-  "index.html": "text/html; charset=utf-8",
-  "favicon.svg": "image/svg+xml",
-  "styles.css": "text/css; charset=utf-8",
-  "app.js": "text/javascript; charset=utf-8",
-  "sources.json": "application/json; charset=utf-8",
-  "taxonomy.json": "application/json; charset=utf-8",
-  "routine-catalog.json": "application/json; charset=utf-8",
-  "recommendation-index.json": "application/json; charset=utf-8"
-};
 
 await rm(outputDirectory, { recursive: true, force: true });
 await mkdir(outputDirectory, { recursive: true });
 
 const files = {};
 
-for (const file of staticFiles) {
+for (const asset of deployedFiles) {
+  const { file } = asset;
   const outputFile = new URL(file, outputDirectory);
   const outputPathParts = file.split("/");
   outputPathParts.pop();
@@ -62,9 +25,9 @@ for (const file of staticFiles) {
     );
   }
   await copyFile(new URL(file, projectDirectory), outputFile);
-  files[`/${file}`] = {
+  files[asset.path] = {
     body: await readFile(new URL(file, projectDirectory), "utf8"),
-    type: contentTypes[file.split("/").at(-1)]
+    type: asset.type
   };
 }
 
@@ -130,4 +93,4 @@ export default {
 
 await writeFile(new URL("server/index.js", outputDirectory), workerSource);
 
-console.log(`Built ${staticFiles.length} static files and the hosting adapter in dist/`);
+console.log(`Built ${deployedFiles.length} static files and the hosting adapter in dist/`);
