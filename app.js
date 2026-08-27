@@ -2160,10 +2160,10 @@ function renderProfile() {
           ${settingsRow("profile", "Athlete details", "Position, experience, primary goal")}
           ${settingsRow("week", "Team schedule", commitmentSummary(data.schedule), "edit-schedule")}
           <span class="settings-label">PREFERENCES & DATA</span>
-          <button type="button" role="switch" aria-checked="${ui.notifications}" data-action="toggle-notifications"><span class="settings-icon">${icon("today")}</span><span><strong>Check-in reminders</strong><small>${ui.notifications ? "On · before optional training" : "Off"}</small></span><span class="toggle ${ui.notifications ? "on" : ""}" aria-hidden="true"><i></i></span></button>
-          ${settingsRow("download", "Export my data", "Download this prototype’s local data", "export-data")}
-          ${settingsRow("refresh", "Restart demo", "Restore the seeded prototype", "reset-demo")}
-          ${settingsRow("trash", "Delete local account", "Clears all prototype data", "delete-data", "danger-row")}
+          <button type="button" role="switch" aria-checked="${ui.notifications}" data-action="toggle-notifications"><span class="settings-icon">${icon("today")}</span><span><strong>Reminder preference</strong><small>${ui.notifications ? "On" : "Off"} · prototype only</small></span><span class="toggle ${ui.notifications ? "on" : ""}" aria-hidden="true"><i></i></span></button>
+          ${settingsRow("download", "Export local data", "Download this browser’s prototype data", "export-data")}
+          ${settingsRow("refresh", "Restart prototype", "Restore the seeded local demo", "reset-demo")}
+          ${settingsRow("trash", "Delete local data", "Clear this browser’s prototype data", "delete-data", "danger-row")}
         </section>
       </div>
     </main>`;
