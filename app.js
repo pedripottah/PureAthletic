@@ -2154,13 +2154,11 @@ function renderProfile() {
       <div class="profile-grid">
         <section class="profile-card">
           <div class="profile-identity"><span class="large-avatar">${escapeHtml(userName.slice(0, 1).toUpperCase())}</span><div><h2>${escapeHtml(userName)}</h2><p>${escapeHtml(ageBandLabel(data.user.ageBandId))} · ${escapeHtml(data.user.position)} · ${escapeHtml(data.user.experience)}</p>${pill(data.user.goal.toUpperCase(), "lime")}</div></div>
-          <div class="profile-facts"><div><span>Availability</span><strong>${data.user.availability.length} days / week</strong></div><div><span>Equipment</span><strong>${data.user.equipment.length} options</strong></div></div>
         </section>
         <section class="settings-card">
           <span class="settings-label">TRAINING SETUP</span>
           ${settingsRow("profile", "Athlete details", "Position, experience, primary goal")}
           ${settingsRow("week", "Team schedule", commitmentSummary(data.schedule), "edit-schedule")}
-          ${settingsRow("bolt", "Equipment & availability", "What you can use and when")}
           <span class="settings-label">PREFERENCES & DATA</span>
           <button type="button" role="switch" aria-checked="${ui.notifications}" data-action="toggle-notifications"><span class="settings-icon">${icon("today")}</span><span><strong>Check-in reminders</strong><small>${ui.notifications ? "On · before optional training" : "Off"}</small></span><span class="toggle ${ui.notifications ? "on" : ""}" aria-hidden="true"><i></i></span></button>
           ${settingsRow("download", "Export my data", "Download this prototype’s local data", "export-data")}
