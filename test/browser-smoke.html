@@ -371,6 +371,26 @@
               && page.querySelector('[data-action="toggle-notifications"]'),
             "Profile did not open"
           );
+          const profileText = page.querySelector("main")?.textContent || "";
+          if (profileText.includes("Availability")
+              || profileText.includes("Equipment & availability")) {
+            throw new Error("Profile presents deferred planner inputs as collected data");
+          }
+          for (const [action, title, detail] of [
+            ["toggle-notifications", "Reminder preference", "prototype only"],
+            ["export-data", "Export local data", "browser’s prototype data"],
+            ["reset-demo", "Restart prototype", "seeded local demo"],
+            ["delete-data", "Delete local data", "browser’s prototype data"]
+          ]) {
+            const control = page.querySelector(`[data-action="${action}"]`);
+            if (!control?.textContent.includes(title)
+                || !control.textContent.includes(detail)) {
+              throw new Error(`${title} does not describe its local prototype scope`);
+            }
+          }
+          if (!page.querySelector('[data-action="edit-schedule"]')) {
+            throw new Error("Profile is missing the editable team schedule");
+          }
           const reminderToggle = page.querySelector('[data-action="toggle-notifications"]');
           const previousReminderState = reminderToggle.getAttribute("aria-checked");
           reminderToggle.click();
