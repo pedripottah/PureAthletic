@@ -39,6 +39,29 @@
         try {
           const page = frame.contentDocument;
           frame.contentWindow.localStorage.clear();
+          assertNoHorizontalOverflow("320px landing");
+
+          page.querySelector('[data-action="start-onboarding"]').click();
+          await waitFor(
+            () => page.querySelector('[data-field="guardianConfirmed"]'),
+            "Research boundary step did not load"
+          );
+          assertNoHorizontalOverflow("320px research boundary");
+
+          page.querySelector('[data-field="guardianConfirmed"]').click();
+          page.querySelector('[data-field="disclaimerAccepted"]').click();
+          page.querySelector('[data-action="onboarding-next"]').click();
+          await waitFor(
+            () => page.querySelector("#name"),
+            "Football profile step did not load"
+          );
+          assertNoHorizontalOverflow("320px football profile");
+
+          page.querySelector('[data-action="exit-onboarding"]').click();
+          await waitFor(
+            () => page.querySelector('[data-action="enter-demo"]'),
+            "Landing page did not return"
+          );
           page.querySelector('[data-action="enter-demo"]').click();
           await waitFor(
             () => page.querySelector('[data-action="open-checkin"]'),
@@ -71,7 +94,7 @@
           await wait(100);
           assertNoHorizontalOverflow("1024px Today");
 
-          result.textContent = "PASS: 320px and 1024px layouts, title metrics, and clean sliders";
+          result.textContent = "PASS: 320px setup and app layouts, 1024px Today, title metrics, and clean sliders";
         } catch (error) {
           result.textContent = `FAIL: ${error.message}`;
         }
