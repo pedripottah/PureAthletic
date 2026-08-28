@@ -1455,15 +1455,15 @@ function renderOnboarding() {
     panel = `
       <div class="step-panel">
         <span class="section-kicker">BEFORE WE BEGIN</span>
-        <h1>Let’s keep junior training useful and safe.</h1>
-        <p class="lead">PureAthletic provides general, age-group training guidance for U5–U17 footballers. It does not diagnose injury, provide treatment, or replace a qualified professional.</p>
+        <h1>Let’s evaluate junior planning safely.</h1>
+        <p class="lead">PureAthletic explores age-aware planning for U5–U17 footballers. During this research phase, only adults should evaluate it, using fictional profiles. Do not follow its workouts as training or medical advice.</p>
         <label class="check-card">
           <input type="checkbox" data-scope="onboarding" data-field="guardianConfirmed"${form.guardianConfirmed ? " checked" : ""}>
-          <span><strong>A parent or guardian approves this setup</strong><small>A responsible adult must know when and where every junior session takes place.</small></span>
+          <span><strong>I understand this simulates guardian involvement</strong><small>This checkbox is not verified guardian consent or approval for real training.</small></span>
         </label>
         <label class="check-card">
           <input type="checkbox" data-scope="onboarding" data-field="disclaimerAccepted"${form.disclaimerAccepted ? " checked" : ""}>
-          <span><strong>We understand the guidance boundary</strong><small>Pain, illness, injury concerns, or return-to-play decisions need qualified support.</small></span>
+          <span><strong>I understand the prototype boundary</strong><small>Pain, illness, injury concerns, or return-to-play decisions need qualified support.</small></span>
         </label>
       </div>`;
   }

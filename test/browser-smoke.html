@@ -63,8 +63,23 @@
           click('[data-action="start-onboarding"]');
           await waitFor(
             () => page.querySelector('[data-field="guardianConfirmed"]'),
-            "Guardian approval step did not open"
+            "Research boundary step did not open"
           );
+          const onboardingBoundary = page.querySelector(".step-panel")?.textContent || "";
+          for (const statement of [
+            "U5–U17 footballers",
+            "only adults should evaluate it",
+            "using fictional profiles",
+            "not verified guardian consent",
+            "not follow its workouts as training or medical advice"
+          ]) {
+            if (!onboardingBoundary.includes(statement)) {
+              throw new Error(`Guided setup is missing its research boundary: ${statement}`);
+            }
+          }
+          if (onboardingBoundary.includes("A parent or guardian approves this setup")) {
+            throw new Error("Guided setup presents the prototype checkbox as guardian approval");
+          }
           click('[data-field="guardianConfirmed"]');
           click('[data-field="disclaimerAccepted"]');
           click('[data-action="onboarding-next"]');
