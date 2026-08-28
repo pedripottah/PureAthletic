@@ -1547,7 +1547,7 @@ function renderOnboarding() {
           <div><span>Fixed commitments</span><strong>${escapeHtml(commitmentSummary(schedule))}</strong></div>
           <div><span>Plan logic</span><strong>Age band + experience + primary goal + schedule</strong></div>
         </div>
-        <div class="info-card">${icon("shield")}<div><strong>Junior safeguards applied</strong><p>Age-band limits, supervision, readiness, recovery, and any fixed match or practice take priority over the selected goal.</p></div></div>
+        <div class="info-card">${icon("shield")}<div><strong>Prototype plan boundary</strong><p>This research view uses age band, experience, primary goal, and fixed commitments. Availability, equipment, and qualified supervision are not collected or checked in this version.</p></div></div>
       </div>`;
   }
 

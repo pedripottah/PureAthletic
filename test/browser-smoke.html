@@ -167,6 +167,15 @@
             () => page.body.textContent.includes("No fixed commitments"),
             "Review did not show an empty commitment state"
           );
+          const reviewBoundary = page.querySelector(".info-card")?.textContent || "";
+          if (!reviewBoundary.includes("Prototype plan boundary")
+              || !reviewBoundary.includes("age band, experience, primary goal, and fixed commitments")
+              || !reviewBoundary.includes("not collected or checked in this version")) {
+            throw new Error("Review does not explain the active prototype plan inputs");
+          }
+          if (reviewBoundary.includes("Junior safeguards applied")) {
+            throw new Error("Review overstates the safeguards applied by the prototype");
+          }
           click('[data-action="onboarding-back"]');
           await waitFor(
             () => page.querySelector('[data-action="add-commitment"]'),
