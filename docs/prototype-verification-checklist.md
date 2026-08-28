@@ -1,7 +1,7 @@
 # PureAthletic — Prototype Verification Checklist
 
 **Status:** Pre-share checklist for the current local research prototype
-**Last reviewed:** 24 August 2026
+**Last reviewed:** 28 August 2026
 
 Use this checklist before sharing the prototype for research. It supplements
 automated tests; it is not evidence of production readiness or junior release.
@@ -20,10 +20,19 @@ local server because they load the app in a same-origin iframe.
 
 ## Automated checks
 
-- Run `npm run verify` for the complete automated check set below.
+- Run `npm run verify` for the complete automated check set below. Stop and
+  investigate if any step fails.
 - [ ] `npm test`
 - [ ] `npm run validate:training`
+- [ ] `npm run validate:docs`
 - [ ] `npm run build`
+- [ ] `npm run verify:build`
+
+## Manual browser checks
+
+Run both browser pages against the same commit recorded below. These checks are
+not included in `npm run verify`.
+
 - [ ] Browser smoke page reports `PASS`.
 - [ ] Responsive smoke page reports `PASS`.
 
