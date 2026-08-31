@@ -1,7 +1,7 @@
 # PureAthletic — Prototype Verification Checklist
 
 **Status:** Pre-share checklist for the current local research prototype
-**Last reviewed:** 28 August 2026
+**Last reviewed:** 31 August 2026
 
 Use this checklist before sharing the prototype for research. It supplements
 automated tests; it is not evidence of production readiness or junior release.
@@ -83,10 +83,16 @@ Commit:
 Date:
 Browser/device:
 Viewport(s):
-Automated checks:
-Manual checks:
+Browser storage cleared before core journey: yes / no
+`npm run verify` result:
+Browser smoke URL and result:
+Responsive smoke URL and result:
 Findings:
 Finding IDs and evidence:
 Release-blocking issue(s):
 Owner, disposition, and next action:
 ```
+
+Record `PASS` only from pages loaded against the commit above. If the source
+changes after either automated or browser verification, rerun the affected
+checks and create a new result record before sharing.
