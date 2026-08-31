@@ -62,6 +62,10 @@ test("the landing page states the adult-only research boundary", async () => {
 
   assert.match(
     index,
+    /name="description"\s+content="Adult-only research prototype[^\"]+fictional profiles\."/
+  );
+  assert.match(
+    index,
     /<aside class="research-notice" aria-labelledby="research-notice-title">/
   );
   assert.match(index, /Adult research prototype/);
