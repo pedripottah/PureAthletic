@@ -69,6 +69,12 @@ test("the generated hosting adapter serves the deployment contract", async () =>
   assert.equal(headResponse.status, 200);
   assert.equal(await headResponse.text(), "");
 
+  const postResponse = await request("/today", { method: "POST" });
+  assert.equal(postResponse.status, 405);
+  assert.equal(postResponse.headers.get("allow"), "GET, HEAD");
+  assert.equal(postResponse.headers.get("content-type"), "text/plain; charset=utf-8");
+  assert.equal(await postResponse.text(), "Method not allowed");
+
   const missingResponse = await request("/missing-page");
   assert.equal(missingResponse.status, 404);
   assert.equal(missingResponse.headers.get("content-type"), "text/plain; charset=utf-8");

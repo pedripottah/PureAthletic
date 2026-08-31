@@ -61,6 +61,16 @@ const pageRoutes = new Set(${JSON.stringify(pageRoutes)});
 
 export default {
   async fetch(request) {
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      return new Response("Method not allowed", {
+        status: 405,
+        headers: {
+          "content-type": "text/plain; charset=utf-8",
+          "allow": "GET, HEAD"
+        }
+      });
+    }
+
     const url = new URL(request.url);
     const normalizedPath = url.pathname === "/"
       ? "/"
