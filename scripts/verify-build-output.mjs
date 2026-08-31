@@ -87,4 +87,8 @@ test("the generated hosting adapter serves the deployment contract", async () =>
   assertSafetyHeaders(missingResponse, "/missing-page");
   assert.equal(missingResponse.headers.get("content-type"), "text/plain; charset=utf-8");
   assert.equal(await missingResponse.text(), "Not found");
+
+  const missingHeadResponse = await request("/missing-page", { method: "HEAD" });
+  assert.equal(missingHeadResponse.status, 404);
+  assert.equal(await missingHeadResponse.text(), "");
 });

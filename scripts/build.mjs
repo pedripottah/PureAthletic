@@ -87,7 +87,7 @@ export default {
         : null);
 
     if (!file) {
-      return new Response("Not found", {
+      return new Response(request.method === "HEAD" ? null : "Not found", {
         status: 404,
         headers: {
           ...responseSafetyHeaders,

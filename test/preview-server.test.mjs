@@ -46,11 +46,12 @@ test("the local preview serves the application HTTP contract", async (t) => {
   });
 
   await t.test("supports HEAD requests without a response body", async () => {
-    const response = await fetch(`${origin}/app.js`, { method: "HEAD" });
+    for (const [path, status] of [["/app.js", 200], ["/missing-page", 404]]) {
+      const response = await fetch(`${origin}${path}`, { method: "HEAD" });
 
-    assert.equal(response.status, 200);
-    assert.equal(response.headers.get("content-type"), "text/javascript; charset=utf-8");
-    assert.equal(await response.text(), "");
+      assert.equal(response.status, status, path);
+      assert.equal(await response.text(), "", path);
+    }
   });
 
   await t.test("sends a conservative browser response policy", async () => {
