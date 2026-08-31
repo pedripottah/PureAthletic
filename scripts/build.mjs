@@ -58,6 +58,10 @@ await writeFile(
 
 const workerSource = `const files = ${JSON.stringify(files)};
 const pageRoutes = new Set(${JSON.stringify(pageRoutes)});
+const responseSafetyHeaders = {
+  "referrer-policy": "no-referrer",
+  "x-content-type-options": "nosniff"
+};
 
 export default {
   async fetch(request) {
@@ -65,6 +69,7 @@ export default {
       return new Response("Method not allowed", {
         status: 405,
         headers: {
+          ...responseSafetyHeaders,
           "content-type": "text/plain; charset=utf-8",
           "allow": "GET, HEAD"
         }
@@ -84,13 +89,17 @@ export default {
     if (!file) {
       return new Response("Not found", {
         status: 404,
-        headers: { "content-type": "text/plain; charset=utf-8" }
+        headers: {
+          ...responseSafetyHeaders,
+          "content-type": "text/plain; charset=utf-8"
+        }
       });
     }
 
     return new Response(request.method === "HEAD" ? null : file.body, {
       status: 200,
       headers: {
+        ...responseSafetyHeaders,
         "content-type": file.type,
         "cache-control": file.type.startsWith("text/html")
           ? "no-cache"

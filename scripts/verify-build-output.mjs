@@ -50,11 +50,16 @@ test("the generated hosting adapter serves the deployment contract", async () =>
   const request = (path, options) => worker.fetch(
     new Request(`https://pureathletic.test${path}`, options)
   );
+  const assertSafetyHeaders = (response, path) => {
+    assert.equal(response.headers.get("x-content-type-options"), "nosniff", path);
+    assert.equal(response.headers.get("referrer-policy"), "no-referrer", path);
+  };
 
   for (const path of [...pageRoutes, "/training/session/custom-id"]) {
     const response = await request(path);
 
     assert.equal(response.status, 200, path);
+    assertSafetyHeaders(response, path);
     assert.equal(response.headers.get("content-type"), "text/html; charset=utf-8");
     assert.equal(response.headers.get("cache-control"), "no-cache");
     assert.match(await response.text(), /<div id="app">/);
@@ -62,6 +67,7 @@ test("the generated hosting adapter serves the deployment contract", async () =>
 
   const assetResponse = await request("/styles.css");
   assert.equal(assetResponse.status, 200);
+  assertSafetyHeaders(assetResponse, "/styles.css");
   assert.equal(assetResponse.headers.get("content-type"), "text/css; charset=utf-8");
   assert.equal(assetResponse.headers.get("cache-control"), "public, max-age=3600");
 
@@ -71,12 +77,14 @@ test("the generated hosting adapter serves the deployment contract", async () =>
 
   const postResponse = await request("/today", { method: "POST" });
   assert.equal(postResponse.status, 405);
+  assertSafetyHeaders(postResponse, "POST /today");
   assert.equal(postResponse.headers.get("allow"), "GET, HEAD");
   assert.equal(postResponse.headers.get("content-type"), "text/plain; charset=utf-8");
   assert.equal(await postResponse.text(), "Method not allowed");
 
   const missingResponse = await request("/missing-page");
   assert.equal(missingResponse.status, 404);
+  assertSafetyHeaders(missingResponse, "/missing-page");
   assert.equal(missingResponse.headers.get("content-type"), "text/plain; charset=utf-8");
   assert.equal(await missingResponse.text(), "Not found");
 });
