@@ -53,6 +53,15 @@ test("the local preview serves the application HTTP contract", async (t) => {
     assert.equal(await response.text(), "");
   });
 
+  await t.test("sends a conservative browser response policy", async () => {
+    for (const path of ["/", "/app.js", "/missing-page"]) {
+      const response = await fetch(`${origin}${path}`);
+
+      assert.equal(response.headers.get("x-content-type-options"), "nosniff", path);
+      assert.equal(response.headers.get("referrer-policy"), "no-referrer", path);
+    }
+  });
+
   await t.test("returns a plain-text 404 for unknown paths", async () => {
     const response = await fetch(`${origin}/missing-page`);
 

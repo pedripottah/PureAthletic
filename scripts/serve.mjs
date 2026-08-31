@@ -12,6 +12,10 @@ const defaultProjectDirectory = new URL("../", import.meta.url);
 const previewFiles = new Map(
   [...deployedFiles, ...previewOnlyFiles].map((asset) => [asset.path, asset])
 );
+const responseSafetyHeaders = {
+  "referrer-policy": "no-referrer",
+  "x-content-type-options": "nosniff"
+};
 
 export function createPreviewServer(projectDirectory = defaultProjectDirectory) {
   return createServer(async (request, response) => {
@@ -21,19 +25,26 @@ export function createPreviewServer(projectDirectory = defaultProjectDirectory) 
       const fileName = asset?.file || (isPageRoute(url.pathname) ? "index.html" : null);
 
       if (!fileName) {
-        response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+        response.writeHead(404, {
+          ...responseSafetyHeaders,
+          "content-type": "text/plain; charset=utf-8"
+        });
         response.end("Not found");
         return;
       }
 
       const body = await readFile(new URL(fileName, projectDirectory));
       response.writeHead(200, {
+        ...responseSafetyHeaders,
         "content-type": asset?.type || "text/html; charset=utf-8",
         "cache-control": fileName === "index.html" ? "no-cache" : "no-store"
       });
       response.end(request.method === "HEAD" ? undefined : body);
     } catch (error) {
-      response.writeHead(500, { "content-type": "text/plain; charset=utf-8" });
+      response.writeHead(500, {
+        ...responseSafetyHeaders,
+        "content-type": "text/plain; charset=utf-8"
+      });
       response.end("Could not load the local preview.");
       console.error(error);
     }
