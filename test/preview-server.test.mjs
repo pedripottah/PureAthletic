@@ -62,6 +62,15 @@ test("the local preview serves the application HTTP contract", async (t) => {
     }
   });
 
+  await t.test("rejects methods that could imply a server-side write", async () => {
+    const response = await fetch(`${origin}/today`, { method: "POST" });
+
+    assert.equal(response.status, 405);
+    assert.equal(response.headers.get("allow"), "GET, HEAD");
+    assert.equal(response.headers.get("content-type"), "text/plain; charset=utf-8");
+    assert.equal(await response.text(), "Method not allowed");
+  });
+
   await t.test("returns a plain-text 404 for unknown paths", async () => {
     const response = await fetch(`${origin}/missing-page`);
 

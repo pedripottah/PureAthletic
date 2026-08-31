@@ -20,6 +20,16 @@ const responseSafetyHeaders = {
 export function createPreviewServer(projectDirectory = defaultProjectDirectory) {
   return createServer(async (request, response) => {
     try {
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        response.writeHead(405, {
+          ...responseSafetyHeaders,
+          "content-type": "text/plain; charset=utf-8",
+          allow: "GET, HEAD"
+        });
+        response.end("Method not allowed");
+        return;
+      }
+
       const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
       const asset = previewFiles.get(url.pathname);
       const fileName = asset?.file || (isPageRoute(url.pathname) ? "index.html" : null);
