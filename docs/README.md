@@ -78,6 +78,7 @@ As of 24 August 2026:
 | [User Flow](user-flow.md) | Target journey and branches | Design input |
 | [Low-Fidelity Wireframes](low-fidelity-wireframes.md) | Target screen concepts | Research/design artifact |
 | [Project Review](project-review.md) | Current gaps and immediate backlog | Dated assessment |
+| [Project Progress](project-progress.md) | Current gate status and completion estimate | Working checkpoint only |
 | [Three-Year Roadmap](three-year-roadmap.md) | Evidence-gated sequence | Directional plan |
 | [Research Plan](research-plan.md) | Research questions and rounds | Research protocol baseline |
 | [Research Preparation](research-preparation.md) | Adult-session procedure | Operational research guide |

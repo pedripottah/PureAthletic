@@ -72,6 +72,7 @@ Supporting product-foundation documents:
 - [V1 User Flow](docs/user-flow.md)
 - [V1 Low-Fidelity Wireframes](docs/low-fidelity-wireframes.md)
 - [Prototype Review](docs/project-review.md)
+- [Current Project Progress](docs/project-progress.md)
 - [Three-Year Product and Engineering Roadmap](docs/three-year-roadmap.md)
 - [Phase 0 Research Plan](docs/research-plan.md)
 - [Research Preparation Pack](docs/research-preparation.md)
