@@ -36,6 +36,8 @@ Approver and basis for approval:
 
 Keep the completed release-gate record and approvals in approved private
 storage. Commit only a non-sensitive version/status summary when appropriate.
+The repository ignores `research-private/` to reduce accidental staging, but
+that folder is not secure or approved merely because Git ignores it.
 
 ## Participant information
 

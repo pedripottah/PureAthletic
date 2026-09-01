@@ -1,15 +1,30 @@
 # PureAthletic — Research Preparation Pack
 
 **Status:** Operational guide for adult-only prototype sessions
-**Last reviewed:** 24 August 2026
+**Last reviewed:** 1 September 2026
 
 This document turns the Phase 0 research plan into a small, executable first
 round. It is preparation guidance, not approval for junior recruitment or
 production use.
 
-The checklist below is not a participant information sheet, privacy notice, or
-consent form. Prepare those separately for the selected jurisdiction and storage
-process before recruitment.
+Use the draft [Adult Research Participant Pack](adult-research-participant-pack.md)
+as a starting point for participant information and consent. It still requires
+approval and adaptation for the selected jurisdiction and storage process
+before recruitment; it is not a privacy notice or legal opinion.
+
+## Private research records
+
+Names, contact details, completed consent records, raw session notes, recordings,
+medical or safeguarding disclosures, and reviewer identity must remain outside
+the tracked repository. `research-private/` is ignored by Git as an additional
+accidental-staging guardrail.
+
+An ignored folder is not encrypted, access-controlled, backed up, or approved
+storage. Use it only if the documented research process permits local storage;
+otherwise use the approved private system. Before recruitment, name the storage
+owner, allowed roles, deletion date, backup behavior, incident contact, and
+withdrawal process. Confirm with `git status --ignored` that any approved local
+working directory is ignored, and inspect staged changes before every commit.
 
 ## Round 1 — adult prototype research
 

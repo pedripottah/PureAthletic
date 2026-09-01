@@ -5,3 +5,6 @@ node_modules/
 *.log
 .env*
 !.env.example
+
+# Local research operations may contain identities, consent, or raw notes.
+research-private/
