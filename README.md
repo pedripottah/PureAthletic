@@ -76,6 +76,7 @@ Supporting product-foundation documents:
 - [Three-Year Product and Engineering Roadmap](docs/three-year-roadmap.md)
 - [Phase 0 Research Plan](docs/research-plan.md)
 - [Research Preparation Pack](docs/research-preparation.md)
+- [Adult Research Participant Pack](docs/adult-research-participant-pack.md)
 - [Prototype Verification Checklist](docs/prototype-verification-checklist.md)
 - [Research Session Form](docs/research-session-form.md)
 - [Research Round Summary](docs/research-round-summary.md)

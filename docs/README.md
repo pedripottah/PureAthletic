@@ -82,6 +82,7 @@ As of 24 August 2026:
 | [Three-Year Roadmap](three-year-roadmap.md) | Evidence-gated sequence | Directional plan |
 | [Research Plan](research-plan.md) | Research questions and rounds | Research protocol baseline |
 | [Research Preparation](research-preparation.md) | Adult-session procedure | Operational research guide |
+| [Adult Research Participant Pack](adult-research-participant-pack.md) | Participant information and consent template | Draft; approval required before use |
 | [Research Session Form](research-session-form.md) | Session evidence capture | Research instrument |
 | [Research Round Summary](research-round-summary.md) | Anonymised synthesis and decision record | Research instrument |
 | [Prototype Verification](prototype-verification-checklist.md) | Pre-research checks | Current prototype checklist |
